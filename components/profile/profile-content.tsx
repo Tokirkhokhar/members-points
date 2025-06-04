@@ -1,89 +1,98 @@
 "use client";
 
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Form, 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { useAuth } from '@/contexts/auth-context';
-import { Badge } from '@/components/ui/badge';
-import { MembershipBadge } from '@/components/profile/membership-badge';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useAuth } from "@/contexts/auth-context";
+import { Badge } from "@/components/ui/badge";
+import {
+  MembershipBadge,
+  MembershipLevel,
+} from "@/components/profile/membership-badge";
+import { useToast } from "@/hooks/use-toast";
 
 const profileFormSchema = z.object({
   name: z
     .string()
-    .min(2, { message: 'Name must be at least 2 characters.' })
-    .max(30, { message: 'Name must not be longer than 30 characters.' }),
-  email: z
-    .string()
-    .email({ message: 'Please enter a valid email address.' }),
+    .min(2, { message: "Name must be at least 2 characters." })
+    .max(30, { message: "Name must not be longer than 30 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
   bio: z
     .string()
-    .max(160, { message: 'Bio must not be longer than 160 characters.' })
+    .max(160, { message: "Bio must not be longer than 160 characters." })
     .optional(),
   phone: z
     .string()
-    .min(10, { message: 'Phone number must be at least 10 characters.' })
-    .max(15, { message: 'Phone number must not be longer than 15 characters.' })
+    .min(10, { message: "Phone number must be at least 10 characters." })
+    .max(15, { message: "Phone number must not be longer than 15 characters." })
     .optional(),
 });
 
-const accountFormSchema = z.object({
-  currentPassword: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters long.' }),
-  newPassword: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters long.' }),
-  confirmPassword: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters long.' }),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const accountFormSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long." }),
+    newPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long." }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long." }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 export function ProfileContent() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
-  
+
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user?.name || '',
-      email: user?.email || '',
-      bio: '',
-      phone: '',
+      name: user?.name || "",
+      email: user?.email || "",
+      bio: "",
+      phone: "",
     },
   });
-  
+
   const accountForm = useForm<z.infer<typeof accountFormSchema>>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: '',
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
-  
+
   function onProfileSubmit(data: z.infer<typeof profileFormSchema>) {
     setIsUpdating(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       toast({
@@ -92,13 +101,13 @@ export function ProfileContent() {
       });
       setIsUpdating(false);
     }, 1000);
-    
+
     console.log(data);
   }
-  
+
   function onAccountSubmit(data: z.infer<typeof accountFormSchema>) {
     setIsUpdating(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       toast({
@@ -107,27 +116,27 @@ export function ProfileContent() {
       });
       setIsUpdating(false);
       accountForm.reset({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       });
     }, 1000);
-    
+
     console.log(data);
   }
-  
+
   const initials = user?.name
     ? user.name
-        .split(' ')
-        .map(n => n[0])
-        .join('')
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
         .toUpperCase()
-    : 'U';
+    : "U";
 
   return (
     <div className="container py-8">
       <h1 className="text-3xl font-bold tracking-tight mb-6">Your Profile</h1>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <Card className="md:col-span-1">
           <CardHeader>
@@ -141,12 +150,17 @@ export function ProfileContent() {
               <AvatarImage src={user?.avatar} alt={user?.name} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
-            
+
             <h3 className="text-xl font-medium">{user?.name}</h3>
             <p className="text-sm text-muted-foreground mb-4">{user?.email}</p>
-            
-            <MembershipBadge level={user?.membershipLevel || 'Gold'} />
-            
+
+            <MembershipBadge
+              level={
+                (user?.membershipLevel as MembershipLevel) ||
+                MembershipLevel.Gold
+              }
+            />
+
             <div className="w-full mt-6 space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Member Since</span>
@@ -167,7 +181,7 @@ export function ProfileContent() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Account Settings</CardTitle>
@@ -182,10 +196,13 @@ export function ProfileContent() {
                 <TabsTrigger value="password">Password</TabsTrigger>
                 <TabsTrigger value="preferences">Preferences</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="personal">
                 <Form {...profileForm}>
-                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={profileForm.handleSubmit(onProfileSubmit)}
+                    className="space-y-6"
+                  >
                     <FormField
                       control={profileForm.control}
                       name="name"
@@ -202,7 +219,7 @@ export function ProfileContent() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={profileForm.control}
                       name="email"
@@ -219,7 +236,7 @@ export function ProfileContent() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={profileForm.control}
                       name="phone"
@@ -236,17 +253,20 @@ export function ProfileContent() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <Button type="submit" disabled={isUpdating}>
-                      {isUpdating ? 'Updating...' : 'Update Profile'}
+                      {isUpdating ? "Updating..." : "Update Profile"}
                     </Button>
                   </form>
                 </Form>
               </TabsContent>
-              
+
               <TabsContent value="password">
                 <Form {...accountForm}>
-                  <form onSubmit={accountForm.handleSubmit(onAccountSubmit)} className="space-y-6">
+                  <form
+                    onSubmit={accountForm.handleSubmit(onAccountSubmit)}
+                    className="space-y-6"
+                  >
                     <FormField
                       control={accountForm.control}
                       name="currentPassword"
@@ -254,13 +274,17 @@ export function ProfileContent() {
                         <FormItem>
                           <FormLabel>Current Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Enter current password" {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Enter current password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={accountForm.control}
                       name="newPassword"
@@ -268,7 +292,11 @@ export function ProfileContent() {
                         <FormItem>
                           <FormLabel>New Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Enter new password" {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Enter new password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormDescription>
                             Password must be at least 8 characters long.
@@ -277,7 +305,7 @@ export function ProfileContent() {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={accountForm.control}
                       name="confirmPassword"
@@ -285,49 +313,61 @@ export function ProfileContent() {
                         <FormItem>
                           <FormLabel>Confirm Password</FormLabel>
                           <FormControl>
-                            <Input type="password" placeholder="Confirm new password" {...field} />
+                            <Input
+                              type="password"
+                              placeholder="Confirm new password"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <Button type="submit" disabled={isUpdating}>
-                      {isUpdating ? 'Updating...' : 'Change Password'}
+                      {isUpdating ? "Updating..." : "Change Password"}
                     </Button>
                   </form>
                 </Form>
               </TabsContent>
-              
+
               <TabsContent value="preferences">
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Notification Preferences</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      Notification Preferences
+                    </h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Email Notifications</p>
-                          <p className="text-sm text-muted-foreground">Receive emails about account activity</p>
+                          <p className="text-sm text-muted-foreground">
+                            Receive emails about account activity
+                          </p>
                         </div>
                         <div>
                           <Badge>Enabled</Badge>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Marketing Emails</p>
-                          <p className="text-sm text-muted-foreground">Receive promotional emails and offers</p>
+                          <p className="text-sm text-muted-foreground">
+                            Receive promotional emails and offers
+                          </p>
                         </div>
                         <div>
                           <Badge variant="outline">Disabled</Badge>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Points Alerts</p>
-                          <p className="text-sm text-muted-foreground">Get notified about points updates</p>
+                          <p className="text-sm text-muted-foreground">
+                            Get notified about points updates
+                          </p>
                         </div>
                         <div>
                           <Badge>Enabled</Badge>
@@ -335,24 +375,30 @@ export function ProfileContent() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <h3 className="text-lg font-medium mb-2">Privacy Settings</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      Privacy Settings
+                    </h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Profile Visibility</p>
-                          <p className="text-sm text-muted-foreground">Control who can see your profile</p>
+                          <p className="text-sm text-muted-foreground">
+                            Control who can see your profile
+                          </p>
                         </div>
                         <div>
                           <Badge>Private</Badge>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Data Usage</p>
-                          <p className="text-sm text-muted-foreground">Allow data to be used for personalization</p>
+                          <p className="text-sm text-muted-foreground">
+                            Allow data to be used for personalization
+                          </p>
                         </div>
                         <div>
                           <Badge>Enabled</Badge>
@@ -360,9 +406,9 @@ export function ProfileContent() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <Button disabled={isUpdating}>
-                    {isUpdating ? 'Updating...' : 'Save Preferences'}
+                    {isUpdating ? "Updating..." : "Save Preferences"}
                   </Button>
                 </div>
               </TabsContent>
