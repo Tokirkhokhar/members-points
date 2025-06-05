@@ -1,47 +1,50 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { pointsService, PointsTransaction } from '@/services/points-service';
-import { BadgePlus, BadgeMinus, Filter } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PointsTransaction } from "@/services/points-service";
+import { BadgePlus, BadgeMinus, Filter } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useGetTransactions } from "@/hooks/useGetTransactions";
 
 export function PointsHistory() {
-  const [transactions, setTransactions] = useState<PointsTransaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { getTransactions, data, isLoading } = useGetTransactions();
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<{
-    type?: 'earned' | 'redeemed',
-    category?: string
+    type?: "earned" | "redeemed";
+    category?: string;
   }>({});
 
-  const fetchTransactions = async () => {
-    try {
-      setIsLoading(true);
-      const result = await pointsService.getPointsTransactions(page, 10, filter);
-      setTransactions(result.transactions);
-      setTotal(result.total);
-    } catch (error) {
-      console.error('Failed to fetch transactions:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    getTransactions(page, 10, filter);
+  }, [page, filter]);
 
   useEffect(() => {
-    fetchTransactions();
-  }, [page, filter]);
+    if (data) {
+      setTotal(data?.total);
+    }
+  }, [data]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= Math.ceil(total / 10)) {
@@ -49,8 +52,11 @@ export function PointsHistory() {
     }
   };
 
-  const handleFilterChange = (key: 'type' | 'category', value: string | undefined) => {
-    if (value === 'all') {
+  const handleFilterChange = (
+    key: "type" | "category",
+    value: string | undefined
+  ) => {
+    if (value === "all") {
       const newFilter = { ...filter };
       delete newFilter[key];
       setFilter(newFilter);
@@ -61,22 +67,30 @@ export function PointsHistory() {
   };
 
   const uniqueCategories = [
-    'Purchase', 'Travel', 'Shopping', 'Promotion', 'Referral', 'Bonus'
+    "Purchase",
+    "Travel",
+    "Shopping",
+    "Promotion",
+    "Referral",
+    "Bonus",
   ];
 
   return (
-    <Card>
+    <Card className="min-h-[570px]">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <CardTitle>Points History</CardTitle>
-          <CardDescription>
-            Your recent points activities
-          </CardDescription>
+          <CardDescription>Your recent points activities</CardDescription>
         </div>
-        
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Select 
-            onValueChange={(value) => handleFilterChange('type', value === 'all' ? undefined : value as any)}
+
+        {/* <div className="flex flex-col sm:flex-row gap-2">
+          <Select
+            onValueChange={(value) =>
+              handleFilterChange(
+                "type",
+                value === "all" ? undefined : (value as any)
+              )
+            }
           >
             <SelectTrigger className="w-36">
               <SelectValue placeholder="All activities" />
@@ -87,7 +101,7 @@ export function PointsHistory() {
               <SelectItem value="redeemed">Redeemed</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" className="gap-2">
@@ -98,19 +112,21 @@ export function PointsHistory() {
               <div className="space-y-2">
                 <h4 className="font-medium">Filter by category</h4>
                 <div className="flex flex-col gap-2 mt-2">
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="justify-start"
-                    onClick={() => handleFilterChange('category', undefined)}
+                    onClick={() => handleFilterChange("category", undefined)}
                   >
                     All categories
                   </Button>
                   {uniqueCategories.map((category) => (
                     <Button
                       key={category}
-                      variant={filter.category === category ? "secondary" : "ghost"}
+                      variant={
+                        filter.category === category ? "secondary" : "ghost"
+                      }
                       className="justify-start"
-                      onClick={() => handleFilterChange('category', category)}
+                      onClick={() => handleFilterChange("category", category)}
                     >
                       {category}
                     </Button>
@@ -119,7 +135,7 @@ export function PointsHistory() {
               </div>
             </PopoverContent>
           </Popover>
-        </div>
+        </div> */}
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -138,51 +154,66 @@ export function PointsHistory() {
         ) : (
           <>
             <div className="space-y-4">
-              {transactions.length === 0 ? (
-                <div className="text-center py-6">
+              {data?.data.length === 0 ? (
+                <div className="flex items-center justify-center min-h-[400px]  text-center py-6">
                   <p className="text-muted-foreground">No transactions found</p>
                 </div>
               ) : (
-                transactions.map((transaction) => (
+                data?.data.map((transaction: PointsTransaction) => (
                   <div
                     key={transaction.id}
                     className="flex items-start gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
                   >
-                    <div className={`rounded-full p-2 ${
-                      transaction.type === 'earned' 
-                        ? 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400' 
-                        : 'bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400'
-                    }`}>
-                      {transaction.type === 'earned' ? (
+                    <div
+                      className={`rounded-full p-2 ${
+                        transaction.type === "earned"
+                          ? "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400"
+                          : "bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400"
+                      }`}
+                    >
+                      {transaction.type === "earned" ? (
                         <BadgePlus className="h-5 w-5" />
                       ) : (
                         <BadgeMinus className="h-5 w-5" />
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{transaction.description}</p>
+                      <p className="font-medium truncate">
+                        {transaction.description || "-"}
+                      </p>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span>{format(new Date(transaction.date), 'MMM dd, yyyy')}</span>
-                        <span>•</span>
-                        <span>{transaction.category}</span>
+                        <span>
+                          {format(
+                            new Date(transaction.createdAt),
+                            "MMM dd, yyyy"
+                          )}
+                        </span>
+                        {/* <span>•</span> */}
+                        {/* <span>{transaction.category}</span> */}
                       </div>
                     </div>
-                    
-                    <div className={`text-right font-medium ${
-                      transaction.type === 'earned' ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'
-                    }`}>
-                      {transaction.type === 'earned' ? '+' : '-'}{transaction.points.toLocaleString()} points
+
+                    <div
+                      className={`text-right font-medium ${
+                        transaction.type === "earned"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-amber-600 dark:text-amber-400"
+                      }`}
+                    >
+                      {transaction.type === "earned" ? "+" : "-"}
+                      {transaction.points.toLocaleString()} points
                     </div>
                   </div>
                 ))
               )}
             </div>
-            
-            {transactions.length > 0 && (
+
+            {data?.data.length > 0 && (
               <div className="flex items-center justify-between mt-6">
                 <p className="text-sm text-muted-foreground">
-                  Showing {Math.min((page - 1) * 10 + 1, total)} to {Math.min(page * 10, total)} of {total} entries
+                  Showing {Math.min((page - 1) * 10 + 1, total)} to{" "}
+                  {Math.min(page * 10, total)} of {total} entries
                 </p>
                 <div className="flex items-center gap-2">
                   <Button

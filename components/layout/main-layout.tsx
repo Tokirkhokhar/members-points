@@ -47,8 +47,8 @@ export function MainLayout({ children }: MainLayoutProps) {
     },
   ];
 
-  const initials = user?.name
-    ? user.name
+  const initials = user?.firstName
+    ? user.firstName
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -68,7 +68,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <span className="text-xl font-bold">MembersPoint</span>
+              <span className="text-xl font-bold">Points Center</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-4">
@@ -98,10 +98,12 @@ export function MainLayout({ children }: MainLayoutProps) {
                 <>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatar} alt={user.name} />
+                      <AvatarImage src={user.avatar} alt={user.firstName} />
                       <AvatarFallback>{initials}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium">{user.name}</span>
+                    <span className="text-sm font-medium">
+                      {user.firstName} {user.lastName}
+                    </span>
                   </div>
                   <Button
                     variant="ghost"
@@ -156,11 +158,13 @@ export function MainLayout({ children }: MainLayoutProps) {
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center gap-3 px-4 py-3">
                   <Avatar className="h-10 w-10">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={user.avatar} alt={user.firstName} />
                     <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium">{user.name}</p>
+                    <p className="font-medium">
+                      {user.firstName} {user.lastName}
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {user.email}
                     </p>
@@ -185,7 +189,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       <footer className="section py-6 border-t">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} MembersPoint. All rights reserved.
+            © {new Date().getFullYear()} Points Center. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link
