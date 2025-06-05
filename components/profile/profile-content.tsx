@@ -62,7 +62,7 @@ const accountFormSchema = z
       .min(8, { message: "Password must be at least 8 characters long." }),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "Passwords don not match",
     path: ["confirmPassword"],
   });
 
@@ -230,7 +230,7 @@ export function ProfileContent() {
                             <Input placeholder="Your email" {...field} />
                           </FormControl>
                           <FormDescription>
-                            We'll use this email to contact you.
+                            We will use this email to contact you.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
