@@ -63,7 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setIsLoading(false);
           return;
         } else {
-          console.log("🚀 ~ checkAuth ~ token:", token);
           await getMe(token);
         }
       } catch (error) {

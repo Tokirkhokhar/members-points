@@ -23,6 +23,7 @@ import {
   Legend,
 } from "recharts";
 import { PointsHistory } from "./points-history";
+import { CountUp } from "../ui/countUp";
 
 type PointsStatisticsProps = {
   statistics: PointsStatsType;
@@ -83,7 +84,7 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
           <CardHeader className="pb-2">
             <CardDescription>Total Earned Points</CardDescription>
             <CardTitle className="text-3xl">
-              {data?.totalEarnedPoints.toLocaleString()}
+              <CountUp targetNumber={data?.totalEarnedPoints || 0} />
             </CardTitle>
           </CardHeader>
           {/* <CardContent>
@@ -97,7 +98,7 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
           <CardHeader className="pb-2">
             <CardDescription>Total Expired Points</CardDescription>
             <CardTitle className="text-3xl">
-              {data?.totalExpiredPoints.toLocaleString()}
+              <CountUp targetNumber={data?.totalExpiredPoints || 0} />
             </CardTitle>
           </CardHeader>
           {/* <CardContent>
@@ -108,7 +109,7 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
           <CardHeader className="pb-2">
             <CardDescription>Total Redeemed Points</CardDescription>
             <CardTitle className="text-3xl">
-              {data?.totalRedeemedPoints.toLocaleString()}
+              <CountUp targetNumber={data?.totalRedeemedPoints || 0} />
             </CardTitle>
           </CardHeader>
           {/* <CardContent>
@@ -119,7 +120,7 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
           <CardHeader className="pb-2">
             <CardDescription>Wallet Balance</CardDescription>
             <CardTitle className="text-3xl">
-              {data?.wallet?.pointBalance.toLocaleString()}
+              <CountUp targetNumber={data?.wallet?.pointBalance || 0} />
             </CardTitle>
           </CardHeader>
         </Card>

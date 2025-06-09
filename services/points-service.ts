@@ -12,19 +12,19 @@ export enum PointsType {
   REDEEMED = "redeemed",
 }
 
-export type PointsTransaction = {
+export interface PointTransaction {
   id: string;
-  createdAt: string;
-  description: string;
-  voucherCode: string;
-  referenceId: string;
+  reference: string;
+  source: string;
+  type: string;
   points: number;
-  type: PointsType;
-  amount: number;
-  currency: string;
-  metadata: {};
-  // category: string;
-};
+  amount?: number;
+  currency: string | null;
+  description?: string;
+  transactionReference: string;
+  expiredAt: Date | null;
+  createdAt: Date;
+}
 
 // Mock data for demonstration purposes
 const mockStatistics: PointsStatistics = {
