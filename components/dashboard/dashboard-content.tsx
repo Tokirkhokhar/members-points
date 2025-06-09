@@ -51,10 +51,10 @@ export function DashboardContent() {
         </div>
       ) : (
         <Tabs defaultValue="statistics" className="space-y-6">
-          <TabsList>
+          {/* <TabsList>
             <TabsTrigger value="statistics">Statistics</TabsTrigger>
             <TabsTrigger value="history">Points History</TabsTrigger>
-          </TabsList>
+          </TabsList> */}
 
           <TabsContent value="statistics" className="space-y-6">
             {statistics && <PointsStatistics statistics={statistics} />}

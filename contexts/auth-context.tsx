@@ -1,49 +1,73 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { authService } from '@/services/auth-service';
-import { useToast } from '@/hooks/use-toast';
+import { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { authService } from "@/services/auth-service";
+import { useToast } from "@/hooks/use-toast";
+import { useLogin } from "@/hooks/useLogin";
+import { useGetMe } from "@/hooks/useGetMe";
 
 type User = {
   id: string;
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   avatar?: string;
   memberSince: string;
   membershipLevel: string;
+  phoneNumber: string;
+  registrationDate: string;
+  referrerToken: string;
+  gender: string;
+  metadata: string[];
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  deactivatedAt: string;
+  createdAt: string;
+  tier: string;
 };
 
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string) => Promise<void>;
   logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { login: loginUser, data } = useLogin();
+  const { getMe, data: userData } = useGetMe();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
+    if (userData) {
+      setUser(userData);
+      router.push("/dashboard");
+    }
+  }, [userData]);
+
+  useEffect(() => {
     // Check if user is authenticated on initial load
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
+        const token = localStorage.getItem("auth_token");
+        if (token == null) {
           setIsLoading(false);
           return;
+        } else {
+          console.log("🚀 ~ checkAuth ~ token:", token);
+          await getMe(token);
         }
-
-        const userData = await authService.getCurrentUser();
-        setUser(userData);
       } catch (error) {
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem("auth_token");
       } finally {
         setIsLoading(false);
       }
@@ -52,17 +76,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string) => {
     setIsLoading(true);
     try {
-      const { token, user: userData } = await authService.login(email, password);
-      localStorage.setItem('auth_token', token);
-      setUser(userData);
-      router.push('/dashboard');
-      toast({
-        title: "Welcome back!",
-        description: `Logged in as ${userData.name}`,
-      });
+      const { accessToken } = await loginUser(email);
+      if (accessToken && accessToken != undefined && accessToken != null) {
+        await getMe(accessToken);
+        localStorage.setItem("auth_token", accessToken);
+        toast({
+          title: "Welcome back!",
+          description: `Logged in as ${userData.firstName} ${userData.lastName}`,
+        });
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -76,9 +101,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem("auth_token");
     setUser(null);
-    router.push('/login');
+    router.push("/login");
     toast({
       title: "Logged out",
       description: "You have been successfully logged out",
@@ -103,7 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

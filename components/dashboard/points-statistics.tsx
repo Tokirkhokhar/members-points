@@ -7,7 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useGetStatistics } from "@/hooks/useGetStatistics";
 import { PointsStatistics as PointsStatsType } from "@/services/points-service";
+import { useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -20,6 +22,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { PointsHistory } from "./points-history";
 
 type PointsStatisticsProps = {
   statistics: PointsStatsType;
@@ -37,6 +40,7 @@ const Progress = ({ value }: { value: number }) => {
 };
 
 export function PointsStatistics({ statistics }: PointsStatisticsProps) {
+  const { getStatistics, isLoading, data } = useGetStatistics();
   // Mock data for monthly points chart
   const monthlyPointsData = [
     { name: "Jan", points: 350 },
@@ -68,36 +72,59 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
     "hsl(var(--chart-4))",
   ];
 
+  useEffect(() => {
+    getStatistics();
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Total Points</CardDescription>
+            <CardDescription>Total Earned Points</CardDescription>
             <CardTitle className="text-3xl">
-              {statistics.totalPoints.toLocaleString()}
+              {data?.totalEarnedPoints.toLocaleString()}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          {/* <CardContent>
             <p className="text-sm text-muted-foreground">
-              {statistics.currentLevel} Member
+              {data?.currentLevel} Member
             </p>
-          </CardContent>
+          </CardContent> */}
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Points This Month</CardDescription>
+            <CardDescription>Total Expired Points</CardDescription>
             <CardTitle className="text-3xl">
-              {statistics.pointsThisMonth.toLocaleString()}
+              {data?.totalExpiredPoints.toLocaleString()}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          {/* <CardContent>
             <p className="text-sm text-muted-foreground">Earned in May</p>
-          </CardContent>
+          </CardContent> */}
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total Redeemed Points</CardDescription>
+            <CardTitle className="text-3xl">
+              {data?.totalRedeemedPoints.toLocaleString()}
+            </CardTitle>
+          </CardHeader>
+          {/* <CardContent>
+            <p className="text-sm text-muted-foreground">Earned in May</p>
+          </CardContent> */}
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Wallet Balance</CardDescription>
+            <CardTitle className="text-3xl">
+              {data?.wallet?.pointBalance.toLocaleString()}
+            </CardTitle>
+          </CardHeader>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardDescription>Next Level</CardDescription>
             <CardTitle className="text-xl">{statistics.nextLevel}</CardTitle>
@@ -115,9 +142,9 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
               )}
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
-        <Card>
+        {/* <Card>
           <CardHeader className="pb-2">
             <CardDescription>Membership Since</CardDescription>
             <CardTitle className="text-xl">
@@ -129,10 +156,12 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
               Joined May 12, {new Date().getFullYear() - 2}
             </p>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <PointsHistory />
+
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Monthly Points Earned</CardTitle>
@@ -206,7 +235,7 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
             </ResponsiveContainer>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 }
