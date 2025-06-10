@@ -133,13 +133,7 @@ export function ProfileContent() {
   }
 
   const initials = useMemo(() => {
-    return user?.firstName
-      ? user.firstName
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-      : "U";
+    return user?.firstName ? user.firstName.charAt(0).toUpperCase() : "U";
   }, [user?.firstName]);
 
   return (

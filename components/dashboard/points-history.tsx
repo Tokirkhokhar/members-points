@@ -199,12 +199,14 @@ export function PointsHistory() {
                           <span className="font-bold">Source:&nbsp;</span>
                           {transaction.source}
                         </p>
-                        <p className="text-sm capitalize">
-                          <span className="font-bold">
-                            Transaction Reference:&nbsp;
-                          </span>
-                          {transaction.transactionReference}
-                        </p>
+                        {transaction?.transactionReference ? (
+                          <p className="text-sm capitalize">
+                            <span className="font-bold">
+                              Transaction Reference:&nbsp;
+                            </span>
+                            {transaction.transactionReference}
+                          </p>
+                        ) : null}
                         {/* <span>•</span> */}
                         {/* <span>{transaction.category}</span> */}
                       </div>

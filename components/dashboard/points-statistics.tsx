@@ -1,27 +1,27 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Card,
-  CardContent,
+  // CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { useGetStatistics } from "@/hooks/useGetStatistics";
 import { PointsStatistics as PointsStatsType } from "@/services/points-service";
-import { useEffect } from "react";
-import {
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-} from "recharts";
+// import {
+//   BarChart,
+//   Bar,
+//   PieChart,
+//   Pie,
+//   Cell,
+//   ResponsiveContainer,
+//   XAxis,
+//   YAxis,
+//   Tooltip,
+//   Legend,
+// } from "recharts";
 import { PointsHistory } from "./points-history";
 import { CountUp } from "../ui/countUp";
 
@@ -29,49 +29,67 @@ type PointsStatisticsProps = {
   statistics: PointsStatsType;
 };
 
-const Progress = ({ value }: { value: number }) => {
+type StateCardProps = {
+  targetNumber: number;
+  label: string;
+};
+
+const StateCard = ({ targetNumber, label }: StateCardProps) => {
   return (
-    <div className="relative h-4 w-full overflow-hidden rounded-full bg-secondary">
-      <div
-        className="h-full w-full flex-1 bg-primary transition-all"
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-      />
-    </div>
+    <Card className="hover:bg-primary/10 hover:scale-[1.03] transition-all cursor-pointer block border border-input rounded-[8px] shadow-sm">
+      <CardHeader className="pb-2">
+        <CardDescription>{label}</CardDescription>
+        <CardTitle className="text-3xl">
+          <CountUp targetNumber={targetNumber} />
+        </CardTitle>
+      </CardHeader>
+    </Card>
   );
 };
+
+// const Progress = ({ value }: { value: number }) => {
+//   return (
+//     <div className="relative h-4 w-full overflow-hidden rounded-full bg-secondary">
+//       <div
+//         className="h-full w-full flex-1 bg-primary transition-all"
+//         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+//       />
+//     </div>
+//   );
+// };
 
 export function PointsStatistics({ statistics }: PointsStatisticsProps) {
   const { getStatistics, isLoading, data } = useGetStatistics();
   // Mock data for monthly points chart
-  const monthlyPointsData = [
-    { name: "Jan", points: 350 },
-    { name: "Feb", points: 420 },
-    { name: "Mar", points: 380 },
-    { name: "Apr", points: 510 },
-    { name: "May", points: statistics.pointsThisMonth },
-    { name: "Jun", points: 0 },
-    { name: "Jul", points: 0 },
-    { name: "Aug", points: 0 },
-    { name: "Sep", points: 0 },
-    { name: "Oct", points: 0 },
-    { name: "Nov", points: 0 },
-    { name: "Dec", points: 0 },
-  ];
+  // const monthlyPointsData = [
+  //   { name: "Jan", points: 350 },
+  //   { name: "Feb", points: 420 },
+  //   { name: "Mar", points: 380 },
+  //   { name: "Apr", points: 510 },
+  //   { name: "May", points: statistics.pointsThisMonth },
+  //   { name: "Jun", points: 0 },
+  //   { name: "Jul", points: 0 },
+  //   { name: "Aug", points: 0 },
+  //   { name: "Sep", points: 0 },
+  //   { name: "Oct", points: 0 },
+  //   { name: "Nov", points: 0 },
+  //   { name: "Dec", points: 0 },
+  // ];
 
-  // Mock data for points distribution
-  const pointsDistributionData = [
-    { name: "Purchases", value: 4200 },
-    { name: "Referrals", value: 1800 },
-    { name: "Promotions", value: 1200 },
-    { name: "Activities", value: 650 },
-  ];
+  // // Mock data for points distribution
+  // const pointsDistributionData = [
+  //   { name: "Purchases", value: 4200 },
+  //   { name: "Referrals", value: 1800 },
+  //   { name: "Promotions", value: 1200 },
+  //   { name: "Activities", value: 650 },
+  // ];
 
-  const COLORS = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-  ];
+  // const COLORS = [
+  //   "hsl(var(--chart-1))",
+  //   "hsl(var(--chart-2))",
+  //   "hsl(var(--chart-3))",
+  //   "hsl(var(--chart-4))",
+  // ];
 
   useEffect(() => {
     getStatistics();
@@ -80,51 +98,22 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Earned Points</CardDescription>
-            <CardTitle className="text-3xl">
-              <CountUp targetNumber={data?.totalEarnedPoints || 0} />
-            </CardTitle>
-          </CardHeader>
-          {/* <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {data?.currentLevel} Member
-            </p>
-          </CardContent> */}
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Expired Points</CardDescription>
-            <CardTitle className="text-3xl">
-              <CountUp targetNumber={data?.totalExpiredPoints || 0} />
-            </CardTitle>
-          </CardHeader>
-          {/* <CardContent>
-            <p className="text-sm text-muted-foreground">Earned in May</p>
-          </CardContent> */}
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Redeemed Points</CardDescription>
-            <CardTitle className="text-3xl">
-              <CountUp targetNumber={data?.totalRedeemedPoints || 0} />
-            </CardTitle>
-          </CardHeader>
-          {/* <CardContent>
-            <p className="text-sm text-muted-foreground">Earned in May</p>
-          </CardContent> */}
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Wallet Balance</CardDescription>
-            <CardTitle className="text-3xl">
-              <CountUp targetNumber={data?.wallet?.pointBalance || 0} />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-
+        <StateCard
+          targetNumber={data?.totalEarnedPoints || 0}
+          label="Total Earned Points"
+        />
+        <StateCard
+          targetNumber={data?.totalExpiredPoints || 0}
+          label="Total Expired Points"
+        />
+        <StateCard
+          targetNumber={data?.totalRedeemedPoints || 0}
+          label="Total Redeemed Points"
+        />
+        <StateCard
+          targetNumber={data?.wallet?.pointBalance || 0}
+          label="Wallet Balance"
+        />
         {/* <Card>
           <CardHeader className="pb-2">
             <CardDescription>Next Level</CardDescription>
