@@ -77,7 +77,7 @@ export function PointsHistory() {
   // ];
 
   return (
-    <Card className="min-h-[570px] relative">
+    <Card className="min-h-[570px] h-auto relative">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <CardTitle>Points History</CardTitle>
@@ -154,7 +154,7 @@ export function PointsHistory() {
           </div>
         ) : (
           <>
-            <div className="space-y-4">
+            <div className="space-y-4 mb-8">
               {data?.data.length === 0 ? (
                 <div className="flex items-center justify-center min-h-[400px]  text-center py-6">
                   <p className="text-muted-foreground">No transactions found</p>
@@ -229,12 +229,12 @@ export function PointsHistory() {
             </div>
 
             {data?.data && data?.data.length > 0 && (
-              <div className="flex items-center justify-between absolute bottom-1 w-full pr-8 pl-4">
+              <div className="flex items-center justify-between absolute bottom-1 w-full pr-14 pl-6">
                 <p className="text-sm text-muted-foreground">
                   Showing {Math.min((page - 1) * 10 + 1, total)} to{" "}
                   {Math.min(page * 10, total)} of {total} entries
                 </p>
-                <div className="flex items-center gap-2 cursor-pointer">
+                <div className="flex items-center gap-4 cursor-pointer">
                   <Button
                     variant="secondary"
                     size="sm"
