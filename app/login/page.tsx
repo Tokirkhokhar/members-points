@@ -125,16 +125,16 @@ export default function LoginPage() {
                 </Button>
               </form>
             </Form>
-            <div className="text-center text-sm">
+            {/* <div className="text-center text-sm">
               <Link
                 href="/forgot-password"
                 className="text-sm text-muted-foreground underline underline-offset-4 hover:text-primary"
               >
                 Forgot your password?
               </Link>
-            </div>
+            </div> */}
           </div>
-          <div className="px-8 text-center text-sm text-muted-foreground">
+          {/* <div className="px-8 text-center text-sm text-muted-foreground">
             <div className="flex items-center justify-center gap-1">
               Don&apos;t have an account?{" "}
               <Link
@@ -144,7 +144,7 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </div>
-          </div>
+          </div> */}
 
           {/* Demo credentials hint */}
           <div className="rounded-lg border bg-card p-4 text-sm">

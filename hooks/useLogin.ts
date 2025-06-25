@@ -10,12 +10,10 @@ export const useLogin = () => {
   const login = async (email: string) => {
     try {
       setIsLoading(true);
-      const payload = {
-        memberEmail: email,
-      };
+      const payload = { email };
 
       const { data: response } = await postReq(
-        "members/generate-token",
+        "admin/members/generate-token",
         payload,
         {
           headers: {

@@ -174,6 +174,10 @@ export function ProfileContent() {
                 </span>
               </div>
               <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Referrer Token</span>
+                <span className="font-semibold ">{user?.referrerToken}</span>
+              </div>
+              <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Total Points</span>
                 <span className="font-medium">7,850</span>
               </div>

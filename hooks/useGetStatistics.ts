@@ -12,7 +12,7 @@ export const useGetStatistics = () => {
 
       const token = localStorage.getItem("auth_token");
 
-      const { data: response } = await getReq("members/wallets/statistics", {
+      const { data: response } = await getReq("members/wallets", {
         headers: {
           // get auth token from local storage and pass as bearer token
           Authorization: `Bearer ${token}`,
@@ -30,5 +30,5 @@ export const useGetStatistics = () => {
     }
   };
 
-  return { getStatistics, isLoading, data };
+  return { getStatistics, isLoading, walletData: data?.data };
 };

@@ -59,7 +59,7 @@ const StateCard = ({ targetNumber, label }: StateCardProps) => {
 // };
 
 export function PointsStatistics({ statistics }: PointsStatisticsProps) {
-  const { getStatistics, isLoading, data } = useGetStatistics();
+  const { getStatistics, isLoading, walletData } = useGetStatistics();
   // Mock data for monthly points chart
   // const monthlyPointsData = [
   //   { name: "Jan", points: 350 },
@@ -95,25 +95,28 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
     getStatistics();
   }, []);
 
+  const data = walletData?.[0]?.account;
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StateCard
-          targetNumber={data?.totalEarnedPoints || 0}
+          targetNumber={data?.activePoints || 0}
+          label="Wallet Balance"
+        />
+        <StateCard
+          targetNumber={data?.earnedPoints || 0}
           label="Total Earned Points"
         />
         <StateCard
-          targetNumber={data?.totalExpiredPoints || 0}
+          targetNumber={data?.expiredPoints || 0}
           label="Total Expired Points"
         />
         <StateCard
-          targetNumber={data?.totalRedeemedPoints || 0}
+          targetNumber={data?.spentPoints || 0}
           label="Total Redeemed Points"
         />
-        <StateCard
-          targetNumber={data?.wallet?.pointBalance || 0}
-          label="Wallet Balance"
-        />
+
         {/* <Card>
           <CardHeader className="pb-2">
             <CardDescription>Next Level</CardDescription>

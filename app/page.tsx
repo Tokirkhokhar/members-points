@@ -32,11 +32,6 @@ export default function Home() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href="/register">
-                  <Button size="lg" variant="outline">
-                    Create an account
-                  </Button>
-                </Link>
               </div>
             </div>
           </div>
