@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -31,18 +31,23 @@ import {
   MembershipLevel,
 } from "@/components/profile/membership-badge";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 const profileFormSchema = z.object({
-  name: z
+  firstName: z
     .string()
-    .min(2, { message: "Name must be at least 2 characters." })
-    .max(30, { message: "Name must not be longer than 30 characters." }),
+    .min(2, { message: "First name must be at least 2 characters." })
+    .max(30, { message: "First name must not be longer than 30 characters." }),
+  lastName: z
+    .string()
+    .min(2, { message: "Last name must be at least 2 characters." })
+    .max(30, { message: "Last name must not be longer than 30 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   bio: z
     .string()
     .max(160, { message: "Bio must not be longer than 160 characters." })
     .optional(),
-  phone: z
+  phoneNumber: z
     .string()
     .min(10, { message: "Phone number must be at least 10 characters." })
     .max(15, { message: "Phone number must not be longer than 15 characters." })
@@ -68,16 +73,18 @@ const accountFormSchema = z
 
 export function ProfileContent() {
   const { user } = useAuth();
+  console.log("🚀 ~ ProfileContent ~ user:", user);
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      name: user?.name || "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
       email: user?.email || "",
       bio: "",
-      phone: "",
+      phoneNumber: user?.phoneNumber || "",
     },
   });
 
@@ -125,13 +132,9 @@ export function ProfileContent() {
     console.log(data);
   }
 
-  const initials = user?.name
-    ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-    : "U";
+  const initials = useMemo(() => {
+    return user?.firstName ? user.firstName.charAt(0).toUpperCase() : "U";
+  }, [user?.firstName]);
 
   return (
     <div className="container py-8">
@@ -147,24 +150,32 @@ export function ProfileContent() {
           </CardHeader>
           <CardContent className="flex flex-col items-center text-center">
             <Avatar className="h-24 w-24 mb-4">
-              <AvatarImage src={user?.avatar} alt={user?.name} />
+              <AvatarImage src={user?.avatar} alt={user?.firstName} />
               <AvatarFallback className="text-xl">{initials}</AvatarFallback>
             </Avatar>
 
-            <h3 className="text-xl font-medium">{user?.name}</h3>
+            <h3 className="text-xl font-medium">
+              {user?.firstName} {user?.lastName}
+            </h3>
             <p className="text-sm text-muted-foreground mb-4">{user?.email}</p>
 
-            <MembershipBadge
+            {/* <MembershipBadge
               level={
                 (user?.membershipLevel as MembershipLevel) ||
                 MembershipLevel.Gold
               }
-            />
+            /> */}
 
             <div className="w-full mt-6 space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Member Since</span>
-                <span className="font-medium">{user?.memberSince}</span>
+                <span className="font-medium">
+                  {format(new Date(user?.registrationDate || ""), "dd/MM/yyyy")}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Referrer Token</span>
+                <span className="font-semibold ">{user?.referrerToken}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Total Points</span>
@@ -174,10 +185,10 @@ export function ProfileContent() {
                 <span className="text-muted-foreground">Points This Month</span>
                 <span className="font-medium">430</span>
               </div>
-              <div className="flex justify-between text-sm">
+              {/* <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Next Level</span>
                 <span className="font-medium">Platinum</span>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>
@@ -193,8 +204,12 @@ export function ProfileContent() {
             <Tabs defaultValue="personal" className="w-full">
               <TabsList className="mb-4">
                 <TabsTrigger value="personal">Personal Info</TabsTrigger>
-                <TabsTrigger value="password">Password</TabsTrigger>
-                <TabsTrigger value="preferences">Preferences</TabsTrigger>
+                <TabsTrigger value="password" disabled>
+                  Password
+                </TabsTrigger>
+                <TabsTrigger value="preferences" disabled>
+                  Preferences
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="personal">
@@ -205,12 +220,28 @@ export function ProfileContent() {
                   >
                     <FormField
                       control={profileForm.control}
-                      name="name"
+                      name="firstName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Name</FormLabel>
+                          <FormLabel>First Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Your name" {...field} />
+                            <Input placeholder="Your first name" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            This is your full name.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Your last name" {...field} />
                           </FormControl>
                           <FormDescription>
                             This is your full name.
@@ -239,7 +270,7 @@ export function ProfileContent() {
 
                     <FormField
                       control={profileForm.control}
-                      name="phone"
+                      name="phoneNumber"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Phone Number</FormLabel>
@@ -254,9 +285,9 @@ export function ProfileContent() {
                       )}
                     />
 
-                    <Button type="submit" disabled={isUpdating}>
+                    {/* <Button type="submit" disabled={true}>
                       {isUpdating ? "Updating..." : "Update Profile"}
-                    </Button>
+                    </Button> */}
                   </form>
                 </Form>
               </TabsContent>

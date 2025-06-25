@@ -7,7 +7,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <header className="section sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          <div className="font-bold text-xl">MembersPoint</div>
+          <div className="font-bold text-xl">Member&apos;s Point</div>
           <Link href="/login">
             <Button variant="ghost">Login</Button>
           </Link>
@@ -30,11 +30,6 @@ export default function Home() {
                   <Button size="lg" className="gap-2">
                     Log in to your account
                     <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button size="lg" variant="outline">
-                    Create an account
                   </Button>
                 </Link>
               </div>
@@ -73,7 +68,7 @@ export default function Home() {
       <footer className="section py-6 border-t">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} MembersPoint. All rights reserved.
+            © {new Date().getFullYear()} Points Center. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link

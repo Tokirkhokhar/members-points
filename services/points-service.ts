@@ -7,14 +7,24 @@ export type PointsStatistics = {
   nextLevel: string;
 };
 
-export type PointsTransaction = {
+export enum PointsType {
+  EARNED = "earned",
+  REDEEMED = "redeemed",
+}
+
+export interface PointTransaction {
   id: string;
-  date: string;
-  description: string;
+  reference: string;
+  source: string;
+  type: string;
   points: number;
-  type: 'earned' | 'redeemed';
-  category: string;
-};
+  amount?: number;
+  currency: string | null;
+  description?: string;
+  transactionReference: string;
+  expiredAt: Date | null;
+  createdAt: Date;
+}
 
 // Mock data for demonstration purposes
 const mockStatistics: PointsStatistics = {
@@ -22,114 +32,145 @@ const mockStatistics: PointsStatistics = {
   pointsThisMonth: 430,
   pointsToNextLevel: 2150,
   percentToNextLevel: 78.5,
-  currentLevel: 'Gold',
-  nextLevel: 'Platinum'
+  currentLevel: "Gold",
+  nextLevel: "Platinum",
 };
 
-const mockTransactions: PointsTransaction[] = [
+const mockTransactions = [
   {
-    id: '1',
-    date: '2023-04-01T10:30:00Z',
-    description: 'Purchase at XYZ Store',
+    id: "1",
+    type: "earned",
     points: 250,
-    type: 'earned',
-    category: 'Purchase'
+    amount: 100,
+    currency: "USD",
+    voucherCode: "PROMO2025",
+    description: "Purchase at XYZ Store",
+    referenceId: "REF-001",
+    metadata: { category: "Purchase" },
+    createdAt: "2023-04-01T10:30:00Z",
   },
   {
-    id: '2',
-    date: '2023-04-03T14:15:00Z',
-    description: 'Referral Bonus',
+    id: "2",
+    type: "earned",
     points: 500,
-    type: 'earned',
-    category: 'Referral'
+    amount: 0,
+    currency: "USD",
+    voucherCode: "",
+    description: "Referral Bonus",
+    referenceId: "REF-002",
+    metadata: { category: "Referral" },
+    createdAt: "2023-04-03T14:15:00Z",
   },
   {
-    id: '3',
-    date: '2023-04-10T09:45:00Z',
-    description: 'Flight Ticket Redemption',
+    id: "3",
+    type: "redeemed",
     points: 1200,
-    type: 'redeemed',
-    category: 'Travel'
+    amount: 400,
+    currency: "USD",
+    voucherCode: "FLIGHT2025",
+    description: "Flight Ticket Redemption",
+    referenceId: "REF-003",
+    metadata: { category: "Travel" },
+    createdAt: "2023-04-10T09:45:00Z",
   },
   {
-    id: '4',
-    date: '2023-04-15T11:20:00Z',
-    description: 'Special Promotion',
+    id: "4",
+    type: "earned",
     points: 300,
-    type: 'earned',
-    category: 'Promotion'
+    amount: 50,
+    currency: "USD",
+    voucherCode: "PROMOAPR",
+    description: "Special Promotion",
+    referenceId: "REF-004",
+    metadata: { category: "Promotion" },
+    createdAt: "2023-04-15T11:20:00Z",
   },
   {
-    id: '5',
-    date: '2023-04-22T16:40:00Z',
-    description: 'Hotel Stay',
+    id: "5",
+    type: "earned",
     points: 450,
-    type: 'earned',
-    category: 'Travel'
+    amount: 200,
+    currency: "USD",
+    voucherCode: "",
+    description: "Hotel Stay",
+    referenceId: "REF-005",
+    metadata: { category: "Travel" },
+    createdAt: "2023-04-22T16:40:00Z",
   },
   {
-    id: '6',
-    date: '2023-04-27T13:50:00Z',
-    description: 'Gift Card Redemption',
+    id: "6",
+    type: "redeemed",
     points: 800,
-    type: 'redeemed',
-    category: 'Shopping'
+    amount: 80,
+    currency: "USD",
+    voucherCode: "GIFT800",
+    description: "Gift Card Redemption",
+    referenceId: "REF-006",
+    metadata: { category: "Shopping" },
+    createdAt: "2023-04-27T13:50:00Z",
   },
   {
-    id: '7',
-    date: '2023-05-02T08:30:00Z',
-    description: 'Online Purchase',
+    id: "7",
+    type: "earned",
     points: 180,
-    type: 'earned',
-    category: 'Shopping'
+    amount: 75,
+    currency: "USD",
+    voucherCode: "",
+    description: "Online Purchase",
+    referenceId: "REF-007",
+    metadata: { category: "Shopping" },
+    createdAt: "2023-05-02T08:30:00Z",
   },
   {
-    id: '8',
-    date: '2023-05-08T15:10:00Z',
-    description: 'Monthly Activity Bonus',
+    id: "8",
+    type: "earned",
     points: 250,
-    type: 'earned',
-    category: 'Bonus'
-  }
+    amount: 0,
+    currency: "USD",
+    voucherCode: "",
+    description: "Monthly Activity Bonus",
+    referenceId: "REF-008",
+    metadata: { category: "Bonus" },
+    createdAt: "2023-05-08T15:10:00Z",
+  },
 ];
 
 export const pointsService = {
   getPointsStatistics: async (): Promise<PointsStatistics> => {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 700));
-    
+    await new Promise((resolve) => setTimeout(resolve, 700));
+
     return mockStatistics;
   },
-  
+
   getPointsTransactions: async (
-    page = 1, 
-    limit = 10, 
-    filter?: { type?: 'earned' | 'redeemed', category?: string }
-  ): Promise<{ transactions: PointsTransaction[], total: number }> => {
+    page = 1,
+    limit = 10,
+    filter?: { type?: "earned" | "redeemed"; category?: string }
+  ): Promise<{ transactions: any[]; total: number }> => {
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
     let filteredTransactions = [...mockTransactions];
-    
+
     if (filter?.type) {
-      filteredTransactions = filteredTransactions.filter(t => t.type === filter.type);
+      filteredTransactions = filteredTransactions.filter(
+        (t) => t.type === filter.type
+      );
     }
-    
-    if (filter?.category) {
-      filteredTransactions = filteredTransactions.filter(t => t.category === filter.category);
-    }
-    
+
     // Sort by date (newest first)
-    filteredTransactions.sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
+    filteredTransactions.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-    
+
     const start = (page - 1) * limit;
     const end = start + limit;
-    
+
     return {
       transactions: filteredTransactions.slice(start, end),
-      total: filteredTransactions.length
+      total: filteredTransactions.length,
     };
-  }
+  },
 };

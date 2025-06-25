@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,15 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
+import { useGenerateTenantToken } from "@/hooks/useGenerateTenantToken";
+import { getCookie } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters long",
-  }),
+  // password: z.string().min(8, {
+  //   message: "Password must be at least 8 characters long",
+  // }),
 });
 
 export default function LoginPage() {
+  const { generateTenantToken, data } = useGenerateTenantToken();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,20 +36,34 @@ export default function LoginPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
   });
+  const values = form.getValues();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      await login(values.email, values.password);
+      if (!getCookie("actk")) {
+        await generateTenantToken();
+      } else {
+        await login(values.email);
+      }
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (data?.accessToken) {
+      document.cookie = `actk=${data.accessToken}; expires=${new Date(
+        Date.now() + 86400000
+      ).toUTCString()}; path=/`;
+
+      onSubmit(values);
+    }
+  }, [data]);
 
   return (
     <div className="section min-h-screen flex flex-col">
@@ -79,7 +96,7 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
@@ -95,7 +112,7 @@ export default function LoginPage() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <>
@@ -108,16 +125,16 @@ export default function LoginPage() {
                 </Button>
               </form>
             </Form>
-            <div className="text-center text-sm">
+            {/* <div className="text-center text-sm">
               <Link
                 href="/forgot-password"
                 className="text-sm text-muted-foreground underline underline-offset-4 hover:text-primary"
               >
                 Forgot your password?
               </Link>
-            </div>
+            </div> */}
           </div>
-          <div className="px-8 text-center text-sm text-muted-foreground">
+          {/* <div className="px-8 text-center text-sm text-muted-foreground">
             <div className="flex items-center justify-center gap-1">
               Don&apos;t have an account?{" "}
               <Link
@@ -127,7 +144,7 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </div>
-          </div>
+          </div> */}
 
           {/* Demo credentials hint */}
           <div className="rounded-lg border bg-card p-4 text-sm">
