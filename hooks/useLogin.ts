@@ -17,7 +17,7 @@ export const useLogin = () => {
         payload,
         {
           headers: {
-            Authorization: `Bearer ${getCookie("actk")}`,
+            "X-Api-Key": appConfig.apiKey,
           },
         }
       );

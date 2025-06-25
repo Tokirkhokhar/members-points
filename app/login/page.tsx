@@ -17,8 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
-import { useGenerateTenantToken } from "@/hooks/useGenerateTenantToken";
-import { getCookie } from "@/lib/utils";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -28,7 +26,6 @@ const formSchema = z.object({
 });
 
 export default function LoginPage() {
-  const { generateTenantToken, data } = useGenerateTenantToken();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,32 +35,17 @@ export default function LoginPage() {
       email: "",
     },
   });
-  const values = form.getValues();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      if (!getCookie("actk")) {
-        await generateTenantToken();
-      } else {
-        await login(values.email);
-      }
+      await login(values.email);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   }
-
-  useEffect(() => {
-    if (data?.accessToken) {
-      document.cookie = `actk=${data.accessToken}; expires=${new Date(
-        Date.now() + 86400000
-      ).toUTCString()}; path=/`;
-
-      onSubmit(values);
-    }
-  }, [data]);
 
   return (
     <div className="section min-h-screen flex flex-col">
@@ -145,17 +127,6 @@ export default function LoginPage() {
               </Link>
             </div>
           </div> */}
-
-          {/* Demo credentials hint */}
-          <div className="rounded-lg border bg-card p-4 text-sm">
-            <p className="font-medium mb-1">Demo Credentials</p>
-            <p className="text-muted-foreground text-xs mb-1">
-              Email: john.doe@example.com
-            </p>
-            <p className="text-muted-foreground text-xs">
-              Password: password123
-            </p>
-          </div>
         </div>
       </div>
     </div>

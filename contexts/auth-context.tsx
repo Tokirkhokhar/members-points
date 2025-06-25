@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem("auth_token", accessToken);
         toast({
           title: "Welcome back!",
-          description: `Logged in as ${userData.firstName} ${userData.lastName}`,
+          description: `Logged in successfully`,
         });
       }
     } catch (error) {
