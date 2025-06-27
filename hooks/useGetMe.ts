@@ -24,7 +24,6 @@ export const useGetMe = () => {
       }
       return response;
     } catch (err) {
-      console.log("🚀 ~ getMe ~ err:", err);
       console.log(err);
     } finally {
       setIsLoading(false);

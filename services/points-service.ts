@@ -1,3 +1,5 @@
+import { PointTransactionType } from "@/enums";
+
 export type PointsStatistics = {
   totalPoints: number;
   pointsThisMonth: number;
@@ -16,7 +18,7 @@ export interface PointTransaction {
   id: string;
   reference: string;
   source: string;
-  type: string;
+  type: PointTransactionType;
   points: number;
   amount?: number;
   currency: string | null;

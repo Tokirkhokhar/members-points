@@ -73,7 +73,6 @@ const accountFormSchema = z
 
 export function ProfileContent() {
   const { user } = useAuth();
-  console.log("🚀 ~ ProfileContent ~ user:", user);
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -108,8 +107,6 @@ export function ProfileContent() {
       });
       setIsUpdating(false);
     }, 1000);
-
-    console.log(data);
   }
 
   function onAccountSubmit(data: z.infer<typeof accountFormSchema>) {
@@ -128,8 +125,6 @@ export function ProfileContent() {
         confirmPassword: "",
       });
     }, 1000);
-
-    console.log(data);
   }
 
   const initials = useMemo(() => {

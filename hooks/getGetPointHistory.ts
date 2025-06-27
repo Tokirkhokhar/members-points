@@ -38,7 +38,6 @@ export const useGetPointHistory = () => {
           ...filter,
         },
       });
-      console.log("🚀 ~ getGetPointHistory ~ response:", response);
       if (response) {
         setIsLoading(false);
         setData(response);
