@@ -21,7 +21,7 @@ export const useGetPointHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<Response | null>(null);
 
-  const getGetPointHistory = async (page = 1, limit = 10, filter: any) => {
+  const getGetPointHistory = async (page = 1, limit = 10) => {
     try {
       setIsLoading(true);
 
@@ -35,7 +35,6 @@ export const useGetPointHistory = () => {
         params: {
           page,
           limit,
-          ...filter,
         },
       });
       if (response) {

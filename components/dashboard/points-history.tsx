@@ -27,20 +27,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetPointHistory } from "@/hooks/getGetPointHistory";
 import { PointTransaction } from "@/services/points-service";
 import { PointTransactionType } from "@/enums";
-import { getBadgeColorClass, getPointsColorClass } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export function PointsHistory() {
   const { getGetPointHistory, data, isLoading } = useGetPointHistory();
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [filter, setFilter] = useState<{
-    type?: PointTransactionType.Earned | "redeemed";
-    category?: string;
-  }>({});
 
   useEffect(() => {
-    getGetPointHistory(page, 10, filter);
-  }, [page, filter]);
+    getGetPointHistory(page, 10);
+  }, [page]);
 
   useEffect(() => {
     if (data) {
@@ -161,67 +157,85 @@ export function PointsHistory() {
                   <p className="text-muted-foreground">No transactions found</p>
                 </div>
               ) : (
-                data?.data.map((transaction: PointTransaction) => {
-                  const badgeColorClass = getBadgeColorClass(transaction.type);
-                  const pointsColorClass = getPointsColorClass(
-                    transaction.type
-                  );
-                  return (
-                    <div
-                      key={transaction.id}
-                      className="flex items-start gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
-                    >
-                      <div className={`rounded-full p-2 ${badgeColorClass}`}>
-                        {transaction.type === PointTransactionType.Earned ? (
-                          <BadgePlus className="h-5 w-5" />
-                        ) : (
-                          <BadgeMinus className="h-5 w-5" />
-                        )}
-                      </div>
+                data?.data.map(
+                  ({
+                    id,
+                    type,
+                    points,
+                    description,
+                    reference,
+                    source,
+                    createdAt,
+                    transactionReference,
+                  }: PointTransaction) => {
+                    return (
+                      <div
+                        key={id}
+                        className="flex items-start gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div
+                          className={cn(`rounded-full p-2`, {
+                            "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400":
+                              type === PointTransactionType.Earned,
+                            "bg-red-100 dark:bg-red-800 text-red-600 dark:text-red-400":
+                              type === PointTransactionType.Expired,
+                            "bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400":
+                              type === PointTransactionType.Redeemed,
+                          })}
+                        >
+                          {type === PointTransactionType.Earned ? (
+                            <BadgePlus className="h-5 w-5" />
+                          ) : (
+                            <BadgeMinus className="h-5 w-5" />
+                          )}
+                        </div>
 
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate text-lg">
-                          {transaction.description || "-"}
-                        </p>
-                        <p className="text-sm font-normal leading-none">
-                          <span className="font-bold">Reference:&nbsp;</span>
-                          {transaction.reference}
-                        </p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <p>
-                            <span className="font-bold">Date:&nbsp;</span>
-                            {format(
-                              new Date(transaction.createdAt),
-                              "MMM dd, yyyy"
-                            )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate text-lg">
+                            {description || "-"}
                           </p>
-                          <p className="text-sm capitalize">
-                            <span className="font-bold">Source:&nbsp;</span>
-                            {transaction.source}
+                          <p className="text-sm font-normal leading-none">
+                            <span className="font-bold">Reference:&nbsp;</span>
+                            {reference}
                           </p>
-                          {transaction?.transactionReference ? (
-                            <p className="text-sm capitalize">
-                              <span className="font-bold">
-                                Transaction Reference:&nbsp;
-                              </span>
-                              {transaction.transactionReference}
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <p>
+                              <span className="font-bold">Date:&nbsp;</span>
+                              {format(new Date(createdAt), "MMM dd, yyyy")}
                             </p>
-                          ) : null}
-                          {/* <span>•</span> */}
-                          {/* <span>{transaction.category}</span> */}
+                            <p className="text-sm capitalize">
+                              <span className="font-bold">Source:&nbsp;</span>
+                              {source}
+                            </p>
+                            {transactionReference ? (
+                              <p className="text-sm capitalize">
+                                <span className="font-bold">
+                                  Transaction Reference:&nbsp;
+                                </span>
+                                {transactionReference}
+                              </p>
+                            ) : null}
+                            {/* <span>•</span> */}
+                            {/* <span>{category}</span> */}
+                          </div>
+                        </div>
+                        <div
+                          className={cn("text-right font-medium", {
+                            "text-green-600 dark:text-green-400":
+                              type === PointTransactionType.Earned,
+                            "text-red-600 dark:text-red-400":
+                              type === PointTransactionType.Expired,
+                            "text-amber-600 dark:text-amber-400":
+                              type === PointTransactionType.Redeemed,
+                          })}
+                        >
+                          {type === PointTransactionType.Earned ? "+" : "-"}
+                          {points.toLocaleString()} points
                         </div>
                       </div>
-                      <div
-                        className={`text-right font-medium ${pointsColorClass}`}
-                      >
-                        {transaction.type === PointTransactionType.Earned
-                          ? "+"
-                          : "-"}
-                        {transaction.points.toLocaleString()} points
-                      </div>
-                    </div>
-                  );
-                })
+                    );
+                  }
+                )
               )}
             </div>
 
