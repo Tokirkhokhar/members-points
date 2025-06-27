@@ -9,6 +9,7 @@ export const useLogin = () => {
 
   const login = async (email: string) => {
     try {
+      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       const payload = { email };
 
@@ -17,7 +18,8 @@ export const useLogin = () => {
         payload,
         {
           headers: {
-            "X-Api-Key": appConfig.apiKey,
+            // get auth token from local storage and pass as bearer token
+            Authorization: `Bearer ${token}`,
           },
         }
       );

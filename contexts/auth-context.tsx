@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (userData) {
       setUser(userData);
-      router.push("/dashboard");
+      router.push("/products");
     }
   }, [userData]);
 
