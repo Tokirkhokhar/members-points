@@ -177,7 +177,7 @@ export function PointsHistory() {
                           className={cn(`rounded-full p-2`, {
                             "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400":
                               type === PointTransactionType.Earned,
-                            "bg-red-100 dark:bg-red-800 text-red-600 dark:text-red-400":
+                            "bg-red-100 dark:bg-red-400/10 text-red-600 dark:text-red-400":
                               type === PointTransactionType.Expired,
                             "bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400":
                               type === PointTransactionType.Redeemed,
