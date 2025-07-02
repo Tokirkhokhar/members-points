@@ -39,7 +39,7 @@ export const useCreateTransaction = () => {
       setIsLoading(true);
       setError(null);
 
-      const { data: response } = await postReq("transactions", payload, {
+      const { data: response } = await postReq("members/transaction", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
