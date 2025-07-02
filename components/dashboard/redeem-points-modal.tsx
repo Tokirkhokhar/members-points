@@ -78,7 +78,7 @@ export function RedeemPointsModal({
     try {
       await redeemPoints({
         points: values.points,
-        description: values.description || undefined,
+        additionalInfo: values.description || undefined,
       });
 
       toast({

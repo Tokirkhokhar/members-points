@@ -3,7 +3,7 @@ import { postReq } from "@/config/request";
 
 export type RedeemPointsPayload = {
   points: number;
-  description?: string;
+  additionalInfo?: string;
 };
 
 export const useRedeemPoints = () => {
