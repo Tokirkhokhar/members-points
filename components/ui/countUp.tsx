@@ -5,7 +5,7 @@ interface Props {
 }
 
 export const CountUp = ({ targetNumber }: Props) => {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0.0);
 
   // Reset count whenever targetNumber changes
   useEffect(() => {
@@ -22,5 +22,5 @@ export const CountUp = ({ targetNumber }: Props) => {
     }
   }, [count, targetNumber]);
 
-  return <span>{count}</span>;
+  return <span>{count.toFixed(2)}</span>;
 };
