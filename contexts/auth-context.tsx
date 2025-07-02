@@ -7,6 +7,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useLogin } from "@/hooks/useLogin";
 import { useGetMe } from "@/hooks/useGetMe";
 
+type Tier = {
+  id: string;
+  name: string;
+  nameAr: string;
+};
+
 type User = {
   id: string;
   email: string;
@@ -26,7 +32,7 @@ type User = {
   country: string;
   deactivatedAt: string;
   createdAt: string;
-  tier: string;
+  tier: Tier;
 };
 
 type AuthContextType = {

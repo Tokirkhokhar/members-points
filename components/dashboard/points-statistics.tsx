@@ -152,7 +152,10 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
         </Card> */}
       </div>
 
-      <PointsHistory />
+      <PointsHistory
+        availablePoints={data?.activePoints || 0}
+        getStatistics={getStatistics}
+      />
 
       {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="col-span-1">

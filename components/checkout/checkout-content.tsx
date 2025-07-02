@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, CreditCard, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { currencySymbol } from "@/constants/common";
 
 export function CheckoutContent() {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -46,7 +47,7 @@ export function CheckoutContent() {
         purchaseDate: new Date().toISOString(),
         memberId: user.id,
         grossValue: totalPrice,
-        currency: "USD",
+        currency: currencySymbol.KWD.trim(),
         items: items.map((item) => ({
           name: item.product.name,
           sku: item.product.sku,
@@ -101,10 +102,10 @@ export function CheckoutContent() {
   }
 
   return (
-    <div className="container py-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="container py-8 min-h-[calc(100vh-13rem)]">
+      <div className="mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/">
+          <Link href="/products">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -112,9 +113,9 @@ export function CheckoutContent() {
           <h1 className="text-3xl font-bold">Checkout</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Order Summary */}
-          <Card>
+          <Card className="col-span-2">
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
@@ -141,10 +142,12 @@ export function CheckoutContent() {
                       <Badge variant="outline">{item.product.category}</Badge>
                       <div className="text-right">
                         <p className="text-sm text-muted-foreground">
-                          ${item.product.price} × {item.quantity}
+                          {currencySymbol.KWD}
+                          {item.product.price} × {item.quantity}
                         </p>
                         <p className="font-medium">
-                          ${(item.product.price * item.quantity).toFixed(2)}
+                          {currencySymbol.KWD}
+                          {(item.product.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -157,27 +160,33 @@ export function CheckoutContent() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <span>
+                    {currencySymbol.KWD}
+                    {totalPrice.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>$0.00</span>
+                  <span>{currencySymbol.KWD}0.00</span>
                 </div>
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <span>Shipping</span>
                   <span>Free</span>
-                </div>
+                </div> */}
                 <Separator />
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <span>
+                    {currencySymbol.KWD}
+                    {totalPrice.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Payment */}
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
               <CardTitle>Payment</CardTitle>
             </CardHeader>
@@ -204,11 +213,14 @@ export function CheckoutContent() {
                         <strong>Email:</strong> {user?.email}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <strong>Member ID:</strong> {user?.id}
+                        <strong>Phone:</strong> {user?.phoneNumber}
                       </p>
+                      {/* <p className="text-sm text-muted-foreground">
+                        <strong>Member ID:</strong> {user?.id}
+                      </p> */}
                     </div>
 
-                    <div className="p-4 border rounded-lg bg-green-50 dark:bg-green-900/20">
+                    {/* <div className="p-4 border rounded-lg bg-green-50 dark:bg-green-900/20">
                       <h3 className="font-medium mb-2 text-green-800 dark:text-green-200">
                         Points Earning
                       </h3>
@@ -217,13 +229,13 @@ export function CheckoutContent() {
                         <strong>{Math.floor(totalPrice * 10)} points</strong>{" "}
                         from this purchase!
                       </p>
-                    </div>
+                    </div> */}
                   </div>
 
                   <Button
                     onClick={handlePayNow}
                     disabled={isLoading}
-                    className="w-full"
+                    className="w-full mt-6"
                     size="lg"
                   >
                     {isLoading ? (
@@ -234,7 +246,8 @@ export function CheckoutContent() {
                     ) : (
                       <>
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Pay Now - ${totalPrice.toFixed(2)}
+                        Pay Now - {currencySymbol.KWD}
+                        {totalPrice.toFixed(2)}
                       </>
                     )}
                   </Button>

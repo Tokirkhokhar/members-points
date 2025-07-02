@@ -12,15 +12,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/types/product";
 import { useCart } from "@/contexts/cart-context";
-import { ShoppingCart, Plus, Minus } from "lucide-react";
+import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { currencySymbol } from "@/constants/common";
 
 type ProductCardProps = {
   product: Product;
 };
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addToCart, items, updateQuantity } = useCart();
+  const { addToCart, items, updateQuantity, removeFromCart } = useCart();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
 
@@ -45,6 +46,15 @@ export function ProductCard({ product }: ProductCardProps) {
     updateQuantity(product.id, newQuantity);
   };
 
+  const handleRemoveFromCart = () => {
+    removeFromCart(product.id);
+    toast({
+      title: "Removed from cart",
+      description: `${product.name} has been removed from your cart.`,
+      variant: "destructive",
+    });
+  };
+
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
       <CardHeader className="p-0">
@@ -58,6 +68,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <Badge className="absolute top-3 left-3 bg-primary/90">
             {product.category}
           </Badge>
+          {isInCart && (
+            <Badge className="absolute top-3 right-3 bg-green-600">
+              In Cart
+            </Badge>
+          )}
         </div>
       </CardHeader>
 
@@ -67,7 +82,10 @@ export function ProductCard({ product }: ProductCardProps) {
             <h3 className="font-semibold text-lg leading-tight">
               {product.name}
             </h3>
-            <p className="text-2xl font-bold text-primary">${product.price}</p>
+            <p className="text-medium font-bold text-primary flex items-center gap-1">
+              <span>{currencySymbol.KWD}</span>
+              {product.price}
+            </p>
           </div>
 
           <p className="text-sm text-muted-foreground font-medium">
@@ -120,6 +138,15 @@ export function ProductCard({ product }: ProductCardProps) {
                 </Button>
               </div>
             </div>
+
+            <Button
+              onClick={handleRemoveFromCart}
+              variant="destructive"
+              className="w-full gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Remove from Cart
+            </Button>
           </div>
         ) : (
           <div className="w-full space-y-3">

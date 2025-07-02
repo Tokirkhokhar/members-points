@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/cart-context";
 import { Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
+import { currencySymbol } from "@/constants/common";
 
 type CartDrawerProps = {
   open: boolean;
@@ -126,7 +127,8 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-sm">
-                        ${(item.product.price * item.quantity).toFixed(2)}
+                        {currencySymbol.KWD}
+                        {(item.product.price * item.quantity).toFixed(2)}
                       </span>
                       <Button
                         size="icon"
@@ -147,7 +149,10 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         <div className="border-t pt-4 space-y-4">
           <div className="flex items-center justify-between text-lg font-semibold">
             <span>Total:</span>
-            <span>${totalPrice.toFixed(2)}</span>
+            <span>
+              {currencySymbol.KWD}
+              {totalPrice.toFixed(2)}
+            </span>
           </div>
 
           <Button onClick={handleCheckout} className="w-full" size="lg">

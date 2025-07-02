@@ -173,12 +173,8 @@ export function ProfileContent() {
                 <span className="font-semibold ">{user?.referrerToken}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Total Points</span>
-                <span className="font-medium">7,850</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Points This Month</span>
-                <span className="font-medium">430</span>
+                <span className="text-muted-foreground">Current Tier</span>
+                <span className="font-medium">{user?.tier?.name || "-"}</span>
               </div>
               {/* <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Next Level</span>

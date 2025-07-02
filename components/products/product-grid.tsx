@@ -6,7 +6,7 @@ import { ProductCard } from "./product-card";
 const dummyProducts: Product[] = [
   {
     id: "1",
-    name: "Wireless Bluetooth Headphones",
+    name: "Bluetooth Headphones",
     sku: "WBH-001",
     price: 99.99,
     brandName: "TechSound",
@@ -51,11 +51,27 @@ const dummyProducts: Product[] = [
       { key: "compatibility", value: "MacBook, PC" },
     ],
   },
+  {
+    id: "4",
+    name: "Wireless Charging Pad",
+    sku: "WCP-004",
+    price: 39.99,
+    brandName: "ChargeTech",
+    category: "Electronics",
+    description:
+      "Fast wireless charging pad compatible with all Qi-enabled devices.",
+    image:
+      "https://images.pexels.com/photos/4526414/pexels-photo-4526414.jpeg?auto=compress&cs=tinysrgb&w=500",
+    customAttributes: [
+      { key: "power", value: "15W" },
+      { key: "material", value: "Aluminum" },
+    ],
+  },
 ];
 
 export function ProductGrid() {
   return (
-    <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-6">
       {dummyProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

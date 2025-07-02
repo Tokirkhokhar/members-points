@@ -18,8 +18,7 @@ export const useLogin = () => {
         payload,
         {
           headers: {
-            // get auth token from local storage and pass as bearer token
-            Authorization: `Bearer ${token}`,
+            "X-Api-Key": appConfig.apiKey,
           },
         }
       );
