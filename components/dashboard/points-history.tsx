@@ -38,7 +38,10 @@ export function PointsHistory({
   availablePoints: number;
   getStatistics: () => void;
 }) {
-  const { getGetPointHistory, data, isLoading } = useGetPointHistory();
+  const { getGetPointHistory, data, isLoading } = useGetPointHistory({
+    polling: true,
+    pollingInterval: 30000,
+  });
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [isRedeemModalOpen, setIsRedeemModalOpen] = useState(false);

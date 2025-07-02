@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import {
   Card,
-  // CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -58,41 +57,21 @@ const StateCard = ({ targetNumber, label }: StateCardProps) => {
 //   );
 // };
 
-export function PointsStatistics({ statistics }: PointsStatisticsProps) {
-  const { getStatistics, isLoading, walletData } = useGetStatistics();
-  // Mock data for monthly points chart
-  // const monthlyPointsData = [
-  //   { name: "Jan", points: 350 },
-  //   { name: "Feb", points: 420 },
-  //   { name: "Mar", points: 380 },
-  //   { name: "Apr", points: 510 },
-  //   { name: "May", points: statistics.pointsThisMonth },
-  //   { name: "Jun", points: 0 },
-  //   { name: "Jul", points: 0 },
-  //   { name: "Aug", points: 0 },
-  //   { name: "Sep", points: 0 },
-  //   { name: "Oct", points: 0 },
-  //   { name: "Nov", points: 0 },
-  //   { name: "Dec", points: 0 },
-  // ];
+export function PointsStatistics({
+  statistics: initialStatistics,
+}: PointsStatisticsProps) {
+  const {
+    isLoading,
+    walletData,
+    refresh: refreshStatistics,
+  } = useGetStatistics({
+    polling: true, // Enable polling
+    pollingInterval: 30000, // Poll every 30 seconds
+  });
 
-  // // Mock data for points distribution
-  // const pointsDistributionData = [
-  //   { name: "Purchases", value: 4200 },
-  //   { name: "Referrals", value: 1800 },
-  //   { name: "Promotions", value: 1200 },
-  //   { name: "Activities", value: 650 },
-  // ];
-
-  // const COLORS = [
-  //   "hsl(var(--chart-1))",
-  //   "hsl(var(--chart-2))",
-  //   "hsl(var(--chart-3))",
-  //   "hsl(var(--chart-4))",
-  // ];
-
+  // Initial data fetch
   useEffect(() => {
-    getStatistics();
+    refreshStatistics();
   }, []);
 
   const data = walletData?.[0]?.account;
@@ -153,8 +132,8 @@ export function PointsStatistics({ statistics }: PointsStatisticsProps) {
       </div>
 
       <PointsHistory
-        availablePoints={data?.activePoints || 0}
-        getStatistics={getStatistics}
+        availablePoints={data?.activePoints ?? 0}
+        getStatistics={refreshStatistics}
       />
 
       {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
