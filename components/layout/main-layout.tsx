@@ -7,8 +7,19 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { useAuth } from "@/contexts/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, User, LogOut, Menu, X } from "lucide-react";
+import {
+  LayoutDashboard,
+  User,
+  LogOut,
+  Menu,
+  X,
+  ShoppingBag,
+  ShoppingCart,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CartDrawer } from "../cart/cart-drawer";
+import { Badge } from "../ui/badge";
+import { useCart } from "@/contexts/cart-context";
 
 type MainLayoutProps = {
   children: React.ReactNode;
@@ -17,6 +28,9 @@ type MainLayoutProps = {
 export function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { getTotalItems } = useCart();
+  const totalItems = getTotalItems();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -35,6 +49,11 @@ export function MainLayout({ children }: MainLayoutProps) {
   }, [pathname]);
 
   const navItems = [
+    {
+      href: "/products",
+      label: "Products",
+      icon: <ShoppingBag className="h-5 w-5 mr-2" />,
+    },
     {
       href: "/dashboard",
       label: "Dashboard",
@@ -67,7 +86,7 @@ export function MainLayout({ children }: MainLayoutProps) {
       >
         <div className="container flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="flex items-center gap-2">
+            <Link href="/products" className="flex items-center gap-2">
               <span className="text-xl font-bold">Points Center</span>
             </Link>
 
@@ -92,6 +111,23 @@ export function MainLayout({ children }: MainLayoutProps) {
 
           <div className="flex items-center gap-4">
             <ModeToggle />
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              onClick={() => setIsCartOpen(true)}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {totalItems > 0 && (
+                <Badge
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {totalItems}
+                </Badge>
+              )}
+            </Button>
 
             <div className="hidden md:flex items-center gap-4">
               {user && (
@@ -132,6 +168,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             </Button>
           </div>
         </div>
+        <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
       </header>
 
       {/* Mobile Navigation */}

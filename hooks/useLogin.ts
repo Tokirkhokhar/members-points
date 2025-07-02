@@ -9,6 +9,7 @@ export const useLogin = () => {
 
   const login = async (email: string) => {
     try {
+      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       const payload = { email };
 
