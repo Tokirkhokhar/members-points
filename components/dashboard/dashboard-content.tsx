@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { PointsStatistics } from "@/components/dashboard/points-statistics";
-import { PointsHistory } from "@/components/dashboard/points-history";
 import {
   pointsService,
   PointsStatistics as PointsStatsType,
@@ -58,10 +57,6 @@ export function DashboardContent() {
 
           <TabsContent value="statistics" className="space-y-6">
             {statistics && <PointsStatistics statistics={statistics} />}
-          </TabsContent>
-
-          <TabsContent value="history">
-            <PointsHistory />
           </TabsContent>
         </Tabs>
       )}
