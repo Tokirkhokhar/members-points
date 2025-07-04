@@ -24,7 +24,7 @@ export interface PointTransaction {
   currency: string | null;
   description?: string;
   transactionReference: string;
-  expiredAt: Date | null;
+  expirationDate: Date | null;
   createdAt: Date;
 }
 

@@ -222,7 +222,7 @@ export function PointsHistory({
                       source,
                       createdAt,
                       transactionReference,
-                      expiredAt,
+                      expirationDate,
                     }: PointTransaction) => {
                       return (
                         <div
@@ -273,11 +273,13 @@ export function PointsHistory({
                                   {transactionReference}
                                 </p>
                               ) : null}
-                              {expiredAt ? (
+                              {expirationDate ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expiry Date: </span>
                                   <span>
-                                    {getExpiryText(expiredAt?.toString() || "")}
+                                    {getExpiryText(
+                                      expirationDate?.toString() || ""
+                                    )}
                                   </span>
                                 </p>
                               ) : null}

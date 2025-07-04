@@ -51,9 +51,9 @@ export function CheckoutContent() {
         items: items.map((item) => ({
           name: item.product.name,
           sku: item.product.sku,
-          quantity: item.quantity,
-          amount: item.product.price * item.quantity,
-          brandName: item.product.brandName,
+          qty: item.quantity,
+          grossValue: item.product.price * item.quantity,
+          maker: item.product.brandName,
           category: item.product.category,
           customAttributes: item.product.customAttributes,
         })),

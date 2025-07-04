@@ -4,9 +4,9 @@ import { postReq } from "@/config/request";
 export type TransactionItem = {
   name: string;
   sku: string;
-  quantity: number;
-  amount: number;
-  brandName: string;
+  qty: number;
+  grossValue: number;
+  maker: string;
   category: string;
   customAttributes: Array<{
     key: string;
