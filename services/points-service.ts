@@ -27,6 +27,10 @@ export interface PointTransaction {
   expirationDate: Date | null;
   expiredAt?: Date | null;
   createdAt: Date;
+  conversionRate: {
+    points: number;
+    currency: string;
+  };
 }
 
 // Mock data for demonstration purposes

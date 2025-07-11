@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/cart-context";
@@ -13,8 +14,19 @@ import {
   useCreateTransaction,
   CreateTransactionPayload,
 } from "@/hooks/useCreateTransaction";
+import {
+  useValidatePoints,
+  ValidatePointsResponse,
+} from "@/hooks/use-validate-points";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, CreditCard, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  CreditCard,
+  Loader2,
+  Gift,
+  CheckCircle,
+  Info,
+} from "lucide-react";
 import Link from "next/link";
 import { currencySymbol } from "@/constants/common";
 import { generateTransactionDocumentNumber } from "@/lib/utils";
@@ -22,11 +34,62 @@ import { generateTransactionDocumentNumber } from "@/lib/utils";
 export function CheckoutContent() {
   const { items, getTotalPrice, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
-  const { createTransaction, isLoading } = useCreateTransaction();
+  const { createTransaction, isLoading: isCreatingTransaction } =
+    useCreateTransaction();
+  const {
+    validatePoints,
+    resetValidation,
+    isLoading: isValidatingPoints,
+    data: validationData,
+  } = useValidatePoints();
   const { toast } = useToast();
   const router = useRouter();
 
+  const [pointsToRedeem, setPointsToRedeem] = useState<number>(0);
+  const [isPointsValidated, setIsPointsValidated] = useState(false);
+
   const totalPrice = getTotalPrice();
+  const finalAmount = validationData
+    ? parseFloat(validationData.discountedAmount)
+    : totalPrice;
+
+  const handleValidatePoints = async () => {
+    if (!pointsToRedeem || pointsToRedeem <= 0) {
+      toast({
+        variant: "destructive",
+        title: "Invalid points",
+        description: "Please enter a valid number of points to redeem.",
+      });
+      return;
+    }
+
+    try {
+      const response = await validatePoints({
+        amount: totalPrice,
+        pointsToUse: pointsToRedeem,
+      });
+
+      setIsPointsValidated(true);
+      toast({
+        title: "Points validated successfully!",
+        description: `You'll save ${response.currencyData.code} ${response.discount} with ${response.pointsToUse} points.`,
+      });
+    } catch (error) {
+      setIsPointsValidated(false);
+      toast({
+        variant: "destructive",
+        title: "Points validation failed",
+        description:
+          "There was an error validating your points. Please try again.",
+      });
+    }
+  };
+
+  const handleResetPoints = () => {
+    setPointsToRedeem(0);
+    setIsPointsValidated(false);
+    resetValidation();
+  };
 
   const handlePayNow = async () => {
     if (!isAuthenticated || !user) {
@@ -45,7 +108,7 @@ export function CheckoutContent() {
         purchasePlace: "MembersPoint Store",
         purchasedAt: new Date().toISOString(),
         memberId: user.id,
-        grossValue: totalPrice,
+        grossValue: finalAmount,
         currency: currencySymbol.KWD.trim(),
         items: items.map((item) => ({
           name: item.product.name,
@@ -60,6 +123,12 @@ export function CheckoutContent() {
           { key: "channel", value: "web" },
           { key: "customer_type", value: "member" },
         ],
+        ...(isPointsValidated &&
+          pointsToRedeem > 0 && {
+            redemptionDetails: {
+              pointsToUse: pointsToRedeem,
+            },
+          }),
       };
 
       await createTransaction(transactionPayload);
@@ -164,20 +233,32 @@ export function CheckoutContent() {
                     {totalPrice.toFixed(2)}
                   </span>
                 </div>
+
+                {isPointsValidated && validationData && (
+                  <div className="flex justify-between text-green-600 dark:text-green-400">
+                    <span>
+                      Points Discount ({validationData.pointsToUse} points)
+                    </span>
+                    <span>
+                      -{validationData.currencyData.code}{" "}
+                      {validationData.discount}
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex justify-between">
                   <span>Tax</span>
                   <span>{currencySymbol.KWD}0.00</span>
                 </div>
-                {/* <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span>Free</span>
-                </div> */}
+
                 <Separator />
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total</span>
                   <span>
-                    {currencySymbol.KWD}
-                    {totalPrice.toFixed(2)}
+                    {validationData
+                      ? validationData.currencyData.code
+                      : currencySymbol.KWD}
+                    {finalAmount.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -201,43 +282,144 @@ export function CheckoutContent() {
                 </div>
               ) : (
                 <>
-                  <div className="space-y-4">
-                    <div className="p-4 border rounded-lg bg-muted/50">
-                      <h3 className="font-medium mb-2">Member Information</h3>
-                      <p className="text-sm text-muted-foreground">
-                        <strong>Name:</strong> {user?.firstName}{" "}
-                        {user?.lastName}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        <strong>Email:</strong> {user?.email}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        <strong>Phone:</strong> {user?.phone}
-                      </p>
-                      {/* <p className="text-sm text-muted-foreground">
-                        <strong>Member ID:</strong> {user?.id}
-                      </p> */}
-                    </div>
-
-                    {/* <div className="p-4 border rounded-lg bg-green-50 dark:bg-green-900/20">
-                      <h3 className="font-medium mb-2 text-green-800 dark:text-green-200">
-                        Points Earning
-                      </h3>
-                      <p className="text-sm text-green-700 dark:text-green-300">
-                        You will earn{" "}
-                        <strong>{Math.floor(totalPrice * 10)} points</strong>{" "}
-                        from this purchase!
-                      </p>
-                    </div> */}
+                  {/* Member Information */}
+                  <div className="p-4 border rounded-lg bg-muted/50">
+                    <h3 className="font-medium mb-2">Member Information</h3>
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Name:</strong> {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      <strong>Email:</strong> {user?.email}
+                    </p>
                   </div>
 
+                  {/* Point Redemption Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Gift className="h-5 w-5 text-amber-500" />
+                        <h3 className="font-medium">Redeem Points</h3>
+                      </div>
+                      {validationData && (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+                          <Info className="h-3 w-3" />
+                          <span>
+                            {validationData.conversionRate.points} pts ={" "}
+                            {validationData.conversionRate.currency}{" "}
+                            {validationData.currencyData.code}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Points Input Row */}
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <Input
+                          type="number"
+                          placeholder="Enter points"
+                          value={pointsToRedeem || ""}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 0;
+                            setPointsToRedeem(value);
+                            if (isPointsValidated) {
+                              setIsPointsValidated(false);
+                              resetValidation();
+                            }
+                          }}
+                          min="0"
+                          className="text-center"
+                          disabled={isPointsValidated}
+                        />
+                      </div>
+
+                      {!isPointsValidated ? (
+                        <Button
+                          onClick={handleValidatePoints}
+                          disabled={isValidatingPoints || !pointsToRedeem}
+                          variant="outline"
+                          size="default"
+                          className="px-4"
+                        >
+                          {isValidatingPoints ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            "Validate"
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={handleResetPoints}
+                          variant="ghost"
+                          size="default"
+                          className="px-4"
+                        >
+                          Reset
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Validation Success State */}
+                    {isPointsValidated && validationData && (
+                      <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                        <div className="flex items-center gap-2 mb-3">
+                          <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                          <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                            Points validated successfully!
+                          </span>
+                        </div>
+
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-green-700 dark:text-green-300">
+                              Points Used:
+                            </span>
+                            <span className="font-medium text-green-800 dark:text-green-200">
+                              {validationData.pointsToUse}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-green-700 dark:text-green-300">
+                              Total amount:
+                            </span>
+                            <span className="font-medium text-green-800 dark:text-green-200">
+                              {validationData.currencyData.code}{" "}
+                              {validationData.amount}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-green-700 dark:text-green-300">
+                              Discount:
+                            </span>
+                            <span className="font-medium text-green-800 dark:text-green-200">
+                              {validationData.currencyData.code}{" "}
+                              {validationData.discount}
+                            </span>
+                          </div>
+                          <div className="flex justify-between border-t border-green-200 dark:border-green-800 pt-2 mt-2">
+                            <span className="text-green-700 dark:text-green-300 font-medium">
+                              Checkout amount:
+                            </span>
+                            <span className="font-bold text-green-800 dark:text-green-200">
+                              {validationData.currencyData.code}{" "}
+                              {validationData.discountedAmount}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <Separator />
+
+                  {/* Pay Now Button */}
                   <Button
                     onClick={handlePayNow}
-                    disabled={isLoading}
-                    className="w-full mt-6"
+                    disabled={isCreatingTransaction}
+                    className="w-full"
                     size="lg"
                   >
-                    {isLoading ? (
+                    {isCreatingTransaction ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Processing Payment...
@@ -245,8 +427,11 @@ export function CheckoutContent() {
                     ) : (
                       <>
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Pay Now - {currencySymbol.KWD}
-                        {totalPrice.toFixed(2)}
+                        Pay Now -{" "}
+                        {validationData
+                          ? validationData.currencyData.code
+                          : currencySymbol.KWD}
+                        {finalAmount.toFixed(2)}
                       </>
                     )}
                   </Button>

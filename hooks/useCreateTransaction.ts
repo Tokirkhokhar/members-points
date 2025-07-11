@@ -26,6 +26,9 @@ export type CreateTransactionPayload = {
     key: string;
     value: string;
   }>;
+  redemptionDetails?: {
+    pointsToUse: number;
+  };
 };
 
 export const useCreateTransaction = () => {

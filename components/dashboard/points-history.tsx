@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { BadgePlus, BadgeMinus /* Filter */, Gift } from "lucide-react";
+import { BadgePlus, BadgeMinus /* Filter */, Gift, Info } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -224,6 +224,7 @@ export function PointsHistory({
                       transactionReference,
                       expirationDate,
                       expiredAt,
+                      conversionRate,
                     }: PointTransaction) => {
                       return (
                         <div
@@ -248,8 +249,17 @@ export function PointsHistory({
                           </div>
 
                           <div className="flex-1 min-w-0 flex flex-col gap-2">
-                            <p className="font-medium truncate text-lg">
+                            <p className="font-medium flex items-center gap-2 truncate text-lg">
                               {description || "-"}
+                              {conversionRate && (
+                                <div className="flex items-center gap-1 text-xs w-fit text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+                                  <Info className="h-3 w-3" />
+                                  <span>
+                                    {conversionRate?.points} pts ={" "}
+                                    {conversionRate?.currency} Unit Currency
+                                  </span>
+                                </div>
+                              )}
                             </p>
                             <p className="text-sm font-normal leading-none">
                               <span className="font-bold">
