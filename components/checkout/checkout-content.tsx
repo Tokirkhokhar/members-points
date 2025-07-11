@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, CreditCard, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { currencySymbol } from "@/constants/common";
+import { generateTransactionDocumentNumber } from "@/lib/utils";
 
 export function CheckoutContent() {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -40,9 +41,7 @@ export function CheckoutContent() {
 
     try {
       const transactionPayload: CreateTransactionPayload = {
-        transactionReference: `TXN-${Date.now()}-${Math.random()
-          .toString(36)
-          .substring(2, 9)}`,
+        documentNumber: generateTransactionDocumentNumber(),
         purchasePlace: "MembersPoint Store",
         purchasedAt: new Date().toISOString(),
         memberId: user.id,

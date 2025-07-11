@@ -15,7 +15,7 @@ export type TransactionItem = {
 };
 
 export type CreateTransactionPayload = {
-  transactionReference: string;
+  documentNumber: string;
   purchasePlace: string;
   purchasedAt: string;
   memberId: string;
