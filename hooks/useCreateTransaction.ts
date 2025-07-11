@@ -4,11 +4,11 @@ import { postReq } from "@/config/request";
 export type TransactionItem = {
   name: string;
   sku: string;
-  qty: number;
+  quantity: number;
   grossValue: number;
   maker: string;
   category: string;
-  customAttributes: Array<{
+  labels: Array<{
     key: string;
     value: string;
   }>;
@@ -17,12 +17,12 @@ export type TransactionItem = {
 export type CreateTransactionPayload = {
   transactionReference: string;
   purchasePlace: string;
-  purchaseDate: string;
+  purchasedAt: string;
   memberId: string;
   grossValue: number;
   currency: string;
   items: TransactionItem[];
-  customAttributes: Array<{
+  labels: Array<{
     key: string;
     value: string;
   }>;

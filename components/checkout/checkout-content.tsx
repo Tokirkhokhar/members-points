@@ -44,20 +44,20 @@ export function CheckoutContent() {
           .toString(36)
           .substring(2, 9)}`,
         purchasePlace: "MembersPoint Store",
-        purchaseDate: new Date().toISOString(),
+        purchasedAt: new Date().toISOString(),
         memberId: user.id,
         grossValue: totalPrice,
         currency: currencySymbol.KWD.trim(),
         items: items.map((item) => ({
           name: item.product.name,
           sku: item.product.sku,
-          qty: item.quantity,
+          quantity: item.quantity,
           grossValue: item.product.price * item.quantity,
           maker: item.product.brandName,
           category: item.product.category,
-          customAttributes: item.product.customAttributes,
+          labels: item.product.labels,
         })),
-        customAttributes: [
+        labels: [
           { key: "channel", value: "web" },
           { key: "customer_type", value: "member" },
         ],
@@ -213,7 +213,7 @@ export function CheckoutContent() {
                         <strong>Email:</strong> {user?.email}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        <strong>Phone:</strong> {user?.phoneNumber}
+                        <strong>Phone:</strong> {user?.phone}
                       </p>
                       {/* <p className="text-sm text-muted-foreground">
                         <strong>Member ID:</strong> {user?.id}

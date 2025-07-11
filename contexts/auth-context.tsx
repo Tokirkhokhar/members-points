@@ -13,6 +13,16 @@ type Tier = {
   nameAr: string;
 };
 
+type Address = {
+  street?: string;
+  address1?: string;
+  address2?: string;
+  postal?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+};
+
 type User = {
   id: string;
   email: string;
@@ -21,15 +31,12 @@ type User = {
   avatar?: string;
   memberSince: string;
   membershipLevel: string;
-  phoneNumber: string;
+  phone: string;
   registrationDate: string;
   referrerToken: string;
   gender: string;
   metadata: string[];
-  address: string;
-  city: string;
-  state: string;
-  country: string;
+  address: Address;
   deactivatedAt: string;
   createdAt: string;
   tier: Tier;

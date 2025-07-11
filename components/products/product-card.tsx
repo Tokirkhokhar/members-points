@@ -96,7 +96,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </p>
 
           <div className="flex flex-wrap gap-1 pt-2">
-            {product.customAttributes.slice(0, 2).map((attr, index) => (
+            {product.labels.slice(0, 2).map((attr, index) => (
               <Badge key={index} variant="outline" className="text-xs">
                 {attr.key}: {attr.value}
               </Badge>

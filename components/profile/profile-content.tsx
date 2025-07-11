@@ -47,7 +47,7 @@ const profileFormSchema = z.object({
     .string()
     .max(160, { message: "Bio must not be longer than 160 characters." })
     .optional(),
-  phoneNumber: z
+  phone: z
     .string()
     .min(10, { message: "Phone number must be at least 10 characters." })
     .max(15, { message: "Phone number must not be longer than 15 characters." })
@@ -83,7 +83,7 @@ export function ProfileContent() {
       lastName: user?.lastName || "",
       email: user?.email || "",
       bio: "",
-      phoneNumber: user?.phoneNumber || "",
+      phone: user?.phone || "",
     },
   });
 
@@ -261,7 +261,7 @@ export function ProfileContent() {
 
                     <FormField
                       control={profileForm.control}
-                      name="phoneNumber"
+                      name="phone"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Phone Number</FormLabel>

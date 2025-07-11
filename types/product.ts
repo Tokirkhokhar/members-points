@@ -7,7 +7,7 @@ export type Product = {
   category: string;
   description: string;
   image: string;
-  customAttributes: Array<{
+  labels: Array<{
     key: string;
     value: string;
   }>;
