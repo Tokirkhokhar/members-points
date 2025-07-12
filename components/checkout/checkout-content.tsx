@@ -80,6 +80,7 @@ export function CheckoutContent() {
         variant: "destructive",
         title: "Points validation failed",
         description:
+          (error as any)?.message ||
           "There was an error validating your points. Please try again.",
       });
     }
@@ -145,6 +146,7 @@ export function CheckoutContent() {
         variant: "destructive",
         title: "Payment failed",
         description:
+          (error as any)?.message ||
           "There was an error processing your payment. Please try again.",
       });
     }
@@ -298,7 +300,7 @@ export function CheckoutContent() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Gift className="h-5 w-5 text-amber-500" />
-                        <h3 className="font-medium">Redeem Points</h3>
+                        <h3 className="font-medium">Pay With Points</h3>
                       </div>
                       {validationData && (
                         <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
@@ -425,14 +427,14 @@ export function CheckoutContent() {
                         Processing Payment...
                       </>
                     ) : (
-                      <>
+                      <Button disabled={!!pointsToRedeem && !isPointsValidated}>
                         <CreditCard className="mr-2 h-4 w-4" />
                         Pay Now -{" "}
                         {validationData
                           ? validationData.currencyData.code
                           : currencySymbol.KWD}
                         {finalAmount.toFixed(2)}
-                      </>
+                      </Button>
                     )}
                   </Button>
 
