@@ -33,7 +33,7 @@ type User = {
   membershipLevel: string;
   phone: string;
   registrationDate: string;
-  referrerToken: string;
+  referralToken: string;
   gender: string;
   metadata: string[];
   address: Address;
