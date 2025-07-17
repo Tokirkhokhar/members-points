@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Product, CartItem } from "@/types/product";
 
 type CartContextType = {
   items: CartItem[];
+  cartId: string;
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
@@ -17,13 +19,17 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [cartId, setCartId] = useState<string>("");
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
+    const savedCart: CartItem[] | null = JSON.parse(
+      localStorage.getItem("cart") || "[]"
+    );
+    if (savedCart && savedCart.length > 0) {
       try {
-        setItems(JSON.parse(savedCart));
+        setItems(savedCart);
+        setCartId(uuidv4());
       } catch (error) {
         console.error("Failed to load cart from localStorage:", error);
       }
@@ -35,7 +41,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
+  useEffect(() => {
+    localStorage.setItem("cartId", JSON.stringify(cartId));
+  }, [cartId]);
+
   const addToCart = (product: Product, quantity = 1) => {
+    if (!items.length) {
+      setCartId(uuidv4());
+    }
+
     setItems((prevItems) => {
       const existingItem = prevItems.find(
         (item) => item.product.id === product.id
@@ -74,6 +88,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     setItems([]);
+    setCartId("");
   };
 
   const getTotalItems = () => {
@@ -91,6 +106,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     <CartContext.Provider
       value={{
         items,
+        cartId,
         addToCart,
         removeFromCart,
         updateQuantity,
