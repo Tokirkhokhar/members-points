@@ -13,15 +13,15 @@ export const useUnBlockPoints = () => {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const unBlockPoints = async (payload: UnBlockPointsPayload) => {
+  const unBlockPoints = async (blockedPointId: string) => {
     try {
       const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        "members/unblock/points",
-        payload,
+        `members/${blockedPointId}/unblock/points`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,

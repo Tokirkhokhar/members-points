@@ -126,13 +126,13 @@ export function PointsHistory({
             <CardDescription>Your recent points activities</CardDescription>
           </div>
 
-          <Button
+          {/* <Button
             onClick={() => setIsRedeemModalOpen(true)}
             className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
           >
             <Gift className="h-4 w-4" />
             Redeem Points
-          </Button>
+          </Button> */}
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -207,13 +207,11 @@ export function PointsHistory({
                                 </div>
                               )}
                             </p>
-
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <p>
                                 <span className="font-bold">Date:&nbsp;</span>
                                 {format(new Date(createdAt), "MMM dd, yyyy")}
                               </p>
-
                               {transactionReference ? (
                                 <p className="text-sm capitalize">
                                   <span className="font-bold">
@@ -245,7 +243,7 @@ export function PointsHistory({
                                 type === PointsType.Locked,
                             })}
                           >
-                            {type === PointsType.Adding ? "+" : "-"}
+                            {type === PointsType.Adding || type === PointsType.Adjustment ? "+" : "-"}
                             {points.toLocaleString()} points
                           </div>
                         </div>

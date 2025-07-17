@@ -5,7 +5,7 @@ export type BlockPointsPayload = {
   memberId: string;
   walletId?: string;
   points: number;
-  transactionDocumentNumber: string;
+  transactionDocumentNumber: string | null;
 };
 
 export const useBlockPoints = () => {

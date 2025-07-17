@@ -59,7 +59,7 @@ export function CheckoutContent() {
     isLoading: isMembersWalletsLoading,
     data: membersWallets,
   } = useGetMembersWallets();
-  const { blockPoints, isLoading: isBlockingPoints } = useBlockPoints();
+  const { blockPoints, isLoading: isBlockingPoints, data: blockPointsData } = useBlockPoints();
   const { spendPoints, isLoading: isSpendingPoints } = useSpendPoints();
   const { unBlockPoints, isLoading: isUnblockingPoints } = useUnBlockPoints();
   const { toast } = useToast();
@@ -70,6 +70,8 @@ export function CheckoutContent() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [defaultWallet, setDefaultWallet] = useState<any>(null);
   const [blockedPoints, setBlockedPoints] = useState<number>(0);
+  const [blockPointId, setBlockPointId] = useState<string | null>(null);
+  const [transactionDocumentNumber, setTransactionDocumentNumber] = useState<string | null>(null);
 
   const totalPrice = getTotalPrice();
   const finalAmount = validationData
@@ -111,7 +113,7 @@ export function CheckoutContent() {
       setIsPointsValidated(true);
       toast({
         title: "Points validated successfully!",
-        description: `You'll save ${response.currencyData.code} ${response.discount} with ${response.pointsToUse} points.`,
+        description: `You'll save ${response.currencyData.code} ${response.discount} with ${response?.points} points.`,
       });
     } catch (error) {
       const message = (error as Error).message;
@@ -143,17 +145,20 @@ export function CheckoutContent() {
       router.push("/login");
       return;
     }
+    const transactionDocumentNumber = generateTransactionDocumentNumber()
+    setTransactionDocumentNumber(transactionDocumentNumber)
 
     // If points are validated, block them first
     if (isPointsValidated && pointsToRedeem > 0) {
       try {
-        await blockPoints({
+        const blockPoint = await blockPoints({
           memberId: user.id,
           points: pointsToRedeem,
           walletId: defaultWallet?.id,
-          transactionDocumentNumber: cartId,
+          transactionDocumentNumber,
         });
         setBlockedPoints(pointsToRedeem);
+        setBlockPointId(blockPoint?.pointId);
         toast({
           title: "Points blocked",
           description: `${pointsToRedeem} points have been temporarily blocked for this transaction.`,
@@ -177,6 +182,7 @@ export function CheckoutContent() {
 
   const handlePaymentConfirm = async () => {
     try {
+      const documentNumber = transactionDocumentNumber || generateTransactionDocumentNumber();
       // First, spend the points if any were blocked
       if (blockedPoints > 0) {
         await spendPoints({
@@ -184,13 +190,13 @@ export function CheckoutContent() {
           memberId: user!.id,
           amount: finalAmount,
           walletId: defaultWallet?.id,
-          transactionDocumentNumber: cartId,
+          transactionDocumentNumber: documentNumber,
         });
       }
 
       // Create the transaction
       const transactionPayload: CreateTransactionPayload = {
-        documentNumber: generateTransactionDocumentNumber(),
+        documentNumber,
         purchasePlace: "MembersPoint Store",
         purchasedAt: new Date().toISOString(),
         memberId: user!.id,
@@ -210,8 +216,11 @@ export function CheckoutContent() {
           { key: "customer_type", value: "member" },
         ],
         ...(blockedPoints > 0 && {
-          redemptionDetails: {
-            pointsToUse: blockedPoints,
+          discountDetails: {
+            pointsUsed: blockedPoints,
+            actualAmount: totalPrice ?? 0,
+            discountedAmount: finalAmount ?? 0,
+            discountAmount: Number(validationData?.discount ?? 0),
           },
         }),
       };
@@ -230,12 +239,7 @@ export function CheckoutContent() {
       // If transaction fails, unblock the points
       if (blockedPoints > 0) {
         try {
-          await unBlockPoints({
-            memberId: user!.id,
-            points: blockedPoints,
-            walletId: defaultWallet?.id,
-            transactionDocumentNumber: cartId,
-          });
+          await unBlockPoints(blockPointId!);
           toast({
             title: "Points unblocked",
             description:
@@ -267,12 +271,7 @@ export function CheckoutContent() {
     // Unblock points if they were blocked
     if (blockedPoints > 0) {
       try {
-        await unBlockPoints({
-          memberId: user!.id,
-          points: blockedPoints,
-          walletId: defaultWallet?.id,
-          transactionDocumentNumber: cartId,
-        });
+        await unBlockPoints(blockPointId!);
         setBlockedPoints(0);
         toast({
           title: "Points unblocked",
@@ -386,7 +385,7 @@ export function CheckoutContent() {
                   {isPointsValidated && validationData && (
                     <div className="flex justify-between text-green-600 dark:text-green-400">
                       <span>
-                        Points Discount ({validationData.pointsToUse} points)
+                        Points Discount ({validationData.points} points)
                       </span>
                       <span>
                         -{validationData.currencyData.code}{" "}
@@ -525,7 +524,7 @@ export function CheckoutContent() {
                                 Points Used:
                               </span>
                               <span className="font-medium text-green-800 dark:text-green-200">
-                                {validationData.pointsToUse}
+                                {validationData.points}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -637,7 +636,7 @@ export function CheckoutContent() {
         items={items}
         totalPrice={totalPrice}
         finalAmount={finalAmount}
-        pointsUsed={validationData?.pointsToUse}
+        pointsUsed={validationData?.points}
         discount={validationData?.discount}
         currencyCode={validationData?.currencyData.code}
       />

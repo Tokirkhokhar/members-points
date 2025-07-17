@@ -8,7 +8,7 @@ export type ValidatePointsPayload = {
 
 export type ValidatePointsResponse = {
   amount: string;
-  pointsToUse: number;
+  points: number;
   discount: string;
   discountedAmount: string;
   currencyData: {

@@ -143,7 +143,7 @@ export const pointsService = {
   getPointsTransactions: async (
     page = 1,
     limit = 10,
-    filter?: { type?: "earned" | "redeemed"; category?: string }
+    filter?: { type?: "adding" | "spending"; category?: string }
   ): Promise<{ transactions: any[]; total: number }> => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800));

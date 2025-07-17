@@ -26,8 +26,11 @@ export type CreateTransactionPayload = {
     key: string;
     value: string;
   }>;
-  redemptionDetails?: {
-    pointsToUse: number;
+  discountDetails?: {
+    pointsUsed: number | string;
+    actualAmount: number | string,
+    discountedAmount: number | string,
+    discountAmount: number | string
   };
 };
 
