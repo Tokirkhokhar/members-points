@@ -1,4 +1,4 @@
-import { PointTransactionType } from "@/enums";
+import { PointsType } from "@/enums";
 
 export type PointsStatistics = {
   totalPoints: number;
@@ -9,23 +9,13 @@ export type PointsStatistics = {
   nextLevel: string;
 };
 
-export enum PointsType {
-  EARNED = "earned",
-  REDEEMED = "redeemed",
-}
-
 export interface PointTransaction {
   id: string;
-  reference: string;
-  source: string;
-  type: PointTransactionType;
+  type: PointsType;
   points: number;
-  amount?: number;
-  currency: string | null;
+  expiredAt: Date | null;
   description?: string;
-  transactionReference: string;
-  expirationDate: Date | null;
-  expiredAt?: Date | null;
+  transactionReference?: string;
   createdAt: Date;
   conversionRate: {
     points: number;
@@ -153,7 +143,7 @@ export const pointsService = {
   getPointsTransactions: async (
     page = 1,
     limit = 10,
-    filter?: { type?: "earned" | "redeemed"; category?: string }
+    filter?: { type?: "adding" | "spending"; category?: string }
   ): Promise<{ transactions: any[]; total: number }> => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 800));

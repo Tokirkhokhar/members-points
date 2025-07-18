@@ -3,12 +3,12 @@ import { postReq } from "@/config/request";
 
 export type ValidatePointsPayload = {
   amount: number;
-  pointsToUse: number;
+  points: number;
 };
 
 export type ValidatePointsResponse = {
   amount: string;
-  pointsToUse: number;
+  points: number;
   discount: string;
   discountedAmount: string;
   currencyData: {
@@ -35,7 +35,7 @@ export const useValidatePoints = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/validate-points",
+        "members/validate/points",
         payload,
         {
           headers: {
