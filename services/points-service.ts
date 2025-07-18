@@ -11,16 +11,11 @@ export type PointsStatistics = {
 
 export interface PointTransaction {
   id: string;
-  reference: string;
-  source: string;
   type: PointsType;
   points: number;
-  amount?: number;
-  currency: string | null;
+  expiredAt: Date | null;
   description?: string;
-  transactionReference: string;
-  expirationDate: Date | null;
-  expiredAt?: Date | null;
+  transactionReference?: string;
   createdAt: Date;
   conversionRate: {
     points: number;

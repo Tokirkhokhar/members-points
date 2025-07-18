@@ -164,11 +164,8 @@ export function PointsHistory({
                       type,
                       points,
                       description,
-                      reference,
-                      source,
                       createdAt,
                       transactionReference,
-                      expirationDate,
                       expiredAt,
                       conversionRate,
                     }: PointTransaction) => {
@@ -210,21 +207,13 @@ export function PointsHistory({
                                 </div>
                               )}
                             </p>
-                            <p className="text-sm font-normal leading-none">
-                              <span className="font-bold">
-                                Reference:&nbsp;
-                              </span>
-                              {reference}
-                            </p>
+
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <p>
                                 <span className="font-bold">Date:&nbsp;</span>
                                 {format(new Date(createdAt), "MMM dd, yyyy")}
                               </p>
-                              <p className="text-sm capitalize">
-                                <span className="font-bold">Source:&nbsp;</span>
-                                {source}
-                              </p>
+
                               {transactionReference ? (
                                 <p className="text-sm capitalize">
                                   <span className="font-bold">
@@ -233,28 +222,14 @@ export function PointsHistory({
                                   {transactionReference}
                                 </p>
                               ) : null}
-                              {expirationDate && type !== PointsType.Expired ? (
+                              {expiredAt && type !== PointsType.Expired ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expiry Date: </span>
                                   <span>
-                                    {getExpiryText(
-                                      expirationDate?.toString() || ""
-                                    )}
+                                    {getExpiryText(expiredAt?.toString() || "")}
                                   </span>
                                 </p>
                               ) : null}
-                              {type === PointsType.Expired ? (
-                                <p className="text-sm text-red-600 dark:text-red-400">
-                                  <span>Expired At: </span>
-                                  <span>
-                                    {expiredAt
-                                      ? format(expiredAt, "MMM dd, yyyy")
-                                      : "-"}
-                                  </span>
-                                </p>
-                              ) : null}
-                              {/* <span>•</span> */}
-                              {/* <span>{category}</span> */}
                             </div>
                           </div>
                           <div
