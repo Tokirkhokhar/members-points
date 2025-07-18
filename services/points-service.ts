@@ -1,4 +1,4 @@
-import { PointTransactionType } from "@/enums";
+import { PointsType } from "@/enums";
 
 export type PointsStatistics = {
   totalPoints: number;
@@ -9,16 +9,11 @@ export type PointsStatistics = {
   nextLevel: string;
 };
 
-export enum PointsType {
-  EARNED = "earned",
-  REDEEMED = "redeemed",
-}
-
 export interface PointTransaction {
   id: string;
   reference: string;
   source: string;
-  type: PointTransactionType;
+  type: PointsType;
   points: number;
   amount?: number;
   currency: string | null;

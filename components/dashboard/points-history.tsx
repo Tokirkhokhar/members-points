@@ -26,7 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 // } from "@/components/ui/popover";
 import { useGetPointHistory } from "@/hooks/getGetPointHistory";
 import { PointTransaction } from "@/services/points-service";
-import { PointTransactionType } from "@/enums";
+import { PointsType } from "@/enums";
 import { cn } from "@/lib/utils";
 import { RedeemPointsModal } from "./redeem-points-modal";
 import { useGetStatistics } from "@/hooks/useGetStatistics";
@@ -126,60 +126,6 @@ export function PointsHistory({
             <CardDescription>Your recent points activities</CardDescription>
           </div>
 
-          {/* <div className="flex flex-col sm:flex-row gap-2">
-          <Select
-            onValueChange={(value) =>
-              handleFilterChange(
-                "type",
-                value === "all" ? undefined : (value as any)
-              )
-            }
-          >
-            <SelectTrigger className="w-36">
-              <SelectValue placeholder="All activities" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All activities</SelectItem>
-              <SelectItem value=PointTransactionType.Earned>Earned</SelectItem>
-              <SelectItem value="redeemed">Redeemed</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <Filter className="h-4 w-4" /> Categories
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56">
-              <div className="space-y-2">
-                <h4 className="font-medium">Filter by category</h4>
-                <div className="flex flex-col gap-2 mt-2">
-                  <Button
-                    variant="ghost"
-                    className="justify-start"
-                    onClick={() => handleFilterChange("category", undefined)}
-                  >
-                    All categories
-                  </Button>
-                  {uniqueCategories.map((category) => (
-                    <Button
-                      key={category}
-                      variant={
-                        filter.category === category ? "secondary" : "ghost"
-                      }
-                      className="justify-start"
-                      onClick={() => handleFilterChange("category", category)}
-                    >
-                      {category}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </div> */}
-
           <Button
             onClick={() => setIsRedeemModalOpen(true)}
             className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
@@ -234,14 +180,17 @@ export function PointsHistory({
                           <div
                             className={cn(`rounded-full p-2`, {
                               "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400":
-                                type === PointTransactionType.Earned,
+                                type === PointsType.Adding,
                               "bg-red-100 dark:bg-red-400/10 text-red-600 dark:text-red-400":
-                                type === PointTransactionType.Expired,
+                                type === PointsType.Expired,
                               "bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400":
-                                type === PointTransactionType.Redeemed,
+                                type === PointsType.Spending,
+                              "bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400":
+                                type === PointsType.Blocked ||
+                                type === PointsType.Locked,
                             })}
                           >
-                            {type === PointTransactionType.Earned ? (
+                            {type === PointsType.Adding ? (
                               <BadgePlus className="h-5 w-5" />
                             ) : (
                               <BadgeMinus className="h-5 w-5" />
@@ -284,8 +233,7 @@ export function PointsHistory({
                                   {transactionReference}
                                 </p>
                               ) : null}
-                              {expirationDate &&
-                              type !== PointTransactionType.Expired ? (
+                              {expirationDate && type !== PointsType.Expired ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expiry Date: </span>
                                   <span>
@@ -295,7 +243,7 @@ export function PointsHistory({
                                   </span>
                                 </p>
                               ) : null}
-                              {type === PointTransactionType.Expired ? (
+                              {type === PointsType.Expired ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expired At: </span>
                                   <span>
@@ -312,14 +260,17 @@ export function PointsHistory({
                           <div
                             className={cn("text-right font-medium", {
                               "text-green-600 dark:text-green-400":
-                                type === PointTransactionType.Earned,
+                                type === PointsType.Adding,
                               "text-red-600 dark:text-red-400":
-                                type === PointTransactionType.Expired,
+                                type === PointsType.Expired,
                               "text-amber-600 dark:text-amber-400":
-                                type === PointTransactionType.Redeemed,
+                                type === PointsType.Spending,
+                              "text-gray-600 dark:text-gray-400":
+                                type === PointsType.Blocked ||
+                                type === PointsType.Locked,
                             })}
                           >
-                            {type === PointTransactionType.Earned ? "+" : "-"}
+                            {type === PointsType.Adding ? "+" : "-"}
                             {points.toLocaleString()} points
                           </div>
                         </div>

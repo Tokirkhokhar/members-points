@@ -78,7 +78,7 @@ export function PointsStatistics({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <StateCard
           targetNumber={data?.accumulatedPoints || 0}
           label="Lifetime Earned Points"
@@ -89,11 +89,12 @@ export function PointsStatistics({
         />
         <StateCard
           targetNumber={data?.expiredPoints || 0}
-          label="Total Expired Points"
+          label="Expired Points"
         />
+        <StateCard targetNumber={data?.spentPoints || 0} label="Spent Points" />
         <StateCard
-          targetNumber={data?.spentPoints || 0}
-          label="Total Redeemed Points"
+          targetNumber={data?.blockedPoints || 0}
+          label="Blocked Points"
         />
 
         {/* <Card>

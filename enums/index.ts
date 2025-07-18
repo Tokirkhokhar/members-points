@@ -3,9 +3,11 @@ export enum WalletType {
   Points = "points",
 }
 
-export enum PointTransactionType {
+export enum PointsType {
+  Adding = "adding",
+  Adjustment = "adjustment",
   Blocked = "blocked",
-  Earned = "earned",
   Expired = "expired",
-  Redeemed = "redeemed",
+  Locked = "locked",
+  Spending = "spending",
 }

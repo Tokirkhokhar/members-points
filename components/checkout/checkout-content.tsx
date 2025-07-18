@@ -77,7 +77,7 @@ export function CheckoutContent() {
     : totalPrice;
 
   // Check if points are entered but not validated
-  const hasUnvalidatedPoints = pointsToRedeem > 0 && !isPointsValidated;
+  const hasInvalidatedPoints = pointsToRedeem > 0 && !isPointsValidated;
 
   useEffect(() => {
     getMembersWallets();
@@ -121,7 +121,7 @@ export function CheckoutContent() {
         variant: "destructive",
         title: "Points validation failed",
         description:
-          message ||
+          (error as any)?.message ||
           "There was an error validating your points. Please try again.",
       });
     }
@@ -256,7 +256,7 @@ export function CheckoutContent() {
         variant: "destructive",
         title: "Payment failed",
         description:
-          message ||
+          (error as any)?.message ||
           "There was an error processing your payment. Please try again.",
       });
       setIsPaymentModalOpen(false);
@@ -564,7 +564,7 @@ export function CheckoutContent() {
 
                     {/* Pay Now Button with Tooltip */}
                     <div className="w-full">
-                      {hasUnvalidatedPoints ? (
+                      {hasInvalidatedPoints ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="w-full">

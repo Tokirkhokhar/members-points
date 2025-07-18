@@ -169,8 +169,8 @@ export function ProfileContent() {
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Referrer Token</span>
-                <span className="font-semibold ">{user?.referrerToken}</span>
+                <span className="text-muted-foreground">Referral Token</span>
+                <span className="font-semibold ">{user?.referralToken}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Current Tier</span>
