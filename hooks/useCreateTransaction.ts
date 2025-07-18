@@ -28,9 +28,13 @@ export type CreateTransactionPayload = {
   }>;
   discountDetails?: {
     pointsUsed: number | string;
-    actualAmount: number | string,
-    discountedAmount: number | string,
-    discountAmount: number | string
+    actualAmount: number | string;
+    discountedAmount: number | string;
+    discountAmount: number | string;
+    conversionRate?: {
+      points: number;
+      currency: number;
+    };
   };
 };
 

@@ -59,7 +59,7 @@ export function CheckoutContent() {
     isLoading: isMembersWalletsLoading,
     data: membersWallets,
   } = useGetMembersWallets();
-  const { blockPoints, isLoading: isBlockingPoints, data: blockPointsData } = useBlockPoints();
+  const { blockPoints, isLoading: isBlockingPoints } = useBlockPoints();
   const { spendPoints, isLoading: isSpendingPoints } = useSpendPoints();
   const { unBlockPoints, isLoading: isUnblockingPoints } = useUnBlockPoints();
   const { toast } = useToast();
@@ -71,7 +71,9 @@ export function CheckoutContent() {
   const [defaultWallet, setDefaultWallet] = useState<any>(null);
   const [blockedPoints, setBlockedPoints] = useState<number>(0);
   const [blockPointId, setBlockPointId] = useState<string | null>(null);
-  const [transactionDocumentNumber, setTransactionDocumentNumber] = useState<string | null>(null);
+  const [transactionDocumentNumber, setTransactionDocumentNumber] = useState<
+    string | null
+  >(null);
 
   const totalPrice = getTotalPrice();
   const finalAmount = validationData
@@ -145,8 +147,8 @@ export function CheckoutContent() {
       router.push("/login");
       return;
     }
-    const transactionDocumentNumber = generateTransactionDocumentNumber()
-    setTransactionDocumentNumber(transactionDocumentNumber)
+    const transactionDocumentNumber = generateTransactionDocumentNumber();
+    setTransactionDocumentNumber(transactionDocumentNumber);
 
     // If points are validated, block them first
     if (isPointsValidated && pointsToRedeem > 0) {
@@ -182,7 +184,8 @@ export function CheckoutContent() {
 
   const handlePaymentConfirm = async () => {
     try {
-      const documentNumber = transactionDocumentNumber || generateTransactionDocumentNumber();
+      const documentNumber =
+        transactionDocumentNumber || generateTransactionDocumentNumber();
       // First, spend the points if any were blocked
       if (blockedPoints > 0) {
         await spendPoints({
@@ -221,6 +224,7 @@ export function CheckoutContent() {
             actualAmount: totalPrice ?? 0,
             discountedAmount: finalAmount ?? 0,
             discountAmount: Number(validationData?.discount ?? 0),
+            conversionRate: validationData?.conversionRate,
           },
         }),
       };
@@ -237,9 +241,9 @@ export function CheckoutContent() {
       router.push("/dashboard");
     } catch (error) {
       // If transaction fails, unblock the points
-      if (blockedPoints > 0) {
+      if (blockedPoints > 0 && blockPointId) {
         try {
-          await unBlockPoints(blockPointId!);
+          await unBlockPoints(blockPointId);
           toast({
             title: "Points unblocked",
             description:
@@ -254,13 +258,11 @@ export function CheckoutContent() {
         }
       }
 
-      const message = (error as Error).message;
-
       toast({
         variant: "destructive",
         title: "Payment failed",
         description:
-          (error as any)?.message ||
+          (error as Error)?.message ||
           "There was an error processing your payment. Please try again.",
       });
       setIsPaymentModalOpen(false);
