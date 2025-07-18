@@ -87,14 +87,14 @@ export function PointsStatistics({
           targetNumber={data?.activePoints || 0}
           label="Wallet Balance"
         />
-        <StateCard
-          targetNumber={data?.expiredPoints || 0}
-          label="Expired Points"
-        />
         <StateCard targetNumber={data?.spentPoints || 0} label="Spent Points" />
         <StateCard
           targetNumber={data?.blockedPoints || 0}
           label="Blocked Points"
+        />
+        <StateCard
+          targetNumber={data?.expiredPoints || 0}
+          label="Expired Points"
         />
 
         {/* <Card>
