@@ -1,8 +1,17 @@
 import { useState, useEffect } from "react";
 import { getReq } from "@/config/request";
 
-export type RewardStatus = "active" | "redeemed" | "expired";
-export type CouponType = "percentage" | "fixed" | "freebie";
+export enum IssuedRewardsStatus {
+  Expired = "expired",
+  Issued = "issued",
+  Redeemed = "redeemed",
+}
+
+export enum RewardCouponType {
+  Percentage = "percentage",
+  UnitConversion = "unitConversion",
+  Value = "value",
+}
 
 export type MemberReward = {
   id: string;
@@ -11,8 +20,8 @@ export type MemberReward = {
   memberId: string;
   issuedAt: string;
   couponCode: string;
-  status: RewardStatus;
-  couponType: CouponType;
+  status: IssuedRewardsStatus;
+  couponType: RewardCouponType;
   rewardValue: number;
   createdAt: string;
   reward: {

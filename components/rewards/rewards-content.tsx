@@ -22,7 +22,8 @@ import {
 import {
   useMemberRewards,
   MemberReward,
-  RewardStatus,
+  IssuedRewardsStatus,
+  RewardCouponType,
 } from "@/hooks/use-members-rewards";
 import {
   Gift,
@@ -46,7 +47,9 @@ export function RewardsContent() {
   const { data, isLoading, getMemberRewards } = useMemberRewards();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<RewardStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<IssuedRewardsStatus | "all">(
+    "all"
+  );
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [debounceSearchText, setDebounceSearchText] = useState<string>();
   const [page, setPage] = useState(1);
@@ -70,26 +73,26 @@ export function RewardsContent() {
 
   const rewards = data?.data;
 
-  const getStatusIcon = (status: RewardStatus) => {
+  const getStatusIcon = (status: IssuedRewardsStatus) => {
     switch (status) {
-      case "active":
+      case IssuedRewardsStatus.Issued:
         return <Clock className="h-4 w-4" />;
-      case "redeemed":
+      case IssuedRewardsStatus.Redeemed:
         return <CheckCircle className="h-4 w-4" />;
-      case "expired":
+      case IssuedRewardsStatus.Expired:
         return <XCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
   };
 
-  const getStatusColor = (status: RewardStatus) => {
+  const getStatusColor = (status: IssuedRewardsStatus) => {
     switch (status) {
-      case "active":
+      case IssuedRewardsStatus.Issued:
         return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-      case "redeemed":
+      case IssuedRewardsStatus.Redeemed:
         return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-      case "expired":
+      case IssuedRewardsStatus.Expired:
         return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
@@ -98,11 +101,11 @@ export function RewardsContent() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case "percentage":
+      case RewardCouponType.Percentage:
         return <Percent className="h-4 w-4" />;
-      case "fixed":
+      case RewardCouponType.Value:
         return <DollarSign className="h-4 w-4" />;
-      case "freebie":
+      case RewardCouponType.UnitConversion:
         return <Package className="h-4 w-4" />;
       default:
         return <Gift className="h-4 w-4" />;
@@ -128,9 +131,15 @@ export function RewardsContent() {
 
   const getRewardStats = () => {
     const total = rewards?.length;
-    const active = rewards?.filter((r) => r.status === "active").length;
-    const redeemed = rewards?.filter((r) => r.status === "redeemed").length;
-    const expired = rewards?.filter((r) => r.status === "expired").length;
+    const active = rewards?.filter(
+      ({ status }) => status === IssuedRewardsStatus.Issued
+    ).length;
+    const redeemed = rewards?.filter(
+      ({ status }) => status === IssuedRewardsStatus.Redeemed
+    ).length;
+    const expired = rewards?.filter(
+      ({ status }) => status === IssuedRewardsStatus.Expired
+    ).length;
 
     return { total, active, redeemed, expired };
   };
@@ -287,9 +296,9 @@ export function RewardsContent() {
                   <div
                     className={cn(
                       "flex items-center justify-center w-12 h-12 rounded-lg",
-                      reward.status === "active"
+                      reward.status === IssuedRewardsStatus.Issued
                         ? "bg-green-100 dark:bg-green-900/20"
-                        : reward.status === "redeemed"
+                        : reward.status === IssuedRewardsStatus.Redeemed
                         ? "bg-blue-100 dark:bg-blue-900/20"
                         : "bg-red-100 dark:bg-red-900/20"
                     )}
@@ -341,7 +350,7 @@ export function RewardsContent() {
                         <p className="font-medium">
                           {reward.couponType === "percentage"
                             ? `${reward.rewardValue}%`
-                            : reward.couponType === "fixed"
+                            : reward.couponType === "value"
                             ? `KWD ${reward.rewardValue}`
                             : "Free Item"}
                         </p>
@@ -366,10 +375,9 @@ export function RewardsContent() {
                               : ""
                           )}
                         >
-                          {format(
-                            new Date(reward.expirationDate),
-                            "MMM dd, yyyy"
-                          )}
+                          {reward.expiredAt
+                            ? format(new Date(reward.expiredAt), "MMM dd, yyyy")
+                            : "-"}
                         </p>
                       </div>
                     </div>
