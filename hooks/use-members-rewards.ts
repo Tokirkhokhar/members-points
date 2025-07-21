@@ -32,6 +32,12 @@ interface Response {
   limit: number;
 }
 
+interface GetMemberRewardsParams {
+  page?: number;
+  limit?: number;
+  searchTerm?: string;
+}
+
 export const useMemberRewards = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<Response | null>(null);
@@ -65,22 +71,15 @@ export const useMemberRewards = () => {
     }
   };
 
-  useEffect(() => {
-    getMemberRewardsApiCall();
-  }, [page, limit, searchTerm]);
-
   const getMemberRewards = ({
     page = 1,
     limit = 10,
     searchTerm = "",
-  }: {
-    page?: number;
-    limit?: number;
-    searchTerm?: string;
-  }) => {
+  }: GetMemberRewardsParams) => {
     setPage(page);
     setLimit(limit);
     setSearchTerm(searchTerm);
+    getMemberRewardsApiCall();
   };
 
   return {

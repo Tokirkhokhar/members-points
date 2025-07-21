@@ -120,7 +120,7 @@ export function RewardsContent() {
   //   use useCallback
   const refreshRewards = useCallback(() => {
     getMemberRewards({ page: 1, limit: 10, searchTerm: "" });
-  }, [getMemberRewards]);
+  }, []);
 
   useEffect(() => {
     getMemberRewards({ page, limit: 10, searchTerm: debounceSearchText });
