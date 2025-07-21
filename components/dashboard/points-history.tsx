@@ -243,7 +243,10 @@ export function PointsHistory({
                                 type === PointsType.Locked,
                             })}
                           >
-                            {type === PointsType.Adding || type === PointsType.Adjustment ? "+" : "-"}
+                            {type === PointsType.Adding ||
+                            type === PointsType.Adjustment
+                              ? "+"
+                              : "-"}
                             {points.toLocaleString()} points
                           </div>
                         </div>
