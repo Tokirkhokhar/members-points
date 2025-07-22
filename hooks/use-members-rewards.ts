@@ -66,7 +66,7 @@ export const useMemberRewards = () => {
         params: {
           page,
           limit,
-          search,
+          ...(search && { search }),
         },
       });
       if (response) {
