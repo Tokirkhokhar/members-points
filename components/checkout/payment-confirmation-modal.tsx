@@ -35,6 +35,8 @@ type PaymentConfirmationModalProps = {
   pointsUsed?: number;
   discount?: string;
   currencyCode?: string;
+  couponCode?: string;
+  couponDiscount?: number;
 };
 
 export function PaymentConfirmationModal({
@@ -49,6 +51,8 @@ export function PaymentConfirmationModal({
   pointsUsed,
   discount,
   currencyCode = "KWD",
+  couponCode,
+  couponDiscount,
 }: PaymentConfirmationModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -146,14 +150,28 @@ export function PaymentConfirmationModal({
                     <span>Points Discount ({pointsUsed} points)</span>
                   </div>
                   <span>
-                    -{currencyCode} {discount}
+                    -{currencyCode}
+                    {discount}
+                  </span>
+                </div>
+              )}
+
+              {couponCode && couponDiscount && (
+                <div className="flex justify-between text-sm text-blue-600 dark:text-blue-400">
+                  <div className="flex items-center gap-1">
+                    <Gift className="h-3 w-3" />
+                    <span>Coupon Discount ({couponCode})</span>
+                  </div>
+                  <span>
+                    -{currencyCode}
+                    {couponDiscount}
                   </span>
                 </div>
               )}
 
               <div className="flex justify-between text-sm">
                 <span>Tax</span>
-                <span>{currencySymbol.KWD}0.00</span>
+                <span>{currencyCode}0.00</span>
               </div>
 
               <Separator />
@@ -161,30 +179,41 @@ export function PaymentConfirmationModal({
               <div className="flex justify-between text-base font-semibold">
                 <span>Total Amount</span>
                 <span>
-                  {currencyCode} {finalAmount.toFixed(2)}
+                  {currencyCode}
+                  {finalAmount.toFixed(2)}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Points Information */}
-          {pointsUsed && pointsUsed > 0 && (
+          {(pointsUsed && pointsUsed > 0) || couponCode ? (
             <>
               <Separator />
               <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
                 <div className="flex items-center gap-2 mb-2">
                   <Gift className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   <span className="text-sm font-medium text-amber-700 dark:text-amber-300">
-                    Points Redemption
+                    Applied Discounts
                   </span>
                 </div>
-                <p className="text-sm text-amber-700 dark:text-amber-300">
-                  {pointsUsed} points will be deducted from your account after
-                  successful payment.
-                </p>
+                <div className="space-y-1 text-sm text-amber-700 dark:text-amber-300">
+                  {pointsUsed && pointsUsed > 0 && (
+                    <p>
+                      {pointsUsed} points will be deducted from your account
+                      after successful payment.
+                    </p>
+                  )}
+                  {couponCode && (
+                    <p>
+                      Coupon {couponCode} will be redeemed after successful
+                      payment.
+                    </p>
+                  )}
+                </div>
               </div>
             </>
-          )}
+          ) : null}
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
