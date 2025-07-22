@@ -62,6 +62,11 @@ export function MainLayout({ children }: MainLayoutProps) {
       icon: <LayoutDashboard className="h-5 w-5 mr-2" />,
     },
     {
+      href: "/rewards-catalog",
+      label: "Rewards Catalog",
+      icon: <Gift className="h-5 w-5 mr-2" />,
+    },
+    {
       href: "/rewards",
       label: "My Rewards",
       icon: <Gift className="h-5 w-5 mr-2" />,

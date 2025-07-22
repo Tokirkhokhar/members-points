@@ -25,6 +25,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { RewardCouponType } from "@/hooks/use-members-rewards";
+import { StatsCard } from "../ui/StatsCard";
 
 export function RedemptionHistoryContent() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -127,19 +128,14 @@ export function RedemptionHistoryContent() {
       </div>
 
       {/* Stats Card */}
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-2">
-            <History className="h-5 w-5 mt-1 text-primary" />
-            <div className="flex flex-col gap-2">
-              <p className="text-base text-muted-foreground">
-                Total Redemptions
-              </p>
-              <p className="text-xl font-bold">{total}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="mb-6">
+        <StatsCard
+          icon={<History className="h-5 w-5 mt-1 text-primary" />}
+          title="Total Redemptions"
+          value={total}
+          isCountUp
+        />
+      </div>
 
       {/* Search */}
       <Card className="mb-6">

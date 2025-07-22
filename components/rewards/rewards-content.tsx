@@ -44,9 +44,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { CountUp } from "../ui/countUp";
+import { StatsCard } from "../ui/StatsCard";
 
 export function RewardsContent() {
-  const { data, isLoading, getMemberRewards } = useMemberRewards();
+  const {
+    data,
+    isLoading,
+    getMemberRewards,
+    refreshRewards: refreshRewardsApiCall,
+  } = useMemberRewards();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   // const [statusFilter, setStatusFilter] = useState<IssuedRewardsStatus | "all">(
@@ -126,9 +132,9 @@ export function RewardsContent() {
   const { data: rewardStats, refetch: refetchStats } = useRewardStatistics();
 
   const refreshRewards = useCallback(() => {
-    getMemberRewards({ page: 1, limit: 10, search: "" });
+    refreshRewardsApiCall();
     refetchStats();
-  }, [refetchStats]);
+  }, [refetchStats, getMemberRewards]);
 
   useEffect(() => {
     getMemberRewards({ page, limit: 10, search: debounceSearchText });
@@ -158,71 +164,30 @@ export function RewardsContent() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2 items-center">
-                <Gift className="h-6 w-6 text-primary" />
-                <p className="text-base text-muted-foreground">Total Rewards</p>
-              </div>
-              <CountUp
-                className="text-xl font-bold ml-6"
-                targetNumber={stats.total}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2 items-center">
-                <Clock className="h-6 w-6 text-green-600" />
-                <p className="text-base text-muted-foreground">
-                  Active Rewards
-                </p>
-              </div>
-              <CountUp
-                className="text-xl font-bold ml-6"
-                targetNumber={stats.active}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2 items-center">
-                <CheckCircle className="h-6 w-6 text-blue-600" />
-                <p className="text-base text-muted-foreground">
-                  Redeemed Rewards
-                </p>
-              </div>
-              <CountUp
-                className="text-xl font-bold ml-6"
-                targetNumber={stats.redeemed}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-2 items-center">
-                <XCircle className="h-6 w-6 text-red-600" />
-                <p className="text-base text-muted-foreground">
-                  Expired Rewards
-                </p>
-              </div>
-              <CountUp
-                className="text-xl font-bold ml-6"
-                targetNumber={stats.expired}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <StatsCard
+          icon={<Gift className="h-5 w-5 text-primary" />}
+          title="Total Rewards"
+          value={stats.total}
+          isCountUp
+        />
+        <StatsCard
+          icon={<Clock className="h-5 w-5 text-green-600" />}
+          title="Active Rewards"
+          value={stats.active}
+          isCountUp
+        />
+        <StatsCard
+          icon={<CheckCircle className="h-5 w-5 text-blue-600" />}
+          title="Redeemed Rewards"
+          value={stats.redeemed}
+          isCountUp
+        />
+        <StatsCard
+          icon={<XCircle className="h-5 w-5 text-red-600" />}
+          title="Expired Rewards"
+          value={stats.expired}
+          isCountUp
+        />
       </div>
 
       {/* Filters */}

@@ -66,7 +66,7 @@ export const useMemberRewards = () => {
         params: {
           page,
           limit,
-          search,
+          ...(search && { search }),
         },
       });
       if (response) {
@@ -94,5 +94,9 @@ export const useMemberRewards = () => {
     setSearch(search);
   };
 
-  return { getMemberRewards, isLoading, data };
+  const refreshRewards = () => {
+    getMemberRewardsApiCall();
+  };
+
+  return { getMemberRewards, isLoading, data, refreshRewards };
 };
