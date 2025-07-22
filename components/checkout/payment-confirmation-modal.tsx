@@ -150,7 +150,7 @@ export function PaymentConfirmationModal({
                     <span>Points Discount ({pointsUsed} points)</span>
                   </div>
                   <span>
-                    -{currencyCode}
+                    -&nbsp;{currencyCode}&nbsp;
                     {discount}
                   </span>
                 </div>
@@ -163,7 +163,7 @@ export function PaymentConfirmationModal({
                     <span>Coupon Discount ({couponCode})</span>
                   </div>
                   <span>
-                    -{currencyCode}
+                    -&nbsp;{currencyCode}&nbsp;
                     {couponDiscount}
                   </span>
                 </div>
@@ -171,7 +171,7 @@ export function PaymentConfirmationModal({
 
               <div className="flex justify-between text-sm">
                 <span>Tax</span>
-                <span>{currencyCode}0.00</span>
+                <span>{currencyCode}&nbsp;0.00</span>
               </div>
 
               <Separator />
@@ -179,7 +179,7 @@ export function PaymentConfirmationModal({
               <div className="flex justify-between text-base font-semibold">
                 <span>Total Amount</span>
                 <span>
-                  {currencyCode}
+                  {currencyCode}&nbsp;
                   {finalAmount.toFixed(2)}
                 </span>
               </div>

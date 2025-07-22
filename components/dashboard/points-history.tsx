@@ -61,6 +61,7 @@ export function PointsHistory({
       setPage(newPage);
     }
   };
+
   const handleRedeemSuccess = () => {
     // Refresh the transactions list after successful redemption
     getGetPointHistory(page, 10);

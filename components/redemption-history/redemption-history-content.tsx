@@ -28,10 +28,10 @@ import { RewardCouponType } from "@/hooks/use-members-rewards";
 import { StatsCard } from "../ui/StatsCard";
 
 export function RedemptionHistoryContent() {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const { redemptions, total, isLoading, error, refreshRedemptions, loadPage } =
-    useMemberRedemptions(currentPage, 20);
+    useMemberRedemptions(page, 20);
   const { toast } = useToast();
 
   const itemsPerPage = 20;
@@ -81,7 +81,7 @@ export function RedemptionHistoryContent() {
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+      setPage(page);
       loadPage(page);
     }
   };
@@ -329,16 +329,15 @@ export function RedemptionHistoryContent() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Showing {Math.min((currentPage - 1) * itemsPerPage + 1, total)}{" "}
-                to {Math.min(currentPage * itemsPerPage, total)} of {total}{" "}
-                entries
+                Showing {Math.min((page - 1) * itemsPerPage + 1, total)} to{" "}
+                {Math.min(page * itemsPerPage, total)} of {total} entries
               </p>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1}
                   className="gap-1"
                 >
                   <ChevronLeft className="h-4 w-4" />
@@ -350,20 +349,18 @@ export function RedemptionHistoryContent() {
                     let pageNum: number;
                     if (totalPages <= 5) {
                       pageNum = i + 1;
-                    } else if (currentPage <= 3) {
+                    } else if (page <= 3) {
                       pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
+                    } else if (page >= totalPages - 2) {
                       pageNum = totalPages - 4 + i;
                     } else {
-                      pageNum = currentPage - 2 + i;
+                      pageNum = page - 2 + i;
                     }
 
                     return (
                       <Button
                         key={pageNum}
-                        variant={
-                          currentPage === pageNum ? "default" : "outline"
-                        }
+                        variant={page === pageNum ? "default" : "outline"}
                         size="sm"
                         onClick={() => handlePageChange(pageNum)}
                         className="w-8 h-8 p-0"
@@ -377,8 +374,8 @@ export function RedemptionHistoryContent() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page === totalPages}
                   className="gap-1"
                 >
                   Next
@@ -388,6 +385,32 @@ export function RedemptionHistoryContent() {
             </div>
           </CardContent>
         </Card>
+      )}
+      {redemptions && redemptions.length > 0 && (
+        <div className="flex items-center justify-between bottom-1 w-full pr-8 pl-6 my-4">
+          <p className="text-sm text-muted-foreground">
+            Showing {Math.min((page - 1) * 10 + 1, total)} to{" "}
+            {Math.min(page * 10, total)} of {total} entries
+          </p>
+          <div className="flex items-center gap-4 cursor-pointer">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page * 10 >= total}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );
