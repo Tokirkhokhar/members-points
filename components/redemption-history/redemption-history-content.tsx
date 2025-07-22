@@ -129,11 +129,13 @@ export function RedemptionHistoryContent() {
       {/* Stats Card */}
       <Card className="mb-6">
         <CardContent className="p-6">
-          <div className="flex items-center gap-2">
-            <History className="h-5 w-5 text-primary" />
-            <div>
-              <p className="text-2xl font-bold">{total}</p>
-              <p className="text-sm text-muted-foreground">Total Redemptions</p>
+          <div className="flex items-start gap-2">
+            <History className="h-5 w-5 mt-1 text-primary" />
+            <div className="flex flex-col gap-2">
+              <p className="text-base text-muted-foreground">
+                Total Redemptions
+              </p>
+              <p className="text-xl font-bold">{total}</p>
             </div>
           </div>
         </CardContent>
