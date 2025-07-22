@@ -44,7 +44,7 @@ interface Response {
 interface GetMemberRewardsParams {
   page?: number;
   limit?: number;
-  searchTerm?: string;
+  search?: string;
 }
 
 export const useMemberRewards = () => {
@@ -52,7 +52,7 @@ export const useMemberRewards = () => {
   const [data, setData] = useState<Response | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
 
   const getMemberRewardsApiCall = async () => {
     try {
@@ -66,7 +66,7 @@ export const useMemberRewards = () => {
         params: {
           page,
           limit,
-          searchTerm,
+          search,
         },
       });
       if (response) {
@@ -80,20 +80,19 @@ export const useMemberRewards = () => {
     }
   };
 
+  useEffect(() => {
+    getMemberRewardsApiCall();
+  }, [page, limit, search]);
+
   const getMemberRewards = ({
     page = 1,
     limit = 10,
-    searchTerm = "",
+    search = "",
   }: GetMemberRewardsParams) => {
     setPage(page);
     setLimit(limit);
-    setSearchTerm(searchTerm);
-    getMemberRewardsApiCall();
+    setSearch(search);
   };
 
-  return {
-    getMemberRewards,
-    isLoading,
-    data,
-  };
+  return { getMemberRewards, isLoading, data };
 };

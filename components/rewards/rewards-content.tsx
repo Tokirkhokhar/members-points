@@ -12,25 +12,25 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import {
   useMemberRewards,
-  MemberReward,
+  // MemberReward,
   IssuedRewardsStatus,
   RewardCouponType,
 } from "@/hooks/use-members-rewards";
 import {
   Gift,
   Search,
-  Filter,
+  // Filter,
   Copy,
-  Calendar,
+  // Calendar,
   Percent,
   DollarSign,
   Package,
@@ -47,10 +47,10 @@ export function RewardsContent() {
   const { data, isLoading, getMemberRewards } = useMemberRewards();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<IssuedRewardsStatus | "all">(
-    "all"
-  );
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+  // const [statusFilter, setStatusFilter] = useState<IssuedRewardsStatus | "all">(
+  //   "all"
+  // );
+  // const [typeFilter, setTypeFilter] = useState<string>("all");
   const [debounceSearchText, setDebounceSearchText] = useState<string>();
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -122,11 +122,11 @@ export function RewardsContent() {
 
   //   use useCallback
   const refreshRewards = useCallback(() => {
-    getMemberRewards({ page: 1, limit: 10, searchTerm: "" });
+    getMemberRewards({ page: 1, limit: 10, search: "" });
   }, []);
 
   useEffect(() => {
-    getMemberRewards({ page, limit: 10, searchTerm: debounceSearchText });
+    getMemberRewards({ page, limit: 10, search: debounceSearchText });
   }, [page, debounceSearchText]);
 
   const getRewardStats = () => {
@@ -228,7 +228,7 @@ export function RewardsContent() {
               </div>
             </div>
 
-            <Select
+            {/* <Select
               value={statusFilter}
               onValueChange={(value) => setStatusFilter(value as any)}
             >
@@ -237,9 +237,15 @@ export function RewardsContent() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="redeemed">Redeemed</SelectItem>
-                <SelectItem value="expired">Expired</SelectItem>
+                <SelectItem value={IssuedRewardsStatus.Issued}>
+                  Active
+                </SelectItem>
+                <SelectItem value={IssuedRewardsStatus.Redeemed}>
+                  Redeemed
+                </SelectItem>
+                <SelectItem value={IssuedRewardsStatus.Expired}>
+                  Expired
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -253,7 +259,7 @@ export function RewardsContent() {
                 <SelectItem value="fixed">Fixed Amount</SelectItem>
                 <SelectItem value="freebie">Freebie</SelectItem>
               </SelectContent>
-            </Select>
+            </Select> */}
           </div>
         </CardContent>
       </Card>
@@ -282,9 +288,8 @@ export function RewardsContent() {
               <Gift className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">No rewards found</h3>
               <p className="text-muted-foreground">
-                {searchTerm || statusFilter !== "all" || typeFilter !== "all"
-                  ? "Try adjusting your filters to see more results."
-                  : "You don't have any rewards yet. Keep earning points to unlock rewards!"}
+                You don&apos;t have any rewards yet. Keep earning points to
+                unlock rewards!
               </p>
             </CardContent>
           </Card>
@@ -300,7 +305,9 @@ export function RewardsContent() {
                         ? "bg-green-100 dark:bg-green-900/20"
                         : reward.status === IssuedRewardsStatus.Redeemed
                         ? "bg-blue-100 dark:bg-blue-900/20"
-                        : "bg-red-100 dark:bg-red-900/20"
+                        : reward.status === IssuedRewardsStatus.Expired
+                        ? "bg-red-100 dark:bg-red-900/20"
+                        : "bg-gray-100 dark:bg-gray-900/20"
                     )}
                   >
                     {getTypeIcon(reward.couponType)}
@@ -365,12 +372,14 @@ export function RewardsContent() {
 
                       <div>
                         <p className="text-muted-foreground">
-                          {reward.status === "expired" ? "Expired" : "Expires"}
+                          {reward.status === IssuedRewardsStatus.Expired
+                            ? "Expired"
+                            : "Expires"}
                         </p>
                         <p
                           className={cn(
                             "font-medium",
-                            reward.status === "expired"
+                            reward.status === IssuedRewardsStatus.Expired
                               ? "text-red-600 dark:text-red-400"
                               : ""
                           )}
@@ -382,48 +391,75 @@ export function RewardsContent() {
                       </div>
                     </div>
 
-                    {reward.redeemedAt && (
-                      <div className="mt-3 pt-3 border-t">
-                        <div className="flex items-center gap-4 text-sm">
+                    <div className="mt-3 pt-3 border-t">
+                      <div className="flex items-center gap-4 text-sm">
+                        {reward.reference && (
                           <div>
                             <p className="text-muted-foreground">
-                              Redeemed Date
+                              Reward Reference
                             </p>
-                            <p className="font-medium">
-                              {format(
-                                new Date(reward.redeemedAt),
-                                "MMM dd, yyyy HH:mm"
-                              )}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              <code className="bg-muted px-2 py-1 rounded font-mono text-xs">
+                                {reward.reference}
+                              </code>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-6 w-6"
+                                onClick={() =>
+                                  copyToClipboard(
+                                    reward.reference!,
+                                    "Reward reference"
+                                  )
+                                }
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
-                          {reward.transactionReference && (
+                        )}
+                        {reward.redeemedAt && (
+                          <>
                             <div>
                               <p className="text-muted-foreground">
-                                Transaction
+                                Redeemed Date
                               </p>
-                              <div className="flex items-center gap-2">
-                                <code className="bg-muted px-2 py-1 rounded font-mono text-xs">
-                                  {reward.transactionReference}
-                                </code>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-6 w-6"
-                                  onClick={() =>
-                                    copyToClipboard(
-                                      reward.transactionReference!,
-                                      "Transaction reference"
-                                    )
-                                  }
-                                >
-                                  <Copy className="h-3 w-3" />
-                                </Button>
-                              </div>
+                              <p className="font-medium">
+                                {format(
+                                  new Date(reward.redeemedAt),
+                                  "MMM dd, yyyy hh:mm a"
+                                )}
+                              </p>
                             </div>
-                          )}
-                        </div>
+                            {reward.transactionReference && (
+                              <div>
+                                <p className="text-muted-foreground">
+                                  Transaction
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <code className="bg-muted px-2 py-1 rounded font-mono text-xs">
+                                    {reward.transactionReference}
+                                  </code>
+                                  <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-6 w-6"
+                                    onClick={() =>
+                                      copyToClipboard(
+                                        reward.transactionReference!,
+                                        "Transaction reference"
+                                      )
+                                    }
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </CardContent>
