@@ -141,6 +141,12 @@ export function RewardsContent() {
     expired: rewardStats?.expiredRewards || 0,
   };
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= Math.ceil(total / 10)) {
+      setPage(newPage);
+    }
+  };
+
   return (
     <div className="container py-8">
       <div className="flex items-center justify-between mb-8">
@@ -478,6 +484,32 @@ export function RewardsContent() {
               </CardContent>
             </Card>
           ))
+        )}
+        {data?.data && data?.data.length > 0 && (
+          <div className="flex items-center justify-between bottom-1 w-full pr-8 pl-6 my-4">
+            <p className="text-sm text-muted-foreground">
+              Showing {Math.min((page - 1) * 10 + 1, total)} to{" "}
+              {Math.min(page * 10, total)} of {total} entries
+            </p>
+            <div className="flex items-center gap-4 cursor-pointer">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 1}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page * 10 >= total}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </div>
