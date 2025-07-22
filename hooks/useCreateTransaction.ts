@@ -35,6 +35,8 @@ export type CreateTransactionPayload = {
       points: number;
       currency: number;
     };
+    couponCode?: string;
+    issuedRewardId?: string;
   };
 };
 
