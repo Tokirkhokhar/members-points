@@ -25,6 +25,7 @@ import {
   IssuedRewardsStatus,
   RewardCouponType,
 } from "@/hooks/use-members-rewards";
+import { useRewardStatistics } from "@/hooks/use-reward-statistics";
 import {
   Gift,
   Search,
@@ -42,6 +43,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { CountUp } from "../ui/countUp";
 
 export function RewardsContent() {
   const { data, isLoading, getMemberRewards } = useMemberRewards();
@@ -121,30 +123,23 @@ export function RewardsContent() {
   };
 
   //   use useCallback
+  const { data: rewardStats, refetch: refetchStats } = useRewardStatistics();
+
   const refreshRewards = useCallback(() => {
     getMemberRewards({ page: 1, limit: 10, search: "" });
-  }, []);
+    refetchStats();
+  }, [refetchStats]);
 
   useEffect(() => {
     getMemberRewards({ page, limit: 10, search: debounceSearchText });
   }, [page, debounceSearchText]);
 
-  const getRewardStats = () => {
-    const total = rewards?.length;
-    const active = rewards?.filter(
-      ({ status }) => status === IssuedRewardsStatus.Issued
-    ).length;
-    const redeemed = rewards?.filter(
-      ({ status }) => status === IssuedRewardsStatus.Redeemed
-    ).length;
-    const expired = rewards?.filter(
-      ({ status }) => status === IssuedRewardsStatus.Expired
-    ).length;
-
-    return { total, active, redeemed, expired };
+  const stats = {
+    total: rewardStats?.totalRewards || 0,
+    active: rewardStats?.activeRewards || 0,
+    redeemed: rewardStats?.redeemedRewards || 0,
+    expired: rewardStats?.expiredRewards || 0,
   };
-
-  const stats = getRewardStats();
 
   return (
     <div className="container py-8">
@@ -162,15 +157,18 @@ export function RewardsContent() {
       </div>
 
       {/* Stats Cards */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <Card>
           <CardContent className="p-6">
             <div className="flex flex-col gap-2">
               <div className="flex gap-2 items-center">
-                <Gift className="h-5 w-5 text-primary" />
+                <Gift className="h-6 w-6 text-primary" />
                 <p className="text-base text-muted-foreground">Total Rewards</p>
               </div>
-              <p className="text-xl font-bold ml-6">{stats.total}</p>
+              <CountUp
+                className="text-xl font-bold ml-6"
+                targetNumber={stats.total}
+              />
             </div>
           </CardContent>
         </Card>
@@ -179,10 +177,15 @@ export function RewardsContent() {
           <CardContent className="p-6">
             <div className="flex flex-col gap-2">
               <div className="flex gap-2 items-center">
-                <Clock className="h-5 w-5 text-green-600" />
-                <p className="text-base text-muted-foreground">Active</p>
+                <Clock className="h-6 w-6 text-green-600" />
+                <p className="text-base text-muted-foreground">
+                  Active Rewards
+                </p>
               </div>
-              <p className="text-xl font-bold ml-6">{stats.active}</p>
+              <CountUp
+                className="text-xl font-bold ml-6"
+                targetNumber={stats.active}
+              />
             </div>
           </CardContent>
         </Card>
@@ -191,10 +194,15 @@ export function RewardsContent() {
           <CardContent className="p-6">
             <div className="flex flex-col gap-2">
               <div className="flex gap-2 items-center">
-                <CheckCircle className="h-5 w-5 text-blue-600" />
-                <p className="text-base text-muted-foreground">Redeemed</p>
+                <CheckCircle className="h-6 w-6 text-blue-600" />
+                <p className="text-base text-muted-foreground">
+                  Redeemed Rewards
+                </p>
               </div>
-              <p className="text-xl font-bold ml-6">{stats.redeemed}</p>
+              <CountUp
+                className="text-xl font-bold ml-6"
+                targetNumber={stats.redeemed}
+              />
             </div>
           </CardContent>
         </Card>
@@ -203,14 +211,19 @@ export function RewardsContent() {
           <CardContent className="p-6">
             <div className="flex flex-col gap-2">
               <div className="flex gap-2 items-center">
-                <XCircle className="h-5 w-5 text-red-600" />
-                <p className="text-base text-muted-foreground">Expired</p>
+                <XCircle className="h-6 w-6 text-red-600" />
+                <p className="text-base text-muted-foreground">
+                  Expired Rewards
+                </p>
               </div>
-              <p className="text-xl font-bold ml-6">{stats.expired}</p>
+              <CountUp
+                className="text-xl font-bold ml-6"
+                targetNumber={stats.expired}
+              />
             </div>
           </CardContent>
         </Card>
-      </div> */}
+      </div>
 
       {/* Filters */}
       <Card className="mb-6">
