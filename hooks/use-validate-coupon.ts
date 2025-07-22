@@ -40,9 +40,9 @@ export const useValidateCoupon = () => {
         }
       );
 
-      if (response?.data) {
-        setData(response.data);
-        return response.data;
+      if (response) {
+        setData(response);
+        return response;
       }
       throw new Error("Invalid response format");
     } catch (err: any) {

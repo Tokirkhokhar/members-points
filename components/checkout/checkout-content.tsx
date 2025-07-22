@@ -328,13 +328,14 @@ export function CheckoutContent() {
         ],
         ...((blockedPoints > 0 ||
           (isCouponValidated && couponValidationData?.isValid)) && {
-          redemptionDetails: {
+          discountDetails: {
             ...(blockedPoints > 0 && {
-              pointsToUse: blockedPoints,
+              pointsUsed: blockedPoints,
             }),
+            conversionRate: validationData?.conversionRate,
             actualAmount: totalPrice,
             discountedAmount: finalAmount,
-            discountAmount: totalPrice - finalAmount,
+            discountAmount: Number((totalPrice - finalAmount).toFixed(2)),
             ...(isCouponValidated &&
               couponValidationData?.isValid && {
                 couponCode: couponValidationData.couponCode,
@@ -567,6 +568,108 @@ export function CheckoutContent() {
                         <strong>Email:</strong> {user?.email}
                       </p>
                     </div>
+                    {/* Coupon Code Section */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Gift className="h-5 w-5 text-blue-500" />
+                        <h3 className="font-medium">Apply Coupon</h3>
+                      </div>
+
+                      {/* Coupon Input Row */}
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Input
+                            type="text"
+                            placeholder="Enter coupon code"
+                            value={couponCode}
+                            onChange={(e) => {
+                              setCouponCode(e.target.value);
+                              if (isCouponValidated) {
+                                setIsCouponValidated(false);
+                                resetCouponValidation();
+                              }
+                            }}
+                            className="text-center uppercase"
+                            disabled={isCouponValidated}
+                          />
+                        </div>
+
+                        {!isCouponValidated ? (
+                          <Button
+                            onClick={handleValidateCoupon}
+                            disabled={isValidatingCoupon || !couponCode.trim()}
+                            variant="outline"
+                            size="default"
+                            className="px-4"
+                          >
+                            {isValidatingCoupon ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Apply"
+                            )}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={handleResetCoupon}
+                            variant="ghost"
+                            size="default"
+                            className="px-4"
+                          >
+                            Reset
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Coupon Validation Success State */}
+                      {isCouponValidated && couponValidationData?.isValid && (
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                              Coupon applied successfully!
+                            </span>
+                          </div>
+
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-blue-700 dark:text-blue-300">
+                                Coupon Code:
+                              </span>
+                              <span className="font-medium text-blue-800 dark:text-blue-200">
+                                {couponValidationData.couponCode}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-blue-700 dark:text-blue-300">
+                                Original Price:
+                              </span>
+                              <span className="font-medium text-blue-800 dark:text-blue-200">
+                                {currencySymbol.KWD}
+                                {couponValidationData.price}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-blue-700 dark:text-blue-300">
+                                Discount:
+                              </span>
+                              <span className="font-medium text-blue-800 dark:text-blue-200">
+                                {currencySymbol.KWD}
+                                {couponValidationData.discount}
+                              </span>
+                            </div>
+                            <div className="flex justify-between border-t border-blue-200 dark:border-blue-800 pt-2 mt-2">
+                              <span className="text-blue-700 dark:text-blue-300 font-medium">
+                                Discounted Price:
+                              </span>
+                              <span className="font-bold text-blue-800 dark:text-blue-200">
+                                {currencySymbol.KWD}
+                                {couponValidationData.discountedPrice}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Point Redemption Section */}
                     <div className="space-y-4">
@@ -678,109 +781,6 @@ export function CheckoutContent() {
                               <span className="font-bold text-green-800 dark:text-green-200">
                                 {validationData.currencyData.code}{" "}
                                 {validationData.discountedAmount}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Coupon Code Section */}
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Gift className="h-5 w-5 text-blue-500" />
-                        <h3 className="font-medium">Apply Coupon</h3>
-                      </div>
-
-                      {/* Coupon Input Row */}
-                      <div className="flex gap-2">
-                        <div className="flex-1">
-                          <Input
-                            type="text"
-                            placeholder="Enter coupon code"
-                            value={couponCode}
-                            onChange={(e) => {
-                              setCouponCode(e.target.value);
-                              if (isCouponValidated) {
-                                setIsCouponValidated(false);
-                                resetCouponValidation();
-                              }
-                            }}
-                            className="text-center uppercase"
-                            disabled={isCouponValidated}
-                          />
-                        </div>
-
-                        {!isCouponValidated ? (
-                          <Button
-                            onClick={handleValidateCoupon}
-                            disabled={isValidatingCoupon || !couponCode.trim()}
-                            variant="outline"
-                            size="default"
-                            className="px-4"
-                          >
-                            {isValidatingCoupon ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              "Apply"
-                            )}
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={handleResetCoupon}
-                            variant="ghost"
-                            size="default"
-                            className="px-4"
-                          >
-                            Reset
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* Coupon Validation Success State */}
-                      {isCouponValidated && couponValidationData?.isValid && (
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                          <div className="flex items-center gap-2 mb-3">
-                            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                              Coupon applied successfully!
-                            </span>
-                          </div>
-
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-blue-700 dark:text-blue-300">
-                                Coupon Code:
-                              </span>
-                              <span className="font-medium text-blue-800 dark:text-blue-200">
-                                {couponValidationData.couponCode}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-blue-700 dark:text-blue-300">
-                                Original Price:
-                              </span>
-                              <span className="font-medium text-blue-800 dark:text-blue-200">
-                                {currencySymbol.KWD}
-                                {couponValidationData.price}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-blue-700 dark:text-blue-300">
-                                Discount:
-                              </span>
-                              <span className="font-medium text-blue-800 dark:text-blue-200">
-                                {currencySymbol.KWD}
-                                {couponValidationData.discount}
-                              </span>
-                            </div>
-                            <div className="flex justify-between border-t border-blue-200 dark:border-blue-800 pt-2 mt-2">
-                              <span className="text-blue-700 dark:text-blue-300 font-medium">
-                                Discounted Price:
-                              </span>
-                              <span className="font-bold text-blue-800 dark:text-blue-200">
-                                {currencySymbol.KWD}
-                                {couponValidationData.discountedPrice}
                               </span>
                             </div>
                           </div>
