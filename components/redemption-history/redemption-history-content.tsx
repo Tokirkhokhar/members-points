@@ -273,7 +273,7 @@ export function RedemptionHistoryContent() {
                           <p className="font-medium">
                             {format(
                               new Date(redemption.issuedAt),
-                              "MMM dd, yyyy HH:mm"
+                              "MMM dd, yyyy hh:mm a"
                             )}
                           </p>
                         </div>
@@ -285,7 +285,7 @@ export function RedemptionHistoryContent() {
                           <p className="font-medium">
                             {format(
                               new Date(redemption.redeemedAt),
-                              "MMM dd, yyyy HH:mm"
+                              "MMM dd, yyyy hh:mm a"
                             )}
                           </p>
                         </div>

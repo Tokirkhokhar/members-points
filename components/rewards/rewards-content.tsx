@@ -350,15 +350,18 @@ export function RewardsContent() {
                       <div>
                         <p className="text-muted-foreground">Issued Date</p>
                         <p className="font-medium">
-                          {format(new Date(reward.issuedAt), "MMM dd, yyyy")}
+                          {format(
+                            new Date(reward.issuedAt),
+                            "MMM dd, yyyy hh:mm a"
+                          )}
                         </p>
                       </div>
 
                       <div>
                         <p className="text-muted-foreground">
                           {reward.status === IssuedRewardsStatus.Expired
-                            ? "Expired"
-                            : "Expires"}
+                            ? "Expired On"
+                            : "Expires On"}
                         </p>
                         <p
                           className={cn(
@@ -369,7 +372,10 @@ export function RewardsContent() {
                           )}
                         >
                           {reward.expiredAt
-                            ? format(new Date(reward.expiredAt), "MMM dd, yyyy")
+                            ? format(
+                                new Date(reward.expiredAt),
+                                "MMM dd, yyyy hh:mm a"
+                              )
                             : "-"}
                         </p>
                       </div>
