@@ -70,6 +70,7 @@ export function RewardPurchaseModal({
         variant: "destructive",
         title: "Purchase failed",
         description:
+          (error as Error)?.message ||
           "There was an error purchasing this reward. Please try again.",
       });
     }

@@ -120,6 +120,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       title: "Logged out",
       description: "You have been successfully logged out",
     });
+    localStorage.removeItem("cart");
+    localStorage.removeItem("cartId");
+    window.location.reload();
   };
 
   return (
