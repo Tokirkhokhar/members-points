@@ -57,14 +57,14 @@ export function MainLayout({ children }: MainLayoutProps) {
       icon: <ShoppingBag className="h-5 w-5 mr-2" />,
     },
     {
-      href: "/dashboard",
-      label: "Dashboard",
-      icon: <LayoutDashboard className="h-5 w-5 mr-2" />,
-    },
-    {
       href: "/rewards-catalog",
       label: "Rewards Catalog",
       icon: <Gift className="h-5 w-5 mr-2" />,
+    },
+    {
+      href: "/dashboard",
+      label: "My Points",
+      icon: <LayoutDashboard className="h-5 w-5 mr-2" />,
     },
     {
       href: "/rewards",
