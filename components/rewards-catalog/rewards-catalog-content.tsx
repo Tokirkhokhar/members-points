@@ -31,6 +31,7 @@ import Image from "next/image";
 import { RewardPurchaseModal } from "./reward-purchase-modal";
 import { RewardSuccessModal } from "./reward-success-modal";
 import { StatsCard } from "../ui/StatsCard";
+import { RewardCouponType } from "@/hooks/use-members-rewards";
 
 export function RewardsCatalogContent() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -80,12 +81,12 @@ export function RewardsCatalogContent() {
   const formatRewardValue = (reward: AvailableReward) => {
     const value = parseFloat(reward.rewardValue);
     switch (reward.couponType) {
-      case "percentage":
+      case RewardCouponType.Percentage:
         return `${value}% OFF`;
-      case "value":
+      case RewardCouponType.Value:
         return `${value} ${reward.currencyData.code} OFF`;
-      case "unitConversion":
-        return `${value} Units`;
+      case RewardCouponType.UnitConversion:
+        return `${reward.pointValue} Units`;
       default:
         return `${value} ${reward.currencyData.code}`;
     }
@@ -186,7 +187,7 @@ export function RewardsCatalogContent() {
                   {/* Reward Value Badge */}
                   <div className="absolute top-3 left-3">
                     <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold">
-                      {formatRewardValue(reward)}
+                      Reward: {formatRewardValue(reward)}
                     </Badge>
                   </div>
 

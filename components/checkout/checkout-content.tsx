@@ -102,9 +102,9 @@ export function CheckoutContent() {
   }
 
   // Check if points are entered but not validated
-  const hasUnvalidatedPoints = pointsToRedeem > 0 && !isPointsValidated;
+  const hasInvalidatedPoints = pointsToRedeem > 0 && !isPointsValidated;
   // Check if coupon is entered but not validated
-  const hasUnvalidatedCoupon = couponCode.trim() !== "" && !isCouponValidated;
+  const hasInvalidatedCoupon = couponCode.trim() !== "" && !isCouponValidated;
 
   useEffect(() => {
     getMembersWallets();
@@ -792,7 +792,7 @@ export function CheckoutContent() {
 
                     {/* Pay Now Button with Tooltip */}
                     <div className="w-full">
-                      {hasUnvalidatedPoints || hasUnvalidatedCoupon ? (
+                      {hasInvalidatedPoints || hasInvalidatedCoupon ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="w-full">
@@ -814,9 +814,9 @@ export function CheckoutContent() {
                             <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
                               <AlertCircle className="h-4 w-4" />
                               <span>
-                                {hasUnvalidatedPoints && hasUnvalidatedCoupon
+                                {hasInvalidatedPoints && hasInvalidatedCoupon
                                   ? "Please validate your points and coupon first"
-                                  : hasUnvalidatedPoints
+                                  : hasInvalidatedPoints
                                   ? "Please validate your points first"
                                   : "Please validate your coupon first"}
                               </span>
