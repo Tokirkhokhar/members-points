@@ -75,6 +75,8 @@ export function CheckoutContent() {
   const router = useRouter();
 
   const [pointsToRedeem, setPointsToRedeem] = useState<number>(0);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [pointsDiscount, setPointsDiscount] = useState<number>(0);
   const [isPointsValidated, setIsPointsValidated] = useState(false);
   const [couponCode, setCouponCode] = useState<string>("");
   const [isCouponValidated, setIsCouponValidated] = useState(false);
@@ -89,17 +91,9 @@ export function CheckoutContent() {
   const totalPrice = getTotalPrice();
 
   // Calculate final amount considering both points and coupon discounts
-  let finalAmount = totalPrice;
-  if (couponValidationData?.isValid) {
-    finalAmount = couponValidationData.discountedPrice;
-  }
-  if (validationData && isPointsValidated) {
-    // If both coupon and points are applied, apply points discount to the coupon-discounted price
-    const baseAmount = couponValidationData?.isValid
-      ? couponValidationData.discountedPrice
-      : totalPrice;
-    finalAmount = parseFloat(validationData.discountedAmount);
-  }
+  let finalAmount = parseFloat(
+    (totalPrice - couponDiscount - pointsDiscount).toFixed(2)
+  );
 
   // Check if points are entered but not validated
   const hasInvalidatedPoints = pointsToRedeem > 0 && !isPointsValidated;
@@ -109,6 +103,15 @@ export function CheckoutContent() {
   useEffect(() => {
     getMembersWallets();
   }, []);
+
+  useEffect(() => {
+    if (!isCouponValidated) {
+      setCouponDiscount(0);
+    }
+    if (!isPointsValidated) {
+      setPointsDiscount(0);
+    }
+  }, [isCouponValidated, isPointsValidated]);
 
   useEffect(() => {
     if (membersWallets?.length) {
@@ -130,15 +133,12 @@ export function CheckoutContent() {
     }
 
     try {
-      // Use coupon-discounted price if coupon is applied, otherwise use total price
-      const baseAmount = couponValidationData?.isValid
-        ? couponValidationData.discountedPrice
-        : totalPrice;
       const response = await validatePoints({
-        amount: baseAmount,
+        amount: totalPrice - couponDiscount,
         points: pointsToRedeem,
       });
 
+      setPointsDiscount(Number(response.discount));
       setIsPointsValidated(true);
       toast({
         title: "Points validated successfully!",
@@ -175,7 +175,7 @@ export function CheckoutContent() {
     try {
       const response = await validateCoupon({
         couponCode: couponCode.trim(),
-        amount: totalPrice,
+        amount: Number((totalPrice - pointsDiscount).toFixed(2)),
       });
 
       if (response.isValid) {
@@ -184,17 +184,7 @@ export function CheckoutContent() {
           title: "Coupon validated successfully!",
           description: `You'll save ${response.discount} with coupon ${response.couponCode}.`,
         });
-
-        // If points were validated, re-validate them with the new coupon-discounted price
-        if (isPointsValidated && pointsToRedeem > 0) {
-          setIsPointsValidated(false);
-          resetValidation();
-          toast({
-            title: "Please re-validate points",
-            description:
-              "Points need to be re-validated with the coupon discount applied.",
-          });
-        }
+        setCouponDiscount(response.discount);
       } else {
         setIsCouponValidated(false);
         toast({
@@ -219,16 +209,6 @@ export function CheckoutContent() {
     setCouponCode("");
     setIsCouponValidated(false);
     resetCouponValidation();
-
-    // If points were validated, re-validate them with the original price
-    if (isPointsValidated && pointsToRedeem > 0) {
-      setIsPointsValidated(false);
-      resetValidation();
-      toast({
-        title: "Please re-validate points",
-        description: "Points need to be re-validated with the original price.",
-      });
-    }
   };
 
   const handlePayNow = async () => {
@@ -645,7 +625,7 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-medium text-blue-800 dark:text-blue-200">
                                 {currencySymbol.KWD}
-                                {couponValidationData.price}
+                                {totalPrice}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -663,7 +643,7 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-bold text-blue-800 dark:text-blue-200">
                                 {currencySymbol.KWD}
-                                {couponValidationData.discountedPrice}
+                                {(totalPrice - couponDiscount).toFixed(2)}
                               </span>
                             </div>
                           </div>
@@ -762,7 +742,7 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-medium text-green-800 dark:text-green-200">
                                 {validationData.currencyData.code}{" "}
-                                {validationData.amount}
+                                {totalPrice - couponDiscount}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -780,7 +760,13 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-bold text-green-800 dark:text-green-200">
                                 {validationData.currencyData.code}{" "}
-                                {validationData.discountedAmount}
+                                {parseFloat(
+                                  (
+                                    totalPrice -
+                                    couponDiscount -
+                                    pointsDiscount
+                                  ).toFixed(2)
+                                )}
                               </span>
                             </div>
                           </div>
