@@ -61,6 +61,7 @@ export function PointsHistory({
       setPage(newPage);
     }
   };
+
   const handleRedeemSuccess = () => {
     // Refresh the transactions list after successful redemption
     getGetPointHistory(page, 10);
@@ -243,7 +244,10 @@ export function PointsHistory({
                                 type === PointsType.Locked,
                             })}
                           >
-                            {type === PointsType.Adding || type === PointsType.Adjustment ? "+" : "-"}
+                            {type === PointsType.Adding ||
+                            type === PointsType.Adjustment
+                              ? "+"
+                              : "-"}
                             {points.toLocaleString()} points
                           </div>
                         </div>

@@ -42,9 +42,11 @@ import { currencySymbol } from "@/constants/common";
 import { generateTransactionDocumentNumber } from "@/lib/utils";
 import { PaymentConfirmationModal } from "./payment-confirmation-modal";
 import { useGetMembersWallets } from "@/hooks/useGetMembersWallets";
+import { useRedeemCoupon } from "@/hooks/use-redeem-coupon";
+import { useValidateCoupon } from "@/hooks/use-validate-coupon";
 
 export function CheckoutContent() {
-  const { items, getTotalPrice, clearCart, cartId } = useCart();
+  const { items, getTotalPrice, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const { createTransaction, isLoading: isCreatingTransaction } =
     useCreateTransaction();
@@ -59,6 +61,13 @@ export function CheckoutContent() {
     isLoading: isMembersWalletsLoading,
     data: membersWallets,
   } = useGetMembersWallets();
+  const {
+    validateCoupon,
+    resetValidation: resetCouponValidation,
+    isLoading: isValidatingCoupon,
+    data: couponValidationData,
+  } = useValidateCoupon();
+  const { redeemCoupon, isLoading: isRedeemingCoupon } = useRedeemCoupon();
   const { blockPoints, isLoading: isBlockingPoints } = useBlockPoints();
   const { spendPoints, isLoading: isSpendingPoints } = useSpendPoints();
   const { unBlockPoints, isLoading: isUnblockingPoints } = useUnBlockPoints();
@@ -66,7 +75,11 @@ export function CheckoutContent() {
   const router = useRouter();
 
   const [pointsToRedeem, setPointsToRedeem] = useState<number>(0);
+  const [couponDiscount, setCouponDiscount] = useState<number>(0);
+  const [pointsDiscount, setPointsDiscount] = useState<number>(0);
   const [isPointsValidated, setIsPointsValidated] = useState(false);
+  const [couponCode, setCouponCode] = useState<string>("");
+  const [isCouponValidated, setIsCouponValidated] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [defaultWallet, setDefaultWallet] = useState<any>(null);
   const [blockedPoints, setBlockedPoints] = useState<number>(0);
@@ -76,22 +89,35 @@ export function CheckoutContent() {
   >(null);
 
   const totalPrice = getTotalPrice();
-  const finalAmount = validationData
-    ? parseFloat(validationData.discountedAmount)
-    : totalPrice;
+
+  // Calculate final amount considering both points and coupon discounts
+  let finalAmount = parseFloat(
+    (totalPrice - couponDiscount - pointsDiscount).toFixed(2)
+  );
 
   // Check if points are entered but not validated
   const hasInvalidatedPoints = pointsToRedeem > 0 && !isPointsValidated;
+  // Check if coupon is entered but not validated
+  const hasInvalidatedCoupon = couponCode.trim() !== "" && !isCouponValidated;
 
   useEffect(() => {
     getMembersWallets();
   }, []);
 
   useEffect(() => {
+    if (!isCouponValidated) {
+      setCouponDiscount(0);
+    }
+    if (!isPointsValidated) {
+      setPointsDiscount(0);
+    }
+  }, [isCouponValidated, isPointsValidated]);
+
+  useEffect(() => {
     if (membersWallets?.length) {
-      const defaultWallet = membersWallets.map((wallet: any) =>
-        wallet.isDefault == true ? wallet : null
-      )?.[0];
+      const defaultWallet = membersWallets.find(
+        (wallet: any) => wallet.isDefault
+      );
       setDefaultWallet(defaultWallet);
     }
   }, [membersWallets]);
@@ -108,24 +134,23 @@ export function CheckoutContent() {
 
     try {
       const response = await validatePoints({
-        amount: totalPrice,
+        amount: totalPrice - couponDiscount,
         points: pointsToRedeem,
       });
 
+      setPointsDiscount(Number(response.discount));
       setIsPointsValidated(true);
       toast({
         title: "Points validated successfully!",
-        description: `You'll save ${response.currencyData.code} ${response.discount} with ${response?.points} points.`,
+        description: `You'll save ${response.currencyData.code} ${response.discount} with ${response.points} points.`,
       });
     } catch (error) {
-      const message = (error as Error).message;
-
       setIsPointsValidated(false);
       toast({
         variant: "destructive",
         title: "Points validation failed",
         description:
-          (error as any)?.message ||
+          (error as Error)?.message ||
           "There was an error validating your points. Please try again.",
       });
     }
@@ -135,6 +160,55 @@ export function CheckoutContent() {
     setPointsToRedeem(0);
     setIsPointsValidated(false);
     resetValidation();
+  };
+
+  const handleValidateCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Invalid coupon",
+        description: "Please enter a valid coupon code.",
+      });
+      return;
+    }
+
+    try {
+      const response = await validateCoupon({
+        couponCode: couponCode.trim(),
+        amount: Number((totalPrice - pointsDiscount).toFixed(2)),
+      });
+
+      if (response.isValid) {
+        setIsCouponValidated(true);
+        toast({
+          title: "Coupon validated successfully!",
+          description: `You'll save ${response.discount} with coupon ${response.couponCode}.`,
+        });
+        setCouponDiscount(response.discount);
+      } else {
+        setIsCouponValidated(false);
+        toast({
+          variant: "destructive",
+          title: "Invalid coupon",
+          description: response.message || "The coupon code is not valid.",
+        });
+      }
+    } catch (error) {
+      setIsCouponValidated(false);
+      toast({
+        variant: "destructive",
+        title: "Coupon validation failed",
+        description:
+          (error as Error)?.message ||
+          "There was an error validating your coupon. Please try again.",
+      });
+    }
+  };
+
+  const handleResetCoupon = () => {
+    setCouponCode("");
+    setIsCouponValidated(false);
+    resetCouponValidation();
   };
 
   const handlePayNow = async () => {
@@ -147,6 +221,7 @@ export function CheckoutContent() {
       router.push("/login");
       return;
     }
+
     const transactionDocumentNumber = generateTransactionDocumentNumber();
     setTransactionDocumentNumber(transactionDocumentNumber);
 
@@ -197,12 +272,25 @@ export function CheckoutContent() {
         });
       }
 
+      // Redeem coupon if validated
+      let couponRedemptionData = null;
+      if (isCouponValidated && couponValidationData?.isValid) {
+        couponRedemptionData = await redeemCoupon({
+          couponCode: couponValidationData.couponCode,
+          amount: totalPrice,
+          additionalInfo: `Transaction: ${documentNumber}`,
+        });
+      }
+
       // Create the transaction
       const transactionPayload: CreateTransactionPayload = {
         documentNumber,
         purchasePlace: "MembersPoint Store",
         purchasedAt: new Date().toISOString(),
         memberId: user!.id,
+        ...(couponRedemptionData && {
+          redemptionId: couponRedemptionData.issuedRewardId,
+        }),
         grossValue: finalAmount,
         currency: currencySymbol.KWD.trim(),
         items: items.map((item) => ({
@@ -218,13 +306,21 @@ export function CheckoutContent() {
           { key: "channel", value: "web" },
           { key: "customer_type", value: "member" },
         ],
-        ...(blockedPoints > 0 && {
+        ...((blockedPoints > 0 ||
+          (isCouponValidated && couponValidationData?.isValid)) && {
           discountDetails: {
-            pointsUsed: blockedPoints,
-            actualAmount: totalPrice ?? 0,
-            discountedAmount: finalAmount ?? 0,
-            discountAmount: Number(validationData?.discount ?? 0),
+            ...(blockedPoints > 0 && {
+              pointsUsed: blockedPoints,
+            }),
             conversionRate: validationData?.conversionRate,
+            actualAmount: totalPrice,
+            discountedAmount: finalAmount,
+            discountAmount: Number((totalPrice - finalAmount).toFixed(2)),
+            ...(isCouponValidated &&
+              couponValidationData?.isValid && {
+                couponCode: couponValidationData.couponCode,
+                issuedRewardId: couponValidationData.issuedRewardId,
+              }),
           },
         }),
       };
@@ -280,12 +376,11 @@ export function CheckoutContent() {
           description: "Your points have been unblocked.",
         });
       } catch (error) {
-        const message = (error as Error).message;
         toast({
           variant: "destructive",
           title: "Error unblocking points",
           description:
-            message ||
+            (error as Error)?.message ||
             "There was an error unblocking your points. Please contact support.",
         });
       }
@@ -396,6 +491,18 @@ export function CheckoutContent() {
                     </div>
                   )}
 
+                  {isCouponValidated && couponValidationData?.isValid && (
+                    <div className="flex justify-between text-blue-600 dark:text-blue-400">
+                      <span>
+                        Coupon Discount ({couponValidationData.couponCode})
+                      </span>
+                      <span>
+                        -{currencySymbol.KWD}
+                        {couponValidationData.discount}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between">
                     <span>Tax</span>
                     <span>{currencySymbol.KWD}0.00</span>
@@ -405,9 +512,7 @@ export function CheckoutContent() {
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total</span>
                     <span>
-                      {validationData
-                        ? validationData.currencyData.code
-                        : currencySymbol.KWD}
+                      {currencySymbol.KWD}
                       {finalAmount.toFixed(2)}
                     </span>
                   </div>
@@ -442,6 +547,108 @@ export function CheckoutContent() {
                       <p className="text-sm text-muted-foreground">
                         <strong>Email:</strong> {user?.email}
                       </p>
+                    </div>
+                    {/* Coupon Code Section */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Gift className="h-5 w-5 text-blue-500" />
+                        <h3 className="font-medium">Apply Coupon</h3>
+                      </div>
+
+                      {/* Coupon Input Row */}
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Input
+                            type="text"
+                            placeholder="Enter coupon code"
+                            value={couponCode}
+                            onChange={(e) => {
+                              setCouponCode(e.target.value);
+                              if (isCouponValidated) {
+                                setIsCouponValidated(false);
+                                resetCouponValidation();
+                              }
+                            }}
+                            className="text-center uppercase"
+                            disabled={isCouponValidated}
+                          />
+                        </div>
+
+                        {!isCouponValidated ? (
+                          <Button
+                            onClick={handleValidateCoupon}
+                            disabled={isValidatingCoupon || !couponCode.trim()}
+                            variant="outline"
+                            size="default"
+                            className="px-4"
+                          >
+                            {isValidatingCoupon ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Apply"
+                            )}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={handleResetCoupon}
+                            variant="ghost"
+                            size="default"
+                            className="px-4"
+                          >
+                            Reset
+                          </Button>
+                        )}
+                      </div>
+
+                      {/* Coupon Validation Success State */}
+                      {isCouponValidated && couponValidationData?.isValid && (
+                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CheckCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                              Coupon applied successfully!
+                            </span>
+                          </div>
+
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-blue-700 dark:text-blue-300">
+                                Coupon Code:
+                              </span>
+                              <span className="font-medium text-blue-800 dark:text-blue-200">
+                                {couponValidationData.couponCode}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-blue-700 dark:text-blue-300">
+                                Original Price:
+                              </span>
+                              <span className="font-medium text-blue-800 dark:text-blue-200">
+                                {currencySymbol.KWD}
+                                {totalPrice}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-blue-700 dark:text-blue-300">
+                                Discount:
+                              </span>
+                              <span className="font-medium text-blue-800 dark:text-blue-200">
+                                {currencySymbol.KWD}
+                                {couponValidationData.discount}
+                              </span>
+                            </div>
+                            <div className="flex justify-between border-t border-blue-200 dark:border-blue-800 pt-2 mt-2">
+                              <span className="text-blue-700 dark:text-blue-300 font-medium">
+                                Discounted Price:
+                              </span>
+                              <span className="font-bold text-blue-800 dark:text-blue-200">
+                                {currencySymbol.KWD}
+                                {(totalPrice - couponDiscount).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Point Redemption Section */}
@@ -535,7 +742,7 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-medium text-green-800 dark:text-green-200">
                                 {validationData.currencyData.code}{" "}
-                                {validationData.amount}
+                                {totalPrice - couponDiscount}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -553,7 +760,13 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-bold text-green-800 dark:text-green-200">
                                 {validationData.currencyData.code}{" "}
-                                {validationData.discountedAmount}
+                                {parseFloat(
+                                  (
+                                    totalPrice -
+                                    couponDiscount -
+                                    pointsDiscount
+                                  ).toFixed(2)
+                                )}
                               </span>
                             </div>
                           </div>
@@ -565,7 +778,7 @@ export function CheckoutContent() {
 
                     {/* Pay Now Button with Tooltip */}
                     <div className="w-full">
-                      {hasInvalidatedPoints ? (
+                      {hasInvalidatedPoints || hasInvalidatedCoupon ? (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="w-full">
@@ -576,7 +789,7 @@ export function CheckoutContent() {
                               >
                                 <CreditCard className="mr-2 h-4 w-4" />
                                 Pay Now - {currencySymbol.KWD}
-                                {totalPrice.toFixed(2)}
+                                {finalAmount.toFixed(2)}
                               </Button>
                             </div>
                           </TooltipTrigger>
@@ -586,7 +799,13 @@ export function CheckoutContent() {
                           >
                             <div className="flex items-center gap-2 text-amber-800 dark:text-amber-200">
                               <AlertCircle className="h-4 w-4" />
-                              <span>Please validate your points first</span>
+                              <span>
+                                {hasInvalidatedPoints && hasInvalidatedCoupon
+                                  ? "Please validate your points and coupon first"
+                                  : hasInvalidatedPoints
+                                  ? "Please validate your points first"
+                                  : "Please validate your coupon first"}
+                              </span>
                             </div>
                           </TooltipContent>
                         </Tooltip>
@@ -605,10 +824,7 @@ export function CheckoutContent() {
                           ) : (
                             <>
                               <CreditCard className="mr-2 h-4 w-4" />
-                              Pay Now -{" "}
-                              {validationData
-                                ? validationData.currencyData.code
-                                : currencySymbol.KWD}
+                              Pay Now - {currencySymbol.KWD}
                               {finalAmount.toFixed(2)}
                             </>
                           )}
@@ -641,6 +857,8 @@ export function CheckoutContent() {
         pointsUsed={validationData?.points}
         discount={validationData?.discount}
         currencyCode={validationData?.currencyData.code}
+        couponCode={couponValidationData?.couponCode}
+        couponDiscount={couponValidationData?.discount}
       />
     </TooltipProvider>
   );

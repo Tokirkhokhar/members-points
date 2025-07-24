@@ -15,6 +15,8 @@ import {
   X,
   ShoppingBag,
   ShoppingCart,
+  Gift,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CartDrawer } from "../cart/cart-drawer";
@@ -55,9 +57,24 @@ export function MainLayout({ children }: MainLayoutProps) {
       icon: <ShoppingBag className="h-5 w-5 mr-2" />,
     },
     {
+      href: "/rewards-catalog",
+      label: "Rewards Catalog",
+      icon: <Gift className="h-5 w-5 mr-2" />,
+    },
+    {
       href: "/dashboard",
-      label: "Dashboard",
+      label: "My Points",
       icon: <LayoutDashboard className="h-5 w-5 mr-2" />,
+    },
+    {
+      href: "/rewards",
+      label: "My Rewards",
+      icon: <Gift className="h-5 w-5 mr-2" />,
+    },
+    {
+      href: "/redemption-history",
+      label: "Redemption History",
+      icon: <History className="h-5 w-5 mr-2" />,
     },
     {
       href: "/profile",

@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 
 interface Props {
   targetNumber: number;
+  className?: string;
 }
 
-export const CountUp = ({ targetNumber }: Props) => {
+export const CountUp = ({ targetNumber, className }: Props) => {
   const [count, setCount] = useState(0.0);
 
   // Reset count whenever targetNumber changes
@@ -22,5 +23,5 @@ export const CountUp = ({ targetNumber }: Props) => {
     }
   }, [count, targetNumber]);
 
-  return <span>{count.toFixed(2)}</span>;
+  return <span className={className}>{count.toFixed(2)}</span>;
 };

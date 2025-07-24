@@ -4,6 +4,7 @@ const nextConfig = {
     domains: [
       "images.pexels.com",
       "images.unsplash.com",
+      "imagedelivery.net",
       "localhost",
       "api.memberspoint.com",
     ],
