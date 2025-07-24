@@ -134,7 +134,7 @@ export function CheckoutContent() {
 
     try {
       const response = await validatePoints({
-        amount: totalPrice - couponDiscount,
+        amount: parseFloat((totalPrice - couponDiscount).toFixed(2)),
         points: pointsToRedeem,
       });
 
@@ -175,7 +175,7 @@ export function CheckoutContent() {
     try {
       const response = await validateCoupon({
         couponCode: couponCode.trim(),
-        amount: Number((totalPrice - pointsDiscount).toFixed(2)),
+        amount: parseFloat((totalPrice - pointsDiscount).toFixed(2)),
       });
 
       if (response.isValid) {
@@ -277,7 +277,7 @@ export function CheckoutContent() {
       if (isCouponValidated && couponValidationData?.isValid) {
         couponRedemptionData = await redeemCoupon({
           couponCode: couponValidationData.couponCode,
-          amount: totalPrice,
+          amount: parseFloat(totalPrice?.toFixed(2)),
           additionalInfo: `Transaction: ${documentNumber}`,
         });
       }
@@ -313,7 +313,7 @@ export function CheckoutContent() {
               pointsUsed: blockedPoints,
             }),
             conversionRate: validationData?.conversionRate,
-            actualAmount: totalPrice,
+            actualAmount: totalPrice?.toFixed(2),
             discountedAmount: finalAmount,
             discountAmount: Number((totalPrice - finalAmount).toFixed(2)),
             ...(isCouponValidated &&
@@ -625,7 +625,7 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-medium text-blue-800 dark:text-blue-200">
                                 {currencySymbol.KWD}
-                                {totalPrice}
+                                {totalPrice?.toFixed(2)}
                               </span>
                             </div>
                             <div className="flex justify-between">
@@ -742,7 +742,7 @@ export function CheckoutContent() {
                               </span>
                               <span className="font-medium text-green-800 dark:text-green-200">
                                 {validationData.currencyData.code}{" "}
-                                {totalPrice - couponDiscount}
+                                {(totalPrice - couponDiscount).toFixed(2)}
                               </span>
                             </div>
                             <div className="flex justify-between">
