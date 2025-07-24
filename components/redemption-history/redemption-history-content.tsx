@@ -269,7 +269,7 @@ export function RedemptionHistoryContent() {
                         </div>
 
                         <div>
-                          <p className="text-muted-foreground">Issued Date</p>
+                          <p className="text-muted-foreground">Issued On</p>
                           <p className="font-medium">
                             {format(
                               new Date(redemption.issuedAt),
@@ -281,7 +281,7 @@ export function RedemptionHistoryContent() {
 
                       <div className="space-y-3">
                         <div>
-                          <p className="text-muted-foreground">Redeemed Date</p>
+                          <p className="text-muted-foreground">Redeemed On</p>
                           <p className="font-medium">
                             {format(
                               new Date(redemption.redeemedAt),

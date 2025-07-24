@@ -348,7 +348,7 @@ export function RewardsContent() {
                       </div>
 
                       <div>
-                        <p className="text-muted-foreground">Issued Date</p>
+                        <p className="text-muted-foreground">Issued On</p>
                         <p className="font-medium">
                           {format(
                             new Date(reward.issuedAt),
@@ -412,7 +412,7 @@ export function RewardsContent() {
                           <>
                             <div>
                               <p className="text-muted-foreground">
-                                Redeemed Date
+                                Redeemed On
                               </p>
                               <p className="font-medium">
                                 {format(

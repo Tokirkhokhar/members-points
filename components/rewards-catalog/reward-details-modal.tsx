@@ -148,7 +148,7 @@ export function RewardDetailsModal({
               </div>
 
               <div>
-                <p className="text-muted-foreground mb-1">Created Date</p>
+                <p className="text-muted-foreground mb-1">Created On</p>
                 <p className="font-medium">
                   {format(new Date(reward.createdAt), "MMM dd, yyyy")}
                 </p>
