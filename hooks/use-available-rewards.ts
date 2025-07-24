@@ -32,6 +32,8 @@ export type AvailableReward = {
   };
   catalogVisibility: {
     allTime: boolean;
+    startDate: string;
+    endDate: string;
   };
   currencyData: {
     id: string;
