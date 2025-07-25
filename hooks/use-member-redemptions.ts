@@ -16,6 +16,7 @@ export type MemberRedemption = {
   transactionReference: string | null;
   currency: string;
   redeemedAt: string;
+  rewardName?: string;
   reward: {
     name: string;
     nameAr: string;

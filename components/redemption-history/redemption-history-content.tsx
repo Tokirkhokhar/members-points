@@ -39,7 +39,12 @@ export function RedemptionHistoryContent() {
 
   const filteredRedemptions = redemptions.filter(
     (redemption) =>
-      redemption.reward.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      redemption?.rewardName
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      redemption.reward?.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       redemption.couponCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
       redemption.reference.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -201,10 +206,10 @@ export function RedemptionHistoryContent() {
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <h3 className="font-semibold text-lg leading-tight">
-                          {redemption.reward.name}
+                          {redemption.rewardName || redemption?.reward?.name}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {redemption.reward.nameAr}
+                          {redemption?.reward?.nameAr}
                         </p>
                       </div>
                       <Badge className="gap-1 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
