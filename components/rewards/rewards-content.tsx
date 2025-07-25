@@ -299,14 +299,22 @@ export function RewardsContent() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-semibold text-lg leading-tight">
-                          {reward.reward.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {reward.reward.nameAr}
-                        </p>
-                      </div>
+                      {reward?.reward?.name ? (
+                        <div>
+                          <h3 className="font-semibold text-lg leading-tight">
+                            {reward.reward.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            {reward.reward.nameAr}
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <h3 className="font-semibold text-lg leading-tight">
+                            {reward.rewardName}
+                          </h3>
+                        </div>
+                      )}
                       <Badge
                         className={cn("gap-1", getStatusColor(reward.status))}
                       >

@@ -34,6 +34,7 @@ export type MemberReward = {
     name: string;
     nameAr: string;
   };
+  rewardName?: string;
   redeemedAt?: string;
   expiredAt?: string;
   expirationDate: string;
