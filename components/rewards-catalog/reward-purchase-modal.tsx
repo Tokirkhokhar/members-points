@@ -94,6 +94,11 @@ export function RewardPurchaseModal({
     setPointsToRedeem(0);
   };
 
+  const handleClose = () => {
+    onOpenChange(false);
+    setPointsToRedeem(0);
+  };
+
   const isUnitConversion =
     reward.couponType === RewardCouponType.UnitConversion;
   const isRedeemable = isUnitConversion
@@ -103,7 +108,7 @@ export function RewardPurchaseModal({
   const isDisabled = isLoading || !isRedeemable;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
