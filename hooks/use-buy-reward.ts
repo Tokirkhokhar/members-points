@@ -10,7 +10,10 @@ export const useBuyReward = () => {
   const [data, setData] = useState<BuyRewardResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const buyReward = async (rewardId: string): Promise<BuyRewardResponse> => {
+  const buyReward = async (
+    rewardId: string,
+    points?: number
+  ): Promise<BuyRewardResponse> => {
     try {
       const token = localStorage.getItem("auth_token");
       setIsLoading(true);
@@ -18,7 +21,7 @@ export const useBuyReward = () => {
 
       const { data: response } = await postReq(
         `members/${rewardId}/buy`,
-        {},
+        { ...(points && { points }) },
         {
           headers: {
             Authorization: `Bearer ${token}`,

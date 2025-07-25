@@ -93,7 +93,7 @@ export function RewardsCatalogContent() {
       case RewardCouponType.Value:
         return `${value} ${reward.currencyData.code} OFF`;
       case RewardCouponType.UnitConversion:
-        return `${reward.pointValue} Units`;
+        return "";
       default:
         return `${value} ${reward.currencyData.code}`;
     }
@@ -199,11 +199,13 @@ export function RewardsCatalogContent() {
                     )}
 
                     {/* Reward Value Badge */}
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold">
-                        Reward: {formatRewardValue(reward)}
-                      </Badge>
-                    </div>
+                    {reward.couponType !== RewardCouponType.UnitConversion && (
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold">
+                          Reward: {formatRewardValue(reward)}
+                        </Badge>
+                      </div>
+                    )}
 
                     {/* Categories */}
                     {reward.categories.length > 0 && (
@@ -246,13 +248,17 @@ export function RewardsCatalogContent() {
                       <div className="flex items-center gap-1">
                         <Tag className="h-4 w-4 text-amber-500" />
                         <span className="font-medium text-amber-600 dark:text-amber-400">
-                          {parseFloat(reward.costInPoints)} Points
+                          {reward.couponType === RewardCouponType.UnitConversion
+                            ? `${reward.pointConversionRate?.points} Points = ${reward.pointConversionRate?.currency} ${reward.currencyData.code}`
+                            : `${reward.costInPoints} Points`}
                         </span>
                       </div>
-                      <div className="text-muted-foreground">
-                        Price: {reward.currencyData.code}&nbsp;
-                        {parseFloat(reward.price).toFixed(2)}
-                      </div>
+                      {reward.price ? (
+                        <div className="text-muted-foreground">
+                          Price: {reward.currencyData.code}&nbsp;
+                          {parseFloat(reward.price).toFixed(2)}
+                        </div>
+                      ) : null}
                     </div>
                     {/* Usage Limit */}
                     <div className="text-xs text-muted-foreground">

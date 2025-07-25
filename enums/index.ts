@@ -11,3 +11,9 @@ export enum PointsType {
   Locked = "locked",
   Spending = "spending",
 }
+
+export enum PointConversionRounding {
+  None = "none",
+  RoundDown = "roundDown",
+  RoundUp = "roundUp",
+}

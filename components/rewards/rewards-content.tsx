@@ -336,16 +336,32 @@ export function RewardsContent() {
                         </div>
                       </div>
 
-                      <div>
-                        <p className="text-muted-foreground">Value</p>
-                        <p className="font-medium">
-                          {reward.couponType === "percentage"
-                            ? `${reward.rewardValue}%`
-                            : reward.couponType === "value"
-                            ? `KWD ${reward.rewardValue}`
-                            : "Free Item"}
-                        </p>
-                      </div>
+                      {reward.couponType !== RewardCouponType.UnitConversion ? (
+                        <div>
+                          <p className="text-muted-foreground">Reward Value</p>
+                          <p className="font-medium">
+                            {reward.couponType === RewardCouponType.Percentage
+                              ? `${reward.rewardValue}%`
+                              : reward.couponType === RewardCouponType.Value
+                              ? `KWD ${reward.rewardValue}`
+                              : "-"}
+                          </p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-muted-foreground">
+                            Conversion Rate
+                          </p>
+                          <p className="font-medium">
+                            {reward.pointConversionRate?.points} Points ={" "}
+                            {reward.pointConversionRate?.currency}{" "}
+                            {reward.currencyData.code}
+                          </p>
+                          <p className="font-medium capitalize">
+                            Rounding: {reward.pointConversionRounding}
+                          </p>
+                        </div>
+                      )}
 
                       <div>
                         <p className="text-muted-foreground">Issued On</p>

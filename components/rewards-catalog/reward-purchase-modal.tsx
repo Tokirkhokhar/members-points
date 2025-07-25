@@ -24,6 +24,8 @@ import { useBuyReward } from "@/hooks/use-buy-reward";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RewardCouponType } from "@/hooks/use-members-rewards";
+import { Input } from "../ui/input";
 
 type RewardPurchaseModalProps = {
   open: boolean;
@@ -41,17 +43,21 @@ export function RewardPurchaseModal({
   const { buyReward, isLoading } = useBuyReward();
   const { toast } = useToast();
 
-  if (!reward) return null;
+  const [pointsToRedeem, setPointsToRedeem] = useState<number>(0);
+
+  if (!reward) {
+    return null;
+  }
 
   const formatRewardValue = (reward: AvailableReward) => {
     const value = parseFloat(reward.rewardValue);
     switch (reward.couponType) {
-      case "percentage":
+      case RewardCouponType.Percentage:
         return `${value}% OFF`;
-      case "value":
+      case RewardCouponType.Value:
         return `${value} ${reward.currencyData.code} OFF`;
-      case "unitConversion":
-        return `${value} Units`;
+      case RewardCouponType.UnitConversion:
+        return `${reward.pointConversionRate?.points} Points = ${reward.pointConversionRate?.currency} ${reward.currencyData.code}`;
       default:
         return `${value} ${reward.currencyData.code}`;
     }
@@ -59,7 +65,14 @@ export function RewardPurchaseModal({
 
   const handleConfirmPurchase = async () => {
     try {
-      await buyReward(reward.id);
+      if (
+        reward.couponType === RewardCouponType.UnitConversion &&
+        pointsToRedeem > 0
+      ) {
+        await buyReward(reward.id, pointsToRedeem);
+      } else {
+        await buyReward(reward.id);
+      }
       toast({
         title: "Purchase successful!",
         description: `${reward.name} has been added to your rewards.`,
@@ -78,7 +91,16 @@ export function RewardPurchaseModal({
 
   const handleCancel = () => {
     onOpenChange(false);
+    setPointsToRedeem(0);
   };
+
+  const isUnitConversion =
+    reward.couponType === RewardCouponType.UnitConversion;
+  const isRedeemable = isUnitConversion
+    ? !!pointsToRedeem
+    : !!reward?.costInPoints;
+
+  const isDisabled = isLoading || !isRedeemable;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -178,13 +200,15 @@ export function RewardPurchaseModal({
               Purchase Summary
             </h4>
             <div className="space-y-2 p-4 rounded-lg bg-muted/30">
-              <div className="flex justify-between text-sm">
-                <span>Reward Value</span>
-                <span>
-                  {reward.currencyData.code}{" "}
-                  {parseFloat(reward.price).toFixed(2)}
-                </span>
-              </div>
+              {reward.price ? (
+                <div className="flex justify-between text-sm">
+                  <span>Reward Value</span>
+                  <span>
+                    {reward.currencyData.code}{" "}
+                    {parseFloat(reward.price).toFixed(2)}
+                  </span>
+                </div>
+              ) : null}
 
               <div className="flex justify-between text-sm">
                 <span>Usage Limit</span>
@@ -193,14 +217,28 @@ export function RewardPurchaseModal({
 
               <Separator />
 
-              <div className="flex justify-between text-base font-semibold">
+              <div className="flex justify-between items-center text-base font-semibold">
                 <div className="flex items-center gap-1">
                   <Tag className="h-4 w-4 text-amber-500" />
                   <span>Points Required</span>
                 </div>
-                <span className="text-amber-600 dark:text-amber-400">
-                  {parseFloat(reward.costInPoints)} Points
-                </span>
+                {reward.couponType === RewardCouponType.UnitConversion ? (
+                  <Input
+                    type="number"
+                    placeholder="Enter points"
+                    value={pointsToRedeem || ""}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value) || 0;
+                      setPointsToRedeem(value);
+                    }}
+                    min="0"
+                    className="text-center w-48"
+                  />
+                ) : (
+                  <span className="text-amber-600 dark:text-amber-400">
+                    {parseFloat(reward.costInPoints)} Points
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -209,8 +247,13 @@ export function RewardPurchaseModal({
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>{parseFloat(reward.costInPoints)} points</strong> will be
-              deducted from your account if you confirm this purchase.
+              {reward.couponType === RewardCouponType.UnitConversion ? (
+                <strong>{pointsToRedeem} points</strong>
+              ) : (
+                <strong>{parseFloat(reward.costInPoints)} points</strong>
+              )}
+              &nbsp; will be deducted from your account if you confirm this
+              purchase.
             </AlertDescription>
           </Alert>
 
@@ -227,7 +270,7 @@ export function RewardPurchaseModal({
             </Button>
             <Button
               onClick={handleConfirmPurchase}
-              disabled={isLoading}
+              disabled={isDisabled}
               className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
             >
               {isLoading ? (

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getReq } from "@/config/request";
+import { PointConversionRounding } from "@/enums";
 
 export type RewardCouponType = "percentage" | "unitConversion" | "value";
 export type RewardType = "coupon" | "product" | "service";
@@ -15,7 +16,8 @@ export type AvailableReward = {
   type: RewardType;
   couponType: RewardCouponType;
   rewardValue: string;
-  pointValue: string | null;
+  pointConversionRate?: { points: number; currency: number };
+  pointConversionRounding?: PointConversionRounding;
   costInPoints: string;
   price: string;
   logo: string;
