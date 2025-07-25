@@ -39,6 +39,9 @@ export type MemberReward = {
   expiredAt?: string;
   expirationDate: string;
   transactionReference?: string;
+  redemptionDetails?: {
+    rewardValue: number;
+  };
   currencyData: {
     id: string;
     code: string;

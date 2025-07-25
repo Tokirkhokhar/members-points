@@ -406,7 +406,7 @@ export function RewardsContent() {
                     </div>
 
                     <div className="mt-3 pt-3 border-t">
-                      <div className="flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-6 text-sm">
                         {reward.reference && (
                           <div>
                             <p className="text-muted-foreground">
@@ -472,6 +472,24 @@ export function RewardsContent() {
                             )}
                           </>
                         )}
+
+                        {reward.couponType ===
+                          RewardCouponType.UnitConversion &&
+                          reward?.status === IssuedRewardsStatus.Redeemed && (
+                            <div>
+                              <p className="text-muted-foreground">
+                                Converted Reward Value
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <p>
+                                  {reward?.currencyData?.code} &nbsp;
+                                  {reward?.redemptionDetails?.rewardValue?.toFixed(
+                                    2
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
