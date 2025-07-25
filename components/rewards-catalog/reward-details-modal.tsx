@@ -46,8 +46,6 @@ export function RewardDetailsModal({
         return `${value}% OFF`;
       case RewardCouponType.Value:
         return `${value} ${reward.currencyData.code} OFF`;
-      case RewardCouponType.UnitConversion:
-        return `${value} Units`;
       default:
         return `${value} ${reward.currencyData.code}`;
     }
@@ -110,26 +108,59 @@ export function RewardDetailsModal({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/30">
-              <div className="text-center">
-                <div className="flex items-center justify-center gap-1 mb-1">
-                  <Tag className="h-4 w-4 text-amber-500" />
-                  <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                    {parseFloat(reward.costInPoints)}
-                  </span>
+            {reward.couponType === RewardCouponType.UnitConversion ? (
+              <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/30">
+                <div className="text-center border-r-2 border-black">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Tag className="h-4 w-4 text-amber-500" />
+                    <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                      {reward.pointConversionRate?.points} Points&nbsp; = &nbsp;
+                      {reward.pointConversionRate?.currency}&nbsp;
+                      {reward.currencyData.code}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Points Conversion Rate
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">Points Required</p>
+                <div className="text-center flex items-center justify-center">
+                  <p className="text-xs text-muted-foreground">
+                    Price-Based Purchase Not Allowed
+                  </p>
+                </div>
               </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold">
-                  {reward.currencyData.code}&nbsp;
-                  {parseFloat(reward.price).toFixed(2)}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Price in {reward.currencyData.code}
-                </p>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/30">
+                <div className="text-center border-r-2 border-black">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Tag className="h-4 w-4 text-amber-500" />
+                    <span className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+                      {parseFloat(reward.costInPoints)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Points Required
+                  </p>
+                </div>
+                <div className="text-center flex items-center justify-center">
+                  {reward.price ? (
+                    <>
+                      <p className="text-2xl font-bold">
+                        {reward.currencyData.code}&nbsp;
+                        {parseFloat(reward.price).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Price in {reward.currencyData.code}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Price-Based Purchase Not Allowed
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <Separator />

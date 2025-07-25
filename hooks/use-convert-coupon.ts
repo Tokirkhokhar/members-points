@@ -1,27 +1,32 @@
 import { useState } from "react";
 import { postReq } from "@/config/request";
 
-export type BuyRewardResponse = {
+export type ConvertCouponPayload = {
+  points: number;
+  walletId?: string;
+};
+
+export type ConvertCouponResponse = {
   message: string;
 };
 
-export const useBuyReward = () => {
+export const useConvertCoupon = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<BuyRewardResponse | null>(null);
+  const [data, setData] = useState<ConvertCouponResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const buyReward = async (
-    rewardId: string,
-    points?: number
-  ): Promise<BuyRewardResponse> => {
+  const convertCoupon = async (
+    issuedRewardId: string,
+    payload: ConvertCouponPayload
+  ): Promise<ConvertCouponResponse> => {
     try {
       const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        `members/${rewardId}/buy`,
-        { ...(points && { points }) },
+        `members/${issuedRewardId}/convert`,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -29,31 +34,27 @@ export const useBuyReward = () => {
           },
         }
       );
-      console.log("🚀 ~ buyReward ~ response:", response);
 
-      if (response?.message) {
+      if (response) {
         setData(response);
         return response;
-      } else {
-        throw new Error("Invalid response format");
       }
+      throw new Error("Invalid response format");
     } catch (err: any) {
       const errorMessage =
-        err.response?.data?.message ||
-        err.message ||
-        "Failed to purchase reward";
+        err.response?.data?.message || "Failed to convert coupon";
       setError(errorMessage);
-      console.error("Buy reward error:", errorMessage);
+      console.error("Coupon conversion error:", err);
       throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const resetState = () => {
+  const resetConversion = () => {
     setData(null);
     setError(null);
   };
 
-  return { buyReward, isLoading, data, error, resetState };
+  return { convertCoupon, resetConversion, isLoading, data, error };
 };

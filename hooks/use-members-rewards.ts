@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getReq } from "@/config/request";
+import { PointConversionRounding } from "@/enums";
 
 export enum IssuedRewardsStatus {
   Expired = "expired",
@@ -22,16 +23,29 @@ export type MemberReward = {
   couponCode: string;
   status: IssuedRewardsStatus;
   couponType: RewardCouponType;
-  rewardValue: number;
+  rewardValue?: number;
+  pointConversionRate?: {
+    points: number;
+    currency: number;
+  };
+  pointConversionRounding: PointConversionRounding;
   createdAt: string;
   reward: {
     name: string;
     nameAr: string;
   };
+  rewardName?: string;
   redeemedAt?: string;
   expiredAt?: string;
   expirationDate: string;
   transactionReference?: string;
+  redemptionDetails?: {
+    rewardValue: number;
+  };
+  currencyData: {
+    id: string;
+    code: string;
+  };
 };
 
 interface Response {
