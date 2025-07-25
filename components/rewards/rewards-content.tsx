@@ -45,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { CountUp } from "../ui/countUp";
 import { StatsCard } from "../ui/StatsCard";
+import { ConvertCouponModal } from "./convert-coupon-modal";
 
 export function RewardsContent() {
   const {
@@ -55,6 +56,9 @@ export function RewardsContent() {
   } = useMemberRewards();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
+  const [convertModalOpen, setConvertModalOpen] = useState(false);
+  const [selectedReward, setSelectedReward] = useState<any>(null);
+
   // const [statusFilter, setStatusFilter] = useState<IssuedRewardsStatus | "all">(
   //   "all"
   // );
@@ -128,6 +132,11 @@ export function RewardsContent() {
     });
   };
 
+  const handleConvertCoupon = (reward: any) => {
+    setSelectedReward(reward);
+    setConvertModalOpen(true);
+  };
+
   //   use useCallback
   const { data: rewardStats, refetch: refetchStats } = useRewardStatistics();
 
@@ -135,6 +144,11 @@ export function RewardsContent() {
     refreshRewardsApiCall();
     refetchStats();
   }, [refetchStats, getMemberRewards]);
+
+  const handleConvertSuccess = () => {
+    // Refresh rewards after successful conversion
+    refreshRewards();
+  };
 
   useEffect(() => {
     getMemberRewards({ page, limit: 10, search: debounceSearchText });
@@ -315,34 +329,53 @@ export function RewardsContent() {
                           </h3>
                         </div>
                       )}
-                      <Badge
-                        className={cn("gap-1", getStatusColor(reward.status))}
-                      >
-                        {getStatusIcon(reward.status)}
-                        {reward.status.charAt(0).toUpperCase() +
-                          reward.status.slice(1)}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        {reward.couponType ===
+                          RewardCouponType.UnitConversion &&
+                          reward.status === IssuedRewardsStatus.Issued && (
+                            <Button
+                              size="sm"
+                              onClick={() => handleConvertCoupon(reward)}
+                              className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                            >
+                              Convert Coupon
+                            </Button>
+                          )}
+                        <Badge
+                          className={cn("gap-1", getStatusColor(reward.status))}
+                        >
+                          {getStatusIcon(reward.status)}
+                          {reward.status.charAt(0).toUpperCase() +
+                            reward.status.slice(1)}
+                        </Badge>
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Coupon Code</p>
-                        <div className="flex items-center gap-2">
-                          <code className="bg-muted px-2 py-1 rounded font-mono text-xs">
-                            {reward.couponCode}
-                          </code>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6"
-                            onClick={() =>
-                              copyToClipboard(reward.couponCode, "Coupon code")
-                            }
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
+                      {reward?.couponType !==
+                      RewardCouponType.UnitConversion ? (
+                        <div>
+                          <p className="text-muted-foreground">Coupon Code</p>
+                          <div className="flex items-center gap-2">
+                            <code className="bg-muted px-2 py-1 rounded font-mono text-xs">
+                              {reward.couponCode}
+                            </code>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-6 w-6"
+                              onClick={() =>
+                                copyToClipboard(
+                                  reward.couponCode,
+                                  "Coupon code"
+                                )
+                              }
+                            >
+                              <Copy className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
-                      </div>
+                      ) : null}
 
                       {reward.couponType !== RewardCouponType.UnitConversion ? (
                         <div>
@@ -365,11 +398,16 @@ export function RewardsContent() {
                             {reward.pointConversionRate?.currency}{" "}
                             {reward.currencyData.code}
                           </p>
-                          <p className="font-medium capitalize">
-                            Rounding: {reward.pointConversionRounding}
-                          </p>
                         </div>
                       )}
+                      {reward.couponType === RewardCouponType.UnitConversion ? (
+                        <div>
+                          <p className="text-muted-foreground">Rounding</p>
+                          <p className="font-medium capitalize">
+                            {reward.pointConversionRounding}
+                          </p>
+                        </div>
+                      ) : null}
 
                       <div>
                         <p className="text-muted-foreground">Issued On</p>
@@ -525,6 +563,15 @@ export function RewardsContent() {
           </div>
         )}
       </div>
+      <ConvertCouponModal
+        open={convertModalOpen}
+        onOpenChange={setConvertModalOpen}
+        issuedRewardId={selectedReward?.id || ""}
+        conversionRate={selectedReward?.pointConversionRate}
+        currencyCode={selectedReward?.currencyData?.code}
+        selectedReward={selectedReward}
+        onSuccess={handleConvertSuccess}
+      />
     </div>
   );
 }
