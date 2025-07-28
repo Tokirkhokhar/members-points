@@ -212,7 +212,7 @@ export function RedemptionHistoryContent() {
                           {redemption?.reward?.nameAr}
                         </p>
                       </div>
-                      <Badge className="gap-1 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                      <Badge className="gap-1 bg-green-100 hover:bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
                         <CheckCircle className="h-3 w-3" />
                         Redeemed
                       </Badge>

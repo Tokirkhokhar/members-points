@@ -101,13 +101,13 @@ export function RewardsContent() {
   const getStatusColor = (status: IssuedRewardsStatus) => {
     switch (status) {
       case IssuedRewardsStatus.Issued:
-        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+        return "bg-green-100 hover:bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
       case IssuedRewardsStatus.Redeemed:
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
+        return "bg-blue-100 hover:bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
       case IssuedRewardsStatus.Expired:
-        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+        return "bg-red-100 hover:bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+        return "bg-gray-100 hover:bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
     }
   };
 
@@ -342,7 +342,10 @@ export function RewardsContent() {
                             </Button>
                           )}
                         <Badge
-                          className={cn("gap-1", getStatusColor(reward.status))}
+                          className={cn(
+                            "gap-1 ",
+                            getStatusColor(reward.status)
+                          )}
                         >
                           {getStatusIcon(reward.status)}
                           {reward.status.charAt(0).toUpperCase() +
