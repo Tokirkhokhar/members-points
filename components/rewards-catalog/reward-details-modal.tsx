@@ -184,6 +184,27 @@ export function RewardDetailsModal({
                   {format(new Date(reward.createdAt), "MMM dd, yyyy")}
                 </p>
               </div>
+              {reward?.minimumAmount && (
+                <div>
+                  <p className="text-muted-foreground mb-1">
+                    Minimum Purchase Amount
+                  </p>
+                  <p className="font-medium">
+                    {reward.minimumAmount} {reward.currencyData.code}
+                  </p>
+                </div>
+              )}
+              {reward?.couponType === RewardCouponType.Percentage &&
+                reward?.amountCapLimit && (
+                  <div>
+                    <p className="text-muted-foreground mb-1">
+                      Maximum Discount Limit
+                    </p>
+                    <p className="font-medium">
+                      {reward.amountCapLimit} {reward.currencyData.code}
+                    </p>
+                  </div>
+                )}
             </div>
           </div>
 

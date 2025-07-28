@@ -19,6 +19,8 @@ export type AvailableReward = {
   pointConversionRate?: { points: number; currency: number };
   pointConversionRounding?: PointConversionRounding;
   costInPoints: string;
+  minimumAmount?: number;
+  amountCapLimit?: number;
   price: string;
   logo: string;
   currency: string;

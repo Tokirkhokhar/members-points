@@ -285,7 +285,7 @@ export function CheckoutContent() {
       // Create the transaction
       const transactionPayload: CreateTransactionPayload = {
         documentNumber,
-        purchasePlace: "MembersPoint Store",
+        purchasePlace: "Member Portal",
         purchasedAt: new Date().toISOString(),
         memberId: user!.id,
         ...(couponRedemptionData && {

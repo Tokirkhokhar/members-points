@@ -342,10 +342,7 @@ export function RewardsContent() {
                             </Button>
                           )}
                         <Badge
-                          className={cn(
-                            "gap-1 ",
-                            getStatusColor(reward.status)
-                          )}
+                          className={cn("gap-1", getStatusColor(reward.status))}
                         >
                           {getStatusIcon(reward.status)}
                           {reward.status.charAt(0).toUpperCase() +
