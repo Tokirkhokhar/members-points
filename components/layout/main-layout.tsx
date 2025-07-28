@@ -3,10 +3,6 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ModeToggle } from "@/components/mode-toggle";
-import { useAuth } from "@/contexts/auth-context";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   User,
@@ -17,12 +13,17 @@ import {
   ShoppingCart,
   Gift,
   History,
+  Trophy,
 } from "lucide-react";
+import { ModeToggle } from "@/components/mode-toggle";
+import { useAuth } from "@/contexts/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CartDrawer } from "../cart/cart-drawer";
-import { Badge } from "../ui/badge";
 import { useCart } from "@/contexts/cart-context";
+import { CartDrawer } from "../cart/cart-drawer";
 import { TooltipProvider } from "../ui/tooltip";
+import { Badge } from "../ui/badge";
 
 type MainLayoutProps = {
   children: React.ReactNode;
@@ -106,7 +107,10 @@ export function MainLayout({ children }: MainLayoutProps) {
           <div className="container flex h-16 items-center justify-between">
             <div className="flex items-center gap-6">
               <Link href="/products" className="flex items-center gap-2">
-                <span className="text-xl font-bold">Points Center</span>
+                <span className="flex items-center gap-2 text-xl font-bold whitespace-nowrap">
+                  <Trophy className="h-5 w-5 text-primary" />
+                  Loyalty Center
+                </span>
               </Link>
 
               <nav className="hidden md:flex items-center gap-4">
@@ -242,7 +246,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         <footer className="section py-6 border-t">
           <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Points Center. All rights reserved.
+              © {new Date().getFullYear()} Loyalty Center. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
               <Link

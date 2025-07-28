@@ -68,7 +68,7 @@ export default function Home() {
       <footer className="section py-6 border-t">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Points Center. All rights reserved.
+            © {new Date().getFullYear()} Loyalty Center. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link
