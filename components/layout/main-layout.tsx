@@ -14,6 +14,8 @@ import {
   Gift,
   History,
   Trophy,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useAuth } from "@/contexts/auth-context";
@@ -22,7 +24,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/cart-context";
 import { CartDrawer } from "../cart/cart-drawer";
-import { TooltipProvider } from "../ui/tooltip";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../ui/tooltip";
 import { Badge } from "../ui/badge";
 
 type MainLayoutProps = {
@@ -36,6 +43,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   const { getTotalItems } = useCart();
   const totalItems = getTotalItems();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -56,32 +64,32 @@ export function MainLayout({ children }: MainLayoutProps) {
     {
       href: "/products",
       label: "Products",
-      icon: <ShoppingBag className="h-5 w-5 mr-2" />,
+      icon: <ShoppingBag className="h-5 w-5" />,
     },
     {
       href: "/rewards-catalog",
       label: "Rewards Catalog",
-      icon: <Gift className="h-5 w-5 mr-2" />,
+      icon: <Gift className="h-5 w-5" />,
     },
     {
       href: "/dashboard",
       label: "My Points",
-      icon: <LayoutDashboard className="h-5 w-5 mr-2" />,
+      icon: <LayoutDashboard className="h-5 w-5" />,
     },
     {
       href: "/rewards",
       label: "My Rewards",
-      icon: <Gift className="h-5 w-5 mr-2" />,
+      icon: <Gift className="h-5 w-5" />,
     },
     {
       href: "/redemption-history",
       label: "Redemption History",
-      icon: <History className="h-5 w-5 mr-2" />,
+      icon: <History className="h-5 w-5" />,
     },
     {
       href: "/profile",
       label: "Profile",
-      icon: <User className="h-5 w-5 mr-2" />,
+      icon: <User className="h-5 w-5" />,
     },
   ];
 
@@ -94,128 +102,141 @@ export function MainLayout({ children }: MainLayoutProps) {
     : "U";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex">
       <TooltipProvider delayDuration={100}>
-        <header
+        {/* Desktop Sidebar */}
+        <aside
           className={cn(
-            "section sticky top-0 z-50 w-full transition-all duration-200",
-            scrolled
-              ? "bg-background/95 backdrop-blur-sm border-b"
-              : "bg-transparent"
+            "hidden md:flex flex-col bg-card border-r transition-all duration-300 ease-in-out",
+            isSidebarCollapsed ? "w-16" : "w-64"
           )}
         >
-          <div className="container flex h-16 items-center justify-between">
-            <div className="flex items-center gap-6">
+          {/* Sidebar Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            {!isSidebarCollapsed && (
               <Link href="/products" className="flex items-center gap-2">
-                <span className="flex items-center gap-2 text-xl font-bold whitespace-nowrap">
-                  <Trophy className="h-5 w-5 text-primary" />
-                  Loyalty Center
-                </span>
+                <Trophy className="h-6 w-6 text-primary" />
+                <span className="text-lg font-bold">Loyalty Center</span>
               </Link>
+            )}
+            {isSidebarCollapsed && (
+              <Link
+                href="/products"
+                className="flex items-center justify-center w-full"
+              >
+                <Trophy className="h-6 w-6 text-primary" />
+              </Link>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className={cn("h-8 w-8", isSidebarCollapsed && "mx-auto")}
+            >
+              {isSidebarCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
 
-              <nav className="hidden md:flex items-center gap-4">
-                {navItems.map((item) => (
+          {/* Navigation */}
+          <nav className="flex-1 p-4 space-y-2">
+            {navItems.map((item) => (
+              <Tooltip key={item.href} delayDuration={0}>
+                <TooltipTrigger asChild>
                   <Link
-                    key={item.href}
                     href={item.href}
                     className={cn(
-                      "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                      "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium",
                       pathname === item.href
                         ? "bg-primary text-primary-foreground"
-                        : "hover:bg-accent hover:text-accent-foreground"
+                        : "hover:bg-accent hover:text-accent-foreground",
+                      isSidebarCollapsed && "justify-center"
                     )}
                   >
                     {item.icon}
-                    {item.label}
+                    {!isSidebarCollapsed && <span>{item.label}</span>}
                   </Link>
-                ))}
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <ModeToggle />
-
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative"
-                onClick={() => setIsCartOpen(true)}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {totalItems > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                  >
-                    {totalItems}
-                  </Badge>
+                </TooltipTrigger>
+                {isSidebarCollapsed && (
+                  <TooltipContent side="right">
+                    <p>{item.label}</p>
+                  </TooltipContent>
                 )}
-              </Button>
+              </Tooltip>
+            ))}
+          </nav>
+        </aside>
 
-              <div className="hidden md:flex items-center gap-4">
-                {user && (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar} alt={user.firstName} />
-                        <AvatarFallback>{initials}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium">
-                        {user.firstName} {user.lastName}
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={logout}
-                      aria-label="Logout"
-                    >
-                      <LogOut className="h-5 w-5" />
-                    </Button>
-                  </>
-                )}
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col">
+          {/* Top Header */}
+          <header
+            className={cn(
+              "section sticky top-0 z-50 w-full transition-all duration-200 md:pl-0",
+              scrolled
+                ? "bg-background/95 backdrop-blur-sm border-b"
+                : "bg-transparent"
+            )}
+          >
+            <div className="container flex h-16 items-center justify-between">
+              {/* Mobile Menu Button and Logo */}
+              <div className="flex items-center gap-4 md:hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                >
+                  {isMobileMenuOpen ? (
+                    <X className="h-5 w-5" />
+                  ) : (
+                    <Menu className="h-5 w-5" />
+                  )}
+                </Button>
+                <Link href="/products" className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-primary" />
+                  <span className="text-lg font-bold">Loyalty Center</span>
+                </Link>
               </div>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              >
-                {isMobileMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
-              </Button>
-            </div>
-          </div>
-          <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
-        </header>
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="fixed inset-0 top-16 z-40 bg-background md:hidden">
-            <nav className="container py-4 flex flex-col gap-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center px-4 py-3 text-base font-medium rounded-md",
-                    pathname === item.href
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-accent hover:text-accent-foreground"
-                  )}
-                >
-                  {item.icon}
-                  {item.label}
-                </Link>
-              ))}
+              {/* Desktop: Empty space or breadcrumbs could go here */}
+              <div className="hidden md:block"></div>
 
-              {user && (
-                <div className="mt-4 pt-4 border-t">
-                  <div className="flex items-center gap-3 px-4 py-3">
+              {/* Right Side Actions */}
+              <div className="flex items-center gap-4">
+                <ModeToggle />
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  onClick={() => setIsCartOpen(true)}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  {totalItems > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                    >
+                      {totalItems}
+                    </Badge>
+                  )}
+                </Button>
+
+                {/* Mobile User Info */}
+                {user && (
+                  <div className="md:hidden">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.avatar} alt={user.firstName} />
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                  </div>
+                )}
+                {user && (
+                  <div className="flex hidden md:flex items-center gap-3 px-4 py-3">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user.avatar} alt={user.firstName} />
                       <AvatarFallback>{initials}</AvatarFallback>
@@ -229,47 +250,106 @@ export function MainLayout({ children }: MainLayoutProps) {
                       </p>
                     </div>
                   </div>
+                )}
+                {user && (
                   <Button
                     variant="ghost"
-                    className="w-full mt-2 justify-start text-destructive"
+                    className="w-auto mt-2 justify-end text-destructive"
                     onClick={logout}
                   >
                     <LogOut className="h-5 w-5 mr-2" />
                     Logout
                   </Button>
-                </div>
-              )}
-            </nav>
-          </div>
-        )}
-        <main className="section ">{children}</main>
-        <footer className="section py-6 border-t">
-          <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Loyalty Center. All rights reserved.
-            </p>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/terms"
-                className="text-sm text-muted-foreground hover:underline"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                href="/privacy"
-                className="text-sm text-muted-foreground hover:underline"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                href="/support"
-                className="text-sm text-muted-foreground hover:underline"
-              >
-                Support
-              </Link>
+                )}
+              </div>
             </div>
-          </div>
-        </footer>
+          </header>
+
+          {/* Mobile Navigation Overlay */}
+          {isMobileMenuOpen && (
+            <div className="fixed inset-0 top-16 z-40 bg-background md:hidden">
+              <nav className="container py-4 flex flex-col gap-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 text-base font-medium rounded-md",
+                      pathname === item.href
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-accent hover:text-accent-foreground"
+                    )}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Link>
+                ))}
+
+                {user && (
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user.avatar} alt={user.firstName} />
+                        <AvatarFallback>{initials}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">
+                          {user.firstName} {user.lastName}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      className="w-full mt-2 justify-start text-destructive"
+                      onClick={logout}
+                    >
+                      <LogOut className="h-5 w-5 mr-2" />
+                      Logout
+                    </Button>
+                  </div>
+                )}
+              </nav>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <main className="section flex-1">{children}</main>
+
+          {/* Footer */}
+          <footer className="section py-6 border-t">
+            <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} Loyalty Center. All rights
+                reserved.
+              </p>
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/terms"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
+                  Terms of Service
+                </Link>
+                <Link
+                  href="/privacy"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
+                  Privacy Policy
+                </Link>
+                <Link
+                  href="/support"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
+                  Support
+                </Link>
+              </div>
+            </div>
+          </footer>
+        </div>
+
+        <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
       </TooltipProvider>
     </div>
   );
