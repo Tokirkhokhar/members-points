@@ -254,7 +254,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 {user && (
                   <Button
                     variant="ghost"
-                    className="w-auto mt-2 justify-end text-destructive"
+                    className="w-auto mt-2 justify-end text-destructive dark:bg-destructive dark:text-white"
                     onClick={logout}
                   >
                     <LogOut className="h-5 w-5 mr-2" />
