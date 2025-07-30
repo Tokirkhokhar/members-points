@@ -118,10 +118,10 @@ export function ConvertCouponModal({
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500">
               <ArrowRightLeft className="h-6 w-6 text-white" />
             </div>
-            <DialogTitle className="text-xl font-semibold text-green-600">
+            <DialogTitle className="text-xl text-center font-semibold text-green-600">
               Conversion Successful!
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-center">
               Your points have been successfully converted to currency.
             </DialogDescription>
           </DialogHeader>
