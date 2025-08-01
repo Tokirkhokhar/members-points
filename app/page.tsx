@@ -65,7 +65,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="section py-6 border-t">
+      <footer className="section p-6 border-t">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Loyalty Center. All rights reserved.

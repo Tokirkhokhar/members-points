@@ -4,7 +4,7 @@ import { ProductGrid } from "@/components/products/product-grid";
 export default function ProductsPage() {
   return (
     <ProtectedRoute>
-      <div className="container py-8">
+      <div className="container p-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
             Welcome to Loyalty Center

@@ -80,7 +80,6 @@
     @apply bg-background text-foreground;
   }
   .section {
-    @apply flex justify-center items-center;
+    @apply flex justify-center;
   }
 }
-

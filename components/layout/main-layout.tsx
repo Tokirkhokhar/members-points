@@ -149,7 +149,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium",
+                      "flex gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium",
                       pathname === item.href
                         ? "bg-primary text-primary-foreground"
                         : "hover:bg-accent hover:text-accent-foreground",
@@ -181,7 +181,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                 : "bg-transparent"
             )}
           >
-            <div className="container flex h-16 items-center justify-between">
+            <div className="flex w-full h-16 px-16 items-center justify-between border-b shadow-md">
               {/* Mobile Menu Button and Logo */}
               <div className="flex items-center gap-4 md:hidden">
                 <Button
@@ -236,7 +236,7 @@ export function MainLayout({ children }: MainLayoutProps) {
                   </div>
                 )}
                 {user && (
-                  <div className="flex hidden md:flex items-center gap-3 px-4 py-3">
+                  <div className="flex md:flex items-center gap-3 px-4 py-3">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user.avatar} alt={user.firstName} />
                       <AvatarFallback>{initials}</AvatarFallback>
@@ -319,7 +319,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           <main className="section flex-1">{children}</main>
 
           {/* Footer */}
-          <footer className="section py-6 border-t">
+          <footer className="section p-6 border-t">
             <div className="container flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
               <p className="text-sm text-muted-foreground">
                 © {new Date().getFullYear()} Loyalty Center. All rights

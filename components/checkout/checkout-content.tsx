@@ -415,7 +415,7 @@ export function CheckoutContent() {
 
   return (
     <TooltipProvider>
-      <div className="container py-8 min-h-[calc(100vh-13rem)]">
+      <div className="container p-8 min-h-[calc(100vh-13rem)]">
         <div className="mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <Link href="/products">

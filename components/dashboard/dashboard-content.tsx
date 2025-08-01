@@ -33,7 +33,7 @@ export function DashboardContent() {
   }, []);
 
   return (
-    <div className="container py-8">
+    <div className="container p-8">
       <h1 className="text-3xl font-bold tracking-tight mb-6">Dashboard</h1>
 
       {error && (

@@ -93,7 +93,7 @@ export function RedemptionHistoryContent() {
 
   if (error) {
     return (
-      <div className="container py-8">
+      <div className="container p-8">
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
             <History className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -112,7 +112,7 @@ export function RedemptionHistoryContent() {
   }
 
   return (
-    <div className="container py-8">
+    <div className="container p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">

@@ -168,7 +168,7 @@ export function RewardsContent() {
   };
 
   return (
-    <div className="container py-8">
+    <div className="container p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">My Rewards</h1>
@@ -225,39 +225,6 @@ export function RewardsContent() {
                 />
               </div>
             </div>
-
-            {/* <Select
-              value={statusFilter}
-              onValueChange={(value) => setStatusFilter(value as any)}
-            >
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value={IssuedRewardsStatus.Issued}>
-                  Active
-                </SelectItem>
-                <SelectItem value={IssuedRewardsStatus.Redeemed}>
-                  Redeemed
-                </SelectItem>
-                <SelectItem value={IssuedRewardsStatus.Expired}>
-                  Expired
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="percentage">Percentage</SelectItem>
-                <SelectItem value="fixed">Fixed Amount</SelectItem>
-                <SelectItem value="freebie">Freebie</SelectItem>
-              </SelectContent>
-            </Select> */}
           </div>
         </CardContent>
       </Card>

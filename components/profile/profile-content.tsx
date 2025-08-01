@@ -132,7 +132,7 @@ export function ProfileContent() {
   }, [user?.firstName]);
 
   return (
-    <div className="container py-8">
+    <div className="container p-8">
       <h1 className="text-3xl font-bold tracking-tight mb-6">Your Profile</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
