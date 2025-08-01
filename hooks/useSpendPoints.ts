@@ -21,7 +21,7 @@ export const useSpendPoints = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/spend/points",
+        "/member-portal/spend/points",
         payload,
         {
           headers: {

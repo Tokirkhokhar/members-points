@@ -51,7 +51,7 @@ export const useMemberRedemptions = (page: number = 1, limit: number = 20) => {
       setError(null);
 
       const { data: response } = await getReq(
-        `members/redemptions?page=${pageNum}&limit=${pageLimit}`,
+        `/member-portal/redemptions?page=${pageNum}&limit=${pageLimit}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

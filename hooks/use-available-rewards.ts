@@ -76,7 +76,7 @@ export const useAvailableRewards = (page: number = 1, limit: number = 10) => {
 
       const token = localStorage.getItem("auth_token");
       const { data: response } = await getReq(
-        `members/rewards/available?page=${page}&limit=${limit}`,
+        `/member-portal/rewards/available?page=${page}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -18,7 +18,7 @@ export const useRedeemPoints = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/redeem-points",
+        "/member-portal/redeem-points",
         payload,
         {
           headers: {

@@ -20,7 +20,7 @@ export const useBlockPoints = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/block/points",
+        "/member-portal/block/points",
         payload,
         {
           headers: {

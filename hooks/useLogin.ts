@@ -14,7 +14,7 @@ export const useLogin = () => {
       const payload = { email };
 
       const { data: response } = await postReq(
-        "admin/members/generate-token",
+        "/members/generate-token",
         payload,
         {
           headers: {

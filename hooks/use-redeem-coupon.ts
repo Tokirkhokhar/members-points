@@ -28,7 +28,7 @@ export const useRedeemCoupon = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/redeem/coupon",
+        "/member-portal/redeem/coupon",
         payload,
         {
           headers: {

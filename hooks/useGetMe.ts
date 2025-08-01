@@ -12,7 +12,7 @@ export const useGetMe = () => {
 
       const token = localStorage.getItem("auth_token");
 
-      const { data: response } = await getReq("members/me", {
+      const { data: response } = await getReq("/member-portal/me", {
         headers: {
           // get auth token from local storage and pass as bearer token
           Authorization: `Bearer ${accessToken || token}`,

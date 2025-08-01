@@ -21,7 +21,7 @@ export const useGetStatistics = ({
       setIsLoading(true);
       const token = localStorage.getItem("auth_token");
 
-      const { data: response } = await getReq("members/wallets", {
+      const { data: response } = await getReq("/member-portal/wallets", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

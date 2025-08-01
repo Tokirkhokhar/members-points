@@ -30,7 +30,7 @@ export const useValidateCoupon = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/validate/coupon",
+        "/member-portal/validate/coupon",
         payload,
         {
           headers: {

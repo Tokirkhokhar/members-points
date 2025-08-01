@@ -25,7 +25,7 @@ export const useConvertCoupon = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        `members/${issuedRewardId}/convert`,
+        `/member-portal/${issuedRewardId}/convert`,
         payload,
         {
           headers: {

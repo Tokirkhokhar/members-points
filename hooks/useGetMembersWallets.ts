@@ -11,7 +11,7 @@ export const useGetMembersWallets = () => {
 
       const token = localStorage.getItem("auth_token");
 
-      const { data: response } = await getReq("members/wallets/list", {
+      const { data: response } = await getReq("/member-portal/wallets/list", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

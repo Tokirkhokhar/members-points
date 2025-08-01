@@ -20,7 +20,7 @@ export const useUnBlockPoints = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        `members/${blockedPointId}/unblock/points`,
+        `/member-portal/${blockedPointId}/unblock/points`,
         {},
         {
           headers: {

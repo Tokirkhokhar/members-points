@@ -20,7 +20,7 @@ export const useBuyReward = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        `members/${rewardId}/buy`,
+        `/member-portal/${rewardId}/buy`,
         { ...(points && { points }) },
         {
           headers: {

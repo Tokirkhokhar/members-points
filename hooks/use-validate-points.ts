@@ -35,7 +35,7 @@ export const useValidatePoints = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/validate/points",
+        "/member-portal/validate/points",
         payload,
         {
           headers: {

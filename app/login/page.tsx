@@ -48,7 +48,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="section min-h-screen flex flex-col">
+    <div className="section items-center min-h-screen flex flex-col">
       <div className="container flex flex-1 items-center justify-center py-12">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">

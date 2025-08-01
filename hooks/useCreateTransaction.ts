@@ -51,12 +51,16 @@ export const useCreateTransaction = () => {
       setIsLoading(true);
       setError(null);
 
-      const { data: response } = await postReq("members/transaction", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const { data: response } = await postReq(
+        "/member-portal/transaction",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response) {
         setData(response);

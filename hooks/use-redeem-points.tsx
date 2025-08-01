@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { postReq } from "@/config/request";
+import { postReq } from "../config/request";
 
 export type RedeemPointsPayload = {
   points: number;
@@ -18,7 +18,7 @@ export const useRedeemPoints = () => {
       setError(null);
 
       const { data: response } = await postReq(
-        "members/redeem-points",
+        "/member-portal/redeem-points",
         payload,
         {
           headers: {

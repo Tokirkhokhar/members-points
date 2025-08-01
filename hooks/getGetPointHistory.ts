@@ -37,16 +37,19 @@ export const useGetPointHistory = ({
 
       const token = localStorage.getItem("auth_token");
 
-      const { data: response } = await getReq("members/wallets/point-history", {
-        headers: {
-          // get auth token from local storage and pass as bearer token
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          page,
-          limit,
-        },
-      });
+      const { data: response } = await getReq(
+        "/member-portal/wallets/point-history",
+        {
+          headers: {
+            // get auth token from local storage and pass as bearer token
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page,
+            limit,
+          },
+        }
+      );
       if (response) {
         if (isFirstTimeAPIcall) {
           setIsFirstTimeAPIcall(false);

@@ -72,7 +72,7 @@ export const useMemberRewards = () => {
     try {
       setIsLoading(true);
       const token = localStorage.getItem("auth_token");
-      const { data: response } = await getReq("members/rewards", {
+      const { data: response } = await getReq("/member-portal/rewards", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
