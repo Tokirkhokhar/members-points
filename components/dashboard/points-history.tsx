@@ -27,23 +27,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetPointHistory } from "@/hooks/getGetPointHistory";
 import { PointTransaction } from "@/services/points-service";
 import { PointsType } from "@/enums";
-import { cn } from "@/lib/utils";
-import { RedeemPointsModal } from "./redeem-points-modal";
+import { cn, formatDateTime } from "@/lib/utils";
 
-export function PointsHistory({
-  availablePoints,
-  getStatistics,
-}: {
-  availablePoints: number;
-  getStatistics: () => void;
-}) {
-  const { getGetPointHistory, data, isLoading } = useGetPointHistory({
-    polling: true,
-    pollingInterval: 30000,
-  });
+export function PointsHistory() {
+  const { getGetPointHistory, data, isLoading } = useGetPointHistory();
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [isRedeemModalOpen, setIsRedeemModalOpen] = useState(false);
 
   useEffect(() => {
     getGetPointHistory(page, 10);
@@ -59,12 +48,6 @@ export function PointsHistory({
     if (newPage > 0 && newPage <= Math.ceil(total / 10)) {
       setPage(newPage);
     }
-  };
-
-  const handleRedeemSuccess = () => {
-    // Refresh the transactions list after successful redemption
-    getGetPointHistory(page, 10);
-    getStatistics();
   };
 
   // const handleFilterChange = (
@@ -89,33 +72,6 @@ export function PointsHistory({
   //   "Referral",
   //   "Bonus",
   // ];
-  const getDaysUntilExpiry = (expiryDate: string): number => {
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-    const diffTime = expiry.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const getExpiryText = (expiryDate: string | undefined): string => {
-    if (!expiryDate) return "-";
-
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-
-    if (expiry < today) {
-      return "Expired";
-    }
-
-    const daysUntilExpiry = getDaysUntilExpiry(expiryDate);
-
-    if (daysUntilExpiry === 1) {
-      return "Expires Today";
-    } else if (daysUntilExpiry === 0) {
-      return "Expired";
-    } else {
-      return format(expiry, "MMM dd, yyyy");
-    }
-  };
 
   return (
     <>
@@ -125,14 +81,6 @@ export function PointsHistory({
             <CardTitle>Points History</CardTitle>
             <CardDescription>Your recent points activities</CardDescription>
           </div>
-
-          {/* <Button
-            onClick={() => setIsRedeemModalOpen(true)}
-            className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-          >
-            <Gift className="h-4 w-4" />
-            Redeem Points
-          </Button> */}
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -210,7 +158,7 @@ export function PointsHistory({
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <p>
                                 <span className="font-bold">Date:&nbsp;</span>
-                                {format(new Date(createdAt), "MMM dd, yyyy")}
+                                {formatDateTime(createdAt)}
                               </p>
                               {transactionReference ? (
                                 <p className="text-sm capitalize">
@@ -223,20 +171,13 @@ export function PointsHistory({
                               {expiredAt && type !== PointsType.Expired ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expiry Date: </span>
-                                  <span>
-                                    {getExpiryText(expiredAt?.toString() || "")}
-                                  </span>
+                                  <span>{formatDateTime(expiredAt)}</span>
                                 </p>
                               ) : null}
                               {expiredAt && type === PointsType.Expired ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expired At: </span>
-                                  <span>
-                                    {format(
-                                      new Date(expiredAt),
-                                      "MMM dd, yyyy HH:mm a"
-                                    )}
-                                  </span>
+                                  <span>{formatDateTime(expiredAt)}</span>
                                 </p>
                               ) : null}
                             </div>
@@ -300,14 +241,6 @@ export function PointsHistory({
           )}
         </CardContent>
       </Card>
-      {isRedeemModalOpen && (
-        <RedeemPointsModal
-          open={isRedeemModalOpen}
-          onOpenChange={setIsRedeemModalOpen}
-          availablePoints={availablePoints}
-          onSuccess={handleRedeemSuccess}
-        />
-      )}
     </>
   );
 }

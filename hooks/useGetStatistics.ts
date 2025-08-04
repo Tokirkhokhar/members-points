@@ -1,31 +1,16 @@
 import { getReq } from "@/config/request";
-import { getCookie } from "@/lib/utils";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
-interface UseGetStatisticsProps {
-  polling?: boolean;
-  pollingInterval?: number;
-}
-
-export const useGetStatistics = ({
-  polling = false,
-  pollingInterval = 30000,
-}: UseGetStatisticsProps = {}) => {
+export const useGetStatistics = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any>(null);
   const [isFirstTimeAPIcall, setIsFirstTimeAPIcall] = useState(true);
-  const pollingRef = useRef<NodeJS.Timeout>();
 
   const getStatistics = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("auth_token");
 
-      const { data: response } = await getReq("members/wallets", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const { data: response } = await getReq("members/wallets");
       if (isFirstTimeAPIcall) {
         setIsFirstTimeAPIcall(false);
       }
@@ -42,28 +27,6 @@ export const useGetStatistics = ({
       setIsLoading(false);
     }
   };
-
-  // Start/stop polling when polling prop changes
-  useEffect(() => {
-    if (polling) {
-      // Initial fetch
-      if (!isFirstTimeAPIcall) {
-        getStatistics().catch(console.error);
-      }
-
-      // Set up polling
-      pollingRef.current = setInterval(() => {
-        getStatistics().catch(console.error);
-      }, pollingInterval);
-
-      // Cleanup on unmount or when polling is disabled
-      return () => {
-        if (pollingRef.current) {
-          clearInterval(pollingRef.current);
-        }
-      };
-    }
-  }, [polling, pollingInterval]);
 
   return {
     getStatistics,

@@ -26,6 +26,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { RewardCouponType } from "@/hooks/use-members-rewards";
 import { StatsCard } from "../ui/StatsCard";
+import { formatDateTime } from "@/lib/utils";
 
 export function RedemptionHistoryContent() {
   const [page, setPage] = useState(1);
@@ -276,10 +277,7 @@ export function RedemptionHistoryContent() {
                         <div>
                           <p className="text-muted-foreground">Issued On</p>
                           <p className="font-medium">
-                            {format(
-                              new Date(redemption.issuedAt),
-                              "MMM dd, yyyy hh:mm a"
-                            )}
+                            {formatDateTime(redemption.issuedAt)}
                           </p>
                         </div>
                       </div>
@@ -288,10 +286,7 @@ export function RedemptionHistoryContent() {
                         <div>
                           <p className="text-muted-foreground">Redeemed On</p>
                           <p className="font-medium">
-                            {format(
-                              new Date(redemption.redeemedAt),
-                              "MMM dd, yyyy hh:mm a"
-                            )}
+                            {formatDateTime(redemption.redeemedAt)}
                           </p>
                         </div>
 

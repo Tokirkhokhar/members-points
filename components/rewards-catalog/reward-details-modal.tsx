@@ -25,6 +25,7 @@ import { AvailableReward } from "@/hooks/use-available-rewards";
 import { format } from "date-fns";
 import Image from "next/image";
 import { RewardCouponType } from "@/hooks/use-members-rewards";
+import { formatDateTime } from "@/lib/utils";
 
 type RewardDetailsModalProps = {
   open: boolean;
@@ -181,7 +182,7 @@ export function RewardDetailsModal({
               <div>
                 <p className="text-muted-foreground mb-1">Created On</p>
                 <p className="font-medium">
-                  {format(new Date(reward.createdAt), "MMM dd, yyyy")}
+                  {formatDateTime(reward.createdAt)}
                 </p>
               </div>
               {reward?.minimumAmount && (

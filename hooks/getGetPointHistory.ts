@@ -17,31 +17,16 @@ interface Response {
   };
 }
 
-interface UseGetPointHistoryProps {
-  polling?: boolean;
-  pollingInterval?: number;
-}
-
-export const useGetPointHistory = ({
-  polling = false,
-  pollingInterval = 30000,
-}: UseGetPointHistoryProps = {}) => {
+export const useGetPointHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isFirstTimeAPIcall, setIsFirstTimeAPIcall] = useState(true);
   const [data, setData] = useState<Response | null>(null);
-  const pollingRef = useRef<NodeJS.Timeout>();
 
   const getGetPointHistory = async (page = 1, limit = 10) => {
     try {
       setIsLoading(true);
 
-      const token = localStorage.getItem("auth_token");
-
       const { data: response } = await getReq("members/wallets/point-history", {
-        headers: {
-          // get auth token from local storage and pass as bearer token
-          Authorization: `Bearer ${token}`,
-        },
         params: {
           page,
           limit,
@@ -61,28 +46,6 @@ export const useGetPointHistory = ({
       setIsLoading(false);
     }
   };
-
-  // Start/stop polling when polling prop changes
-  useEffect(() => {
-    if (polling) {
-      // Initial fetch
-      if (!isFirstTimeAPIcall) {
-        getGetPointHistory().catch(console.error);
-      }
-
-      // Set up polling
-      pollingRef.current = setInterval(() => {
-        getGetPointHistory().catch(console.error);
-      }, pollingInterval);
-
-      // Cleanup on unmount or when polling is disabled
-      return () => {
-        if (pollingRef.current) {
-          clearInterval(pollingRef.current);
-        }
-      };
-    }
-  }, [polling, pollingInterval, isFirstTimeAPIcall]);
 
   return {
     getGetPointHistory,

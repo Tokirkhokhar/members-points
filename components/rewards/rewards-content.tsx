@@ -42,8 +42,7 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { CountUp } from "../ui/countUp";
+import { cn, formatDateTime } from "@/lib/utils";
 import { StatsCard } from "../ui/StatsCard";
 import { ConvertCouponModal } from "./convert-coupon-modal";
 
@@ -379,10 +378,7 @@ export function RewardsContent() {
                       <div>
                         <p className="text-muted-foreground">Issued On</p>
                         <p className="font-medium">
-                          {format(
-                            new Date(reward.issuedAt),
-                            "MMM dd, yyyy hh:mm a"
-                          )}
+                          {formatDateTime(reward.issuedAt)}
                         </p>
                       </div>
 
@@ -401,10 +397,7 @@ export function RewardsContent() {
                           )}
                         >
                           {reward.expiredAt
-                            ? format(
-                                new Date(reward.expiredAt),
-                                "MMM dd, yyyy hh:mm a"
-                              )
+                            ? formatDateTime(reward.expiredAt)
                             : "-"}
                         </p>
                       </div>
@@ -444,10 +437,7 @@ export function RewardsContent() {
                                 Redeemed On
                               </p>
                               <p className="font-medium">
-                                {format(
-                                  new Date(reward.redeemedAt),
-                                  "MMM dd, yyyy hh:mm a"
-                                )}
+                                {formatDateTime(reward.redeemedAt)}
                               </p>
                             </div>
                             {reward.transactionReference && (

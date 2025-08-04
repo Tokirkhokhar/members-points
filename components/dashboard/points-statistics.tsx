@@ -24,10 +24,6 @@ import { PointsStatistics as PointsStatsType } from "@/services/points-service";
 import { PointsHistory } from "./points-history";
 import { CountUp } from "../ui/countUp";
 
-type PointsStatisticsProps = {
-  statistics: PointsStatsType;
-};
-
 type StateCardProps = {
   targetNumber: number;
   label: string;
@@ -57,17 +53,12 @@ const StateCard = ({ targetNumber, label }: StateCardProps) => {
 //   );
 // };
 
-export function PointsStatistics({
-  statistics: initialStatistics,
-}: PointsStatisticsProps) {
+export function PointsStatistics() {
   const {
     isLoading,
     walletData,
     refresh: refreshStatistics,
-  } = useGetStatistics({
-    polling: true, // Enable polling
-    pollingInterval: 30000, // Poll every 30 seconds
-  });
+  } = useGetStatistics();
 
   // Initial data fetch
   useEffect(() => {
@@ -96,46 +87,9 @@ export function PointsStatistics({
           targetNumber={data?.expiredPoints || 0}
           label="Expired Points"
         />
-
-        {/* <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Next Level</CardDescription>
-            <CardTitle className="text-xl">{statistics.nextLevel}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>
-                  {statistics.pointsToNextLevel.toLocaleString()} points needed
-                </span>
-                <span>{statistics.percentToNextLevel}%</span>
-              </div>
-              {statistics?.percentToNextLevel && (
-                <Progress value={statistics.percentToNextLevel} />
-              )}
-            </div>
-          </CardContent>
-        </Card> */}
-
-        {/* <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Membership Since</CardDescription>
-            <CardTitle className="text-xl">
-              {new Date().getFullYear() - 2} years
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Joined May 12, {new Date().getFullYear() - 2}
-            </p>
-          </CardContent>
-        </Card> */}
       </div>
 
-      <PointsHistory
-        availablePoints={data?.activePoints ?? 0}
-        getStatistics={refreshStatistics}
-      />
+      <PointsHistory />
 
       {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="col-span-1">

@@ -32,6 +32,8 @@ import {
 } from "@/components/profile/membership-badge";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { DateFormat } from "@/enums";
+import { formatDateTime } from "@/lib/utils";
 
 const profileFormSchema = z.object({
   firstName: z
@@ -165,7 +167,10 @@ export function ProfileContent() {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Member Since</span>
                 <span className="font-medium">
-                  {format(new Date(user?.registrationDate || ""), "dd/MM/yyyy")}
+                  {formatDateTime(
+                    user?.registrationDate || "",
+                    DateFormat.DATE_FORMAT
+                  )}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
