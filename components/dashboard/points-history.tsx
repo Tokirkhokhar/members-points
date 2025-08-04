@@ -29,7 +29,6 @@ import { PointTransaction } from "@/services/points-service";
 import { PointsType } from "@/enums";
 import { cn } from "@/lib/utils";
 import { RedeemPointsModal } from "./redeem-points-modal";
-import { useGetStatistics } from "@/hooks/useGetStatistics";
 
 export function PointsHistory({
   availablePoints,
@@ -181,7 +180,7 @@ export function PointsHistory({
                                 type === PointsType.Adding,
                               "bg-red-100 dark:bg-red-400/10 text-red-600 dark:text-red-400":
                                 type === PointsType.Expired,
-                              "bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400":
+                              "bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400":
                                 type === PointsType.Spending,
                               "bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400":
                                 type === PointsType.Blocked ||
@@ -229,17 +228,31 @@ export function PointsHistory({
                                   </span>
                                 </p>
                               ) : null}
+                              {expiredAt && type === PointsType.Expired ? (
+                                <p className="text-sm text-red-600 dark:text-red-400">
+                                  <span>Expired At: </span>
+                                  <span>
+                                    {format(
+                                      new Date(expiredAt),
+                                      "MMM dd, yyyy HH:mm a"
+                                    )}
+                                  </span>
+                                </p>
+                              ) : null}
                             </div>
                           </div>
                           <div
                             className={cn("text-right font-medium", {
                               "text-green-600 dark:text-green-400":
                                 type === PointsType.Adding,
-                              "text-red-600 dark:text-red-400":
+
+                              "text-rose-500 dark:text-rose-400":
                                 type === PointsType.Expired,
-                              "text-amber-600 dark:text-amber-400":
+
+                              "text-orange-500 dark:text-orange-400":
                                 type === PointsType.Spending,
-                              "text-gray-600 dark:text-gray-400":
+
+                              "text-gray-500 dark:text-gray-400":
                                 type === PointsType.Blocked ||
                                 type === PointsType.Locked,
                             })}
