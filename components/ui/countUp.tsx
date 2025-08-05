@@ -3,9 +3,14 @@ import { useState, useEffect } from "react";
 interface Props {
   targetNumber: number | string;
   decimalPlaces?: number; // Optional: for consistent formatting
+  className?: string;
 }
 
-export const CountUp = ({ targetNumber, decimalPlaces = 0 }: Props) => {
+export const CountUp = ({
+  targetNumber,
+  decimalPlaces = 0,
+  className,
+}: Props) => {
   const parsedTarget =
     typeof targetNumber === "string" ? parseFloat(targetNumber) : targetNumber;
   const [count, setCount] = useState(0);
@@ -29,5 +34,5 @@ export const CountUp = ({ targetNumber, decimalPlaces = 0 }: Props) => {
       ? count.toFixed(decimalPlaces)
       : Math.round(count).toString();
 
-  return <span>{formattedCount}</span>;
+  return <span className={className}>{formattedCount}</span>;
 };
