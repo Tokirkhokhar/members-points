@@ -405,7 +405,7 @@ export function RewardsContent() {
                       {reward.minimumAmount && (
                         <div>
                           <p className="text-muted-foreground">
-                            Minimum Required Amount
+                            Minimum Amount
                           </p>
                           <p className="font-medium">{reward.minimumAmount}</p>
                         </div>
