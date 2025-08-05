@@ -317,7 +317,7 @@ export function RewardsContent() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 gap-4 text-sm">
                       {reward?.couponType !==
                       RewardCouponType.UnitConversion ? (
                         <div>
@@ -401,6 +401,27 @@ export function RewardsContent() {
                             : "-"}
                         </p>
                       </div>
+
+                      {reward.minimumAmount && (
+                        <div>
+                          <p className="text-muted-foreground">
+                            Minimum Required Amount
+                          </p>
+                          <p className="font-medium">{reward.minimumAmount}</p>
+                        </div>
+                      )}
+
+                      {reward.amountCapLimit &&
+                        reward.couponType === RewardCouponType.Percentage && (
+                          <div>
+                            <p className="text-muted-foreground">
+                              Amount Cap Limit
+                            </p>
+                            <p className="font-medium">
+                              {reward.amountCapLimit}
+                            </p>
+                          </div>
+                        )}
                     </div>
 
                     <div className="mt-3 pt-3 border-t">

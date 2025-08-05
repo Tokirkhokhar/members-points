@@ -24,6 +24,8 @@ export type MemberReward = {
   status: IssuedRewardsStatus;
   couponType: RewardCouponType;
   rewardValue?: number;
+  minimumAmount?: number;
+  amountCapLimit?: number;
   pointConversionRate?: {
     points: number;
     currency: number;
