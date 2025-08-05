@@ -1,27 +1,33 @@
 import { useState, useEffect } from "react";
 
 interface Props {
-  targetNumber: number;
-  className?: string;
+  targetNumber: number | string;
+  decimalPlaces?: number; // Optional: for consistent formatting
 }
 
-export const CountUp = ({ targetNumber, className }: Props) => {
-  const [count, setCount] = useState(0.0);
+export const CountUp = ({ targetNumber, decimalPlaces = 0 }: Props) => {
+  const parsedTarget =
+    typeof targetNumber === "string" ? parseFloat(targetNumber) : targetNumber;
+  const [count, setCount] = useState(0);
 
-  // Reset count whenever targetNumber changes
   useEffect(() => {
     setCount(0);
-  }, [targetNumber]);
+  }, [parsedTarget]);
 
   useEffect(() => {
-    if (count < targetNumber) {
-      const increment = Math.ceil(targetNumber / 10);
+    if (count < parsedTarget) {
+      const increment = Math.ceil(parsedTarget / 10);
       const timeout = setTimeout(() => {
-        setCount((prevCount) => Math.min(prevCount + increment, targetNumber));
+        setCount((prevCount) => Math.min(prevCount + increment, parsedTarget));
       }, 100);
       return () => clearTimeout(timeout);
     }
-  }, [count, targetNumber]);
+  }, [count, parsedTarget]);
 
-  return <span className={className}>{count.toFixed(2)}</span>;
+  const formattedCount =
+    decimalPlaces > 0
+      ? count.toFixed(decimalPlaces)
+      : Math.round(count).toString();
+
+  return <span>{formattedCount}</span>;
 };

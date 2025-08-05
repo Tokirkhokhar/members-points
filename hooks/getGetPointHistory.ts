@@ -22,7 +22,11 @@ export const useGetPointHistory = () => {
   const [isFirstTimeAPIcall, setIsFirstTimeAPIcall] = useState(true);
   const [data, setData] = useState<Response | null>(null);
 
-  const getGetPointHistory = async (page = 1, limit = 10) => {
+  const getGetPointHistory = async (
+    page = 1,
+    limit = 10,
+    walletTypeId?: string
+  ) => {
     try {
       setIsLoading(true);
 
@@ -30,6 +34,7 @@ export const useGetPointHistory = () => {
         params: {
           page,
           limit,
+          ...(walletTypeId && { walletTypeId }),
         },
       });
       if (response) {

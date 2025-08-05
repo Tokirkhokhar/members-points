@@ -29,14 +29,21 @@ import { PointTransaction } from "@/services/points-service";
 import { PointsType } from "@/enums";
 import { cn, formatDateTime } from "@/lib/utils";
 
-export function PointsHistory() {
+export function PointsHistory({
+  selectedWallet,
+}: {
+  selectedWallet?: {
+    walletTypeId: string;
+    unitsName?: string;
+  };
+}) {
   const { getGetPointHistory, data, isLoading } = useGetPointHistory();
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    getGetPointHistory(page, 10);
-  }, [page]);
+    getGetPointHistory(page, 10, selectedWallet?.walletTypeId);
+  }, [page, selectedWallet]);
 
   useEffect(() => {
     if (data) {
@@ -49,29 +56,6 @@ export function PointsHistory() {
       setPage(newPage);
     }
   };
-
-  // const handleFilterChange = (
-  //   key: "type" | "category",
-  //   value: string | undefined
-  // ) => {
-  //   if (value === "all") {
-  //     const newFilter = { ...filter };
-  //     delete newFilter[key];
-  //     setFilter(newFilter);
-  //   } else {
-  //     setFilter({ ...filter, [key]: value as any });
-  //   }
-  //   setPage(1);
-  // };
-
-  // const uniqueCategories = [
-  //   "Purchase",
-  //   "Travel",
-  //   "Shopping",
-  //   "Promotion",
-  //   "Referral",
-  //   "Bonus",
-  // ];
 
   return (
     <>
@@ -115,7 +99,6 @@ export function PointsHistory() {
                       createdAt,
                       transactionReference,
                       expiredAt,
-                      conversionRate,
                     }: PointTransaction) => {
                       return (
                         <div
@@ -145,15 +128,6 @@ export function PointsHistory() {
                           <div className="flex-1 min-w-0 flex flex-col gap-2">
                             <p className="font-medium flex items-center gap-2 truncate text-lg">
                               {description || "-"}
-                              {conversionRate && (
-                                <div className="flex items-center gap-1 text-xs w-fit text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
-                                  <Info className="h-3 w-3" />
-                                  <span>
-                                    {conversionRate?.points} pts ={" "}
-                                    {conversionRate?.currency} Unit Currency
-                                  </span>
-                                </div>
-                              )}
                             </p>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <p>
@@ -202,7 +176,8 @@ export function PointsHistory() {
                             type === PointsType.Adjustment
                               ? "+"
                               : "-"}
-                            {points.toLocaleString()} points
+                            {points.toLocaleString()}&nbsp;
+                            {selectedWallet?.unitsName}
                           </div>
                         </div>
                       );

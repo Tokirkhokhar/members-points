@@ -1,6 +1,28 @@
 import { getReq } from "@/config/request";
 import { useState } from "react";
 
+export interface PointStatisticsResponse {
+  walletType: {
+    walletTypeId: string;
+    code: string;
+    name: string;
+    unitSingularName: string;
+    unitPluralName: string;
+    active: boolean;
+    isDefault: boolean;
+    createdAt: string;
+  };
+  createdAt: string;
+  account: {
+    accumulatedPoints: string;
+    spentPoints: string;
+    activePoints: string;
+    expiredPoints: string;
+    blockedPoints: string;
+  };
+  pointsLimitUsed: number;
+}
+
 export const useGetStatistics = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any>(null);
@@ -31,7 +53,7 @@ export const useGetStatistics = () => {
   return {
     getStatistics,
     isLoading,
-    walletData: data?.data,
+    walletData: data?.data as PointStatisticsResponse[],
     // Add a way to manually refresh
     refresh: getStatistics,
   };

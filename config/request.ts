@@ -17,10 +17,12 @@ export const getReq = async (url: string, config?: AxiosRequestConfig<any>) => {
   try {
     const response = await axiosInstance.get(url, {
       ...options,
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-      },
+      headers: token
+        ? {
+            ...options.headers,
+            Authorization: `Bearer ${token}`,
+          }
+        : options.headers,
     });
     return response.data;
   } catch (err: any) {

@@ -17,10 +17,6 @@ export interface PointTransaction {
   description?: string;
   transactionReference?: string;
   createdAt: Date;
-  conversionRate: {
-    points: number;
-    currency: string;
-  };
 }
 
 // Mock data for demonstration purposes
