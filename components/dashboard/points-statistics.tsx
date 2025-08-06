@@ -130,7 +130,7 @@ export function PointsStatistics() {
             onValueChange={(walletTypeId) => handleWalletChange(walletTypeId)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="selectWallet" />
+              <SelectValue placeholder="Select Wallet" />
             </SelectTrigger>
             <SelectContent>
               {walletData?.map((wallet) => (
