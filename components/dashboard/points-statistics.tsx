@@ -154,7 +154,7 @@ export function PointsStatistics() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-4">
           {(() => {
             const selectedWalletData = selectedWallet
               ? walletData?.find(
@@ -200,6 +200,12 @@ export function PointsStatistics() {
                 icon: <CircleX className="h-5 w-5" />,
                 color: "text-destructive",
               },
+              {
+                title: "Locked Points",
+                value: accountData.lockedPoints,
+                icon: <CircleX className="h-5 w-5" />,
+                color: "text-destructive",
+              },
             ];
 
             return stats.map((stat, index) => (
@@ -207,7 +213,7 @@ export function PointsStatistics() {
                 key={index}
                 className="p-4 border border-border hover:shadow-md hover:scale-[1.02] transition-all block rounded-[8px] shadow-sm"
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <div
                     className={`p-2 rounded-full ${stat.color} bg-opacity-10`}
                   >

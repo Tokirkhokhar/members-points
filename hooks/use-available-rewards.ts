@@ -24,6 +24,7 @@ export type AvailableReward = {
   price: string;
   logo: string;
   currency: string;
+  walletCode: string | null;
   usageLimit: {
     limit: number;
     perMember: number;

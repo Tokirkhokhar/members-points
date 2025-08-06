@@ -19,6 +19,7 @@ export interface PointStatisticsResponse {
     activePoints: string;
     expiredPoints: string;
     blockedPoints: string;
+    lockedPoints: string;
   };
   pointsLimitUsed: number;
 }

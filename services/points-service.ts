@@ -17,6 +17,8 @@ export interface PointTransaction {
   description?: string;
   transactionReference?: string;
   createdAt: Date;
+  unlockAt: Date | null;
+  locked: boolean;
 }
 
 // Mock data for demonstration purposes

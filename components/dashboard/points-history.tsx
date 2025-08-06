@@ -99,6 +99,8 @@ export function PointsHistory({
                       createdAt,
                       transactionReference,
                       expiredAt,
+                      unlockAt,
+                      locked,
                     }: PointTransaction) => {
                       return (
                         <div
@@ -118,7 +120,11 @@ export function PointsHistory({
                                 type === PointsType.Locked,
                             })}
                           >
-                            {type === PointsType.Adding ? (
+                            {[
+                              PointsType.Adding,
+                              PointsType.Locked,
+                              PointsType.Adjustment,
+                            ].includes(type) ? (
                               <BadgePlus className="h-5 w-5" />
                             ) : (
                               <BadgeMinus className="h-5 w-5" />
@@ -142,7 +148,10 @@ export function PointsHistory({
                                   {transactionReference}
                                 </p>
                               ) : null}
-                              {expiredAt && type !== PointsType.Expired ? (
+                              {expiredAt &&
+                              ![PointsType.Expired, PointsType.Locked].includes(
+                                type
+                              ) ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expiry Date: </span>
                                   <span>{formatDateTime(expiredAt)}</span>
@@ -152,6 +161,12 @@ export function PointsHistory({
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expired At: </span>
                                   <span>{formatDateTime(expiredAt)}</span>
+                                </p>
+                              ) : null}
+                              {unlockAt && type === PointsType.Locked ? (
+                                <p className="text-sm text-green-600 dark:text-green-400">
+                                  <span>Unlock Date: </span>
+                                  <span>{formatDateTime(unlockAt)}</span>
                                 </p>
                               ) : null}
                             </div>
@@ -172,8 +187,11 @@ export function PointsHistory({
                                 type === PointsType.Locked,
                             })}
                           >
-                            {type === PointsType.Adding ||
-                            type === PointsType.Adjustment
+                            {[
+                              PointsType.Adding,
+                              PointsType.Locked,
+                              PointsType.Adjustment,
+                            ].includes(type)
                               ? "+"
                               : "-"}
                             {points.toLocaleString()}&nbsp;
