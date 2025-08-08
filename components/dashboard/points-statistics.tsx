@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardDescription,
@@ -23,10 +23,23 @@ import { PointsStatistics as PointsStatsType } from "@/services/points-service";
 // } from "recharts";
 import { PointsHistory } from "./points-history";
 import { CountUp } from "../ui/countUp";
-
-type PointsStatisticsProps = {
-  statistics: PointsStatsType;
-};
+import { Skeleton } from "../ui/skeleton";
+import {
+  BadgeMinus,
+  BadgePlus,
+  BlocksIcon,
+  CircleX,
+  CrossIcon,
+  Info,
+  Wallet,
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type StateCardProps = {
   targetNumber: number;
@@ -57,161 +70,172 @@ const StateCard = ({ targetNumber, label }: StateCardProps) => {
 //   );
 // };
 
-export function PointsStatistics({
-  statistics: initialStatistics,
-}: PointsStatisticsProps) {
+export function PointsStatistics() {
   const {
-    isLoading,
+    isLoading: isPointsStatisticsLoading,
     walletData,
     refresh: refreshStatistics,
-  } = useGetStatistics({
-    polling: true, // Enable polling
-    pollingInterval: 30000, // Poll every 30 seconds
-  });
+  } = useGetStatistics();
 
   // Initial data fetch
   useEffect(() => {
     refreshStatistics();
   }, []);
 
-  const data = walletData?.[0]?.account;
+  const [selectedWallet, setSelectedWallet] = useState<{
+    walletTypeId: string;
+    unitsName?: string;
+  }>();
+
+  const handleWalletChange = (walletTypeId: string) => {
+    setSelectedWallet({
+      walletTypeId,
+      unitsName:
+        walletData?.find(
+          ({ walletType }) => walletType.walletTypeId === walletTypeId
+        )?.walletType.unitPluralName || "Points",
+    });
+  };
+
+  useEffect(() => {
+    if (walletData?.length) {
+      const defaultWallet = walletData?.find(
+        ({ walletType }) => walletType.isDefault
+      );
+
+      if (defaultWallet) {
+        setSelectedWallet({
+          walletTypeId: defaultWallet?.walletType.walletTypeId,
+          unitsName: defaultWallet?.walletType.unitPluralName || "Points",
+        });
+      } else {
+        setSelectedWallet({
+          walletTypeId: walletData?.[0]?.walletType.walletTypeId,
+          unitsName: walletData?.[0]?.walletType.unitPluralName || "Points",
+        });
+      }
+    }
+  }, [walletData]);
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <StateCard
-          targetNumber={data?.accumulatedPoints || 0}
-          label="Lifetime Earned Points"
-        />
-        <StateCard
-          targetNumber={data?.activePoints || 0}
-          label="Wallet Balance"
-        />
-        <StateCard targetNumber={data?.spentPoints || 0} label="Spent Points" />
-        <StateCard
-          targetNumber={data?.blockedPoints || 0}
-          label="Blocked Points"
-        />
-        <StateCard
-          targetNumber={data?.expiredPoints || 0}
-          label="Expired Points"
-        />
-
-        {/* <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Next Level</CardDescription>
-            <CardTitle className="text-xl">{statistics.nextLevel}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>
-                  {statistics.pointsToNextLevel.toLocaleString()} points needed
-                </span>
-                <span>{statistics.percentToNextLevel}%</span>
-              </div>
-              {statistics?.percentToNextLevel && (
-                <Progress value={statistics.percentToNextLevel} />
-              )}
-            </div>
-          </CardContent>
-        </Card> */}
-
-        {/* <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Membership Since</CardDescription>
-            <CardTitle className="text-xl">
-              {new Date().getFullYear() - 2} years
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Joined May 12, {new Date().getFullYear() - 2}
-            </p>
-          </CardContent>
-        </Card> */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">Wallet Statistics</h2>
+        <div className="w-64">
+          <Select
+            value={
+              selectedWallet?.walletTypeId ||
+              walletData?.[0]?.walletType.walletTypeId
+            }
+            onValueChange={(walletTypeId) => handleWalletChange(walletTypeId)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Wallet" />
+            </SelectTrigger>
+            <SelectContent>
+              {walletData?.map((wallet) => (
+                <SelectItem
+                  key={wallet.walletType.walletTypeId}
+                  value={wallet.walletType.walletTypeId}
+                >
+                  {wallet.walletType.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <PointsHistory
-        availablePoints={data?.activePoints ?? 0}
-        getStatistics={refreshStatistics}
-      />
+      {/* Points Statistics */}
+      {isPointsStatisticsLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-lg" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {(() => {
+            const selectedWalletData = selectedWallet
+              ? walletData?.find(
+                  ({ walletType }) =>
+                    walletType.walletTypeId === selectedWallet.walletTypeId
+                )
+              : walletData?.[0];
 
-      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Monthly Points Earned</CardTitle>
-            <CardDescription>
-              Points earned over the past months
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={monthlyPointsData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            if (!selectedWalletData) {
+              return null;
+            }
+
+            const accountData = selectedWalletData.account;
+
+            const stats = [
+              {
+                title: "Accumulated Points",
+                value: accountData.accumulatedPoints,
+                icon: <BadgePlus className="h-5 w-5" />,
+                color: "text-green-500",
+              },
+              {
+                title: "Active Points",
+                value: accountData.activePoints,
+                icon: <Wallet className="h-5 w-5" />,
+                color: "text-primary",
+              },
+              {
+                title: "Spent Points",
+                value: accountData.spentPoints,
+                icon: <BadgeMinus className="h-5 w-5" />,
+                color: "text-amber-500",
+              },
+              {
+                title: "Expired Points",
+                value: accountData.expiredPoints,
+                icon: <Info className="h-5 w-5" />,
+                color: "text-destructive",
+              },
+              {
+                title: "Blocked Points",
+                value: accountData.blockedPoints,
+                icon: <CircleX className="h-5 w-5" />,
+                color: "text-destructive",
+              },
+              {
+                title: "Locked Points",
+                value: accountData.lockedPoints,
+                icon: <CircleX className="h-5 w-5" />,
+                color: "text-destructive",
+              },
+            ];
+
+            return stats.map((stat, index) => (
+              <Card
+                key={index}
+                className="p-4 border border-border hover:shadow-md hover:scale-[1.02] transition-all block rounded-[8px] shadow-sm"
               >
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip
-                  formatter={(value) => [`${value} points`, "Points"]}
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "0.5rem",
-                  }}
-                />
-                <Bar
-                  dataKey="points"
-                  fill="hsl(var(--chart-1))"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`p-2 rounded-full ${stat.color} bg-opacity-10`}
+                  >
+                    {stat.icon}
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      {stat.title}
+                    </p>
+                    <h3 className="text-2xl font-bold">
+                      <CountUp targetNumber={stat.value} decimalPlaces={2} />
+                    </h3>
+                  </div>
+                </div>
+              </Card>
+            ));
+          })()}
+        </div>
+      )}
 
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Points Distribution</CardTitle>
-            <CardDescription>How you have earned your points</CardDescription>
-          </CardHeader>
-          <CardContent className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pointsDistributionData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {pointsDistributionData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => [`${value} points`, "Points"]}
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "0.5rem",
-                  }}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div> */}
+      {/* Points History */}
+      <PointsHistory selectedWallet={selectedWallet} />
     </div>
   );
 }

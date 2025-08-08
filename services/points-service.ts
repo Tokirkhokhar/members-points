@@ -17,10 +17,8 @@ export interface PointTransaction {
   description?: string;
   transactionReference?: string;
   createdAt: Date;
-  conversionRate: {
-    points: number;
-    currency: string;
-  };
+  unlockAt: Date | null;
+  locked: boolean;
 }
 
 // Mock data for demonstration purposes

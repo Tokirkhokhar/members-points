@@ -42,8 +42,7 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { CountUp } from "../ui/countUp";
+import { cn, formatDateTime } from "@/lib/utils";
 import { StatsCard } from "../ui/StatsCard";
 import { ConvertCouponModal } from "./convert-coupon-modal";
 
@@ -318,7 +317,7 @@ export function RewardsContent() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 gap-4 text-sm">
                       {reward?.couponType !==
                       RewardCouponType.UnitConversion ? (
                         <div>
@@ -379,10 +378,7 @@ export function RewardsContent() {
                       <div>
                         <p className="text-muted-foreground">Issued On</p>
                         <p className="font-medium">
-                          {format(
-                            new Date(reward.issuedAt),
-                            "MMM dd, yyyy hh:mm a"
-                          )}
+                          {formatDateTime(reward.issuedAt)}
                         </p>
                       </div>
 
@@ -401,13 +397,31 @@ export function RewardsContent() {
                           )}
                         >
                           {reward.expiredAt
-                            ? format(
-                                new Date(reward.expiredAt),
-                                "MMM dd, yyyy hh:mm a"
-                              )
+                            ? formatDateTime(reward.expiredAt)
                             : "-"}
                         </p>
                       </div>
+
+                      {reward.minimumAmount && (
+                        <div>
+                          <p className="text-muted-foreground">
+                            Minimum Amount
+                          </p>
+                          <p className="font-medium">{reward.minimumAmount}</p>
+                        </div>
+                      )}
+
+                      {reward.amountCapLimit &&
+                        reward.couponType === RewardCouponType.Percentage && (
+                          <div>
+                            <p className="text-muted-foreground">
+                              Amount Cap Limit
+                            </p>
+                            <p className="font-medium">
+                              {reward.amountCapLimit}
+                            </p>
+                          </div>
+                        )}
                     </div>
 
                     <div className="mt-3 pt-3 border-t">
@@ -444,10 +458,7 @@ export function RewardsContent() {
                                 Redeemed On
                               </p>
                               <p className="font-medium">
-                                {format(
-                                  new Date(reward.redeemedAt),
-                                  "MMM dd, yyyy hh:mm a"
-                                )}
+                                {formatDateTime(reward.redeemedAt)}
                               </p>
                             </div>
                             {reward.transactionReference && (

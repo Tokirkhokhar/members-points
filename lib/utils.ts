@@ -1,5 +1,6 @@
-import { PointConversionRounding } from "@/enums";
+import { DateFormat, PointConversionRounding } from "@/enums";
 import { clsx, type ClassValue } from "clsx";
+import { format } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -59,4 +60,11 @@ export const calculateConvertedRewardValue = ({
   }
 
   return rewardValue;
+};
+
+export const formatDateTime = (
+  date: string | Date,
+  dateFormat = DateFormat.DATE_TIME_FORMAT
+) => {
+  return format(date, dateFormat);
 };

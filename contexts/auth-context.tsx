@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (token == null) {
           setIsLoading(false);
           return;
-        } else {
+        } else if (token != null) {
           await getMe(token);
         }
       } catch (error) {

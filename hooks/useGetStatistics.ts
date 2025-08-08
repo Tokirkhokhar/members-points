@@ -1,31 +1,39 @@
 import { getReq } from "@/config/request";
-import { getCookie } from "@/lib/utils";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
-interface UseGetStatisticsProps {
-  polling?: boolean;
-  pollingInterval?: number;
+export interface PointStatisticsResponse {
+  walletType: {
+    walletTypeId: string;
+    code: string;
+    name: string;
+    unitSingularName: string;
+    unitPluralName: string;
+    active: boolean;
+    isDefault: boolean;
+    createdAt: string;
+  };
+  createdAt: string;
+  account: {
+    accumulatedPoints: string;
+    spentPoints: string;
+    activePoints: string;
+    expiredPoints: string;
+    blockedPoints: string;
+    lockedPoints: string;
+  };
+  pointsLimitUsed: number;
 }
 
-export const useGetStatistics = ({
-  polling = false,
-  pollingInterval = 30000,
-}: UseGetStatisticsProps = {}) => {
+export const useGetStatistics = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any>(null);
   const [isFirstTimeAPIcall, setIsFirstTimeAPIcall] = useState(true);
-  const pollingRef = useRef<NodeJS.Timeout>();
 
   const getStatistics = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("auth_token");
 
-      const { data: response } = await getReq("/member-portal/wallets", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const { data: response } = await getReq("/member-portal/wallets");
       if (isFirstTimeAPIcall) {
         setIsFirstTimeAPIcall(false);
       }
@@ -43,32 +51,10 @@ export const useGetStatistics = ({
     }
   };
 
-  // Start/stop polling when polling prop changes
-  useEffect(() => {
-    if (polling) {
-      // Initial fetch
-      if (!isFirstTimeAPIcall) {
-        getStatistics().catch(console.error);
-      }
-
-      // Set up polling
-      pollingRef.current = setInterval(() => {
-        getStatistics().catch(console.error);
-      }, pollingInterval);
-
-      // Cleanup on unmount or when polling is disabled
-      return () => {
-        if (pollingRef.current) {
-          clearInterval(pollingRef.current);
-        }
-      };
-    }
-  }, [polling, pollingInterval]);
-
   return {
     getStatistics,
     isLoading,
-    walletData: data?.data,
+    walletData: data?.data as PointStatisticsResponse[],
     // Add a way to manually refresh
     refresh: getStatistics,
   };

@@ -25,6 +25,7 @@ import { AvailableReward } from "@/hooks/use-available-rewards";
 import { format } from "date-fns";
 import Image from "next/image";
 import { RewardCouponType } from "@/hooks/use-members-rewards";
+import { formatDateTime } from "@/lib/utils";
 
 type RewardDetailsModalProps = {
   open: boolean;
@@ -175,13 +176,30 @@ export function RewardDetailsModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-muted-foreground mb-1">Reward Value</p>
-                <p className="font-medium">{formatRewardValue(reward)}</p>
+                {reward.couponType === RewardCouponType.UnitConversion ? (
+                  <p className="font-medium">
+                    {reward.pointConversionRate?.points} Points&nbsp; = &nbsp;
+                    {reward.pointConversionRate?.currency}&nbsp;
+                    {reward.currencyData.code}
+                  </p>
+                ) : (
+                  <p className="font-medium">{formatRewardValue(reward)}</p>
+                )}
               </div>
+
+              {reward?.walletCode && (
+                <div>
+                  <p className="text-muted-foreground mb-1">
+                    Required Wallet Code
+                  </p>
+                  <p className="font-medium">{reward.walletCode}</p>
+                </div>
+              )}
 
               <div>
                 <p className="text-muted-foreground mb-1">Created On</p>
                 <p className="font-medium">
-                  {format(new Date(reward.createdAt), "MMM dd, yyyy")}
+                  {formatDateTime(reward.createdAt)}
                 </p>
               </div>
               {reward?.minimumAmount && (

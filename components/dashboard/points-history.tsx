@@ -27,28 +27,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetPointHistory } from "@/hooks/getGetPointHistory";
 import { PointTransaction } from "@/services/points-service";
 import { PointsType } from "@/enums";
-import { cn } from "@/lib/utils";
-import { RedeemPointsModal } from "./redeem-points-modal";
-import { useGetStatistics } from "@/hooks/useGetStatistics";
+import { cn, formatDateTime } from "@/lib/utils";
 
 export function PointsHistory({
-  availablePoints,
-  getStatistics,
+  selectedWallet,
 }: {
-  availablePoints: number;
-  getStatistics: () => void;
+  selectedWallet?: {
+    walletTypeId: string;
+    unitsName?: string;
+  };
 }) {
-  const { getGetPointHistory, data, isLoading } = useGetPointHistory({
-    polling: true,
-    pollingInterval: 30000,
-  });
+  const { getGetPointHistory, data, isLoading } = useGetPointHistory();
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [isRedeemModalOpen, setIsRedeemModalOpen] = useState(false);
 
   useEffect(() => {
-    getGetPointHistory(page, 10);
-  }, [page]);
+    getGetPointHistory(page, 10, selectedWallet?.walletTypeId);
+  }, [page, selectedWallet]);
 
   useEffect(() => {
     if (data) {
@@ -62,62 +57,6 @@ export function PointsHistory({
     }
   };
 
-  const handleRedeemSuccess = () => {
-    // Refresh the transactions list after successful redemption
-    getGetPointHistory(page, 10);
-    getStatistics();
-  };
-
-  // const handleFilterChange = (
-  //   key: "type" | "category",
-  //   value: string | undefined
-  // ) => {
-  //   if (value === "all") {
-  //     const newFilter = { ...filter };
-  //     delete newFilter[key];
-  //     setFilter(newFilter);
-  //   } else {
-  //     setFilter({ ...filter, [key]: value as any });
-  //   }
-  //   setPage(1);
-  // };
-
-  // const uniqueCategories = [
-  //   "Purchase",
-  //   "Travel",
-  //   "Shopping",
-  //   "Promotion",
-  //   "Referral",
-  //   "Bonus",
-  // ];
-  const getDaysUntilExpiry = (expiryDate: string): number => {
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-    const diffTime = expiry.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
-
-  const getExpiryText = (expiryDate: string | undefined): string => {
-    if (!expiryDate) return "-";
-
-    const today = new Date();
-    const expiry = new Date(expiryDate);
-
-    if (expiry < today) {
-      return "Expired";
-    }
-
-    const daysUntilExpiry = getDaysUntilExpiry(expiryDate);
-
-    if (daysUntilExpiry === 1) {
-      return "Expires Today";
-    } else if (daysUntilExpiry === 0) {
-      return "Expired";
-    } else {
-      return format(expiry, "MMM dd, yyyy");
-    }
-  };
-
   return (
     <>
       <Card className="min-h-[570px] h-auto relative">
@@ -126,14 +65,6 @@ export function PointsHistory({
             <CardTitle>Points History</CardTitle>
             <CardDescription>Your recent points activities</CardDescription>
           </div>
-
-          {/* <Button
-            onClick={() => setIsRedeemModalOpen(true)}
-            className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-          >
-            <Gift className="h-4 w-4" />
-            Redeem Points
-          </Button> */}
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -168,7 +99,8 @@ export function PointsHistory({
                       createdAt,
                       transactionReference,
                       expiredAt,
-                      conversionRate,
+                      unlockAt,
+                      locked,
                     }: PointTransaction) => {
                       return (
                         <div
@@ -181,14 +113,18 @@ export function PointsHistory({
                                 type === PointsType.Adding,
                               "bg-red-100 dark:bg-red-400/10 text-red-600 dark:text-red-400":
                                 type === PointsType.Expired,
-                              "bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400":
+                              "bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400":
                                 type === PointsType.Spending,
                               "bg-gray-100 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400":
                                 type === PointsType.Blocked ||
                                 type === PointsType.Locked,
                             })}
                           >
-                            {type === PointsType.Adding ? (
+                            {[
+                              PointsType.Adding,
+                              PointsType.Locked,
+                              PointsType.Adjustment,
+                            ].includes(type) ? (
                               <BadgePlus className="h-5 w-5" />
                             ) : (
                               <BadgeMinus className="h-5 w-5" />
@@ -198,20 +134,11 @@ export function PointsHistory({
                           <div className="flex-1 min-w-0 flex flex-col gap-2">
                             <p className="font-medium flex items-center gap-2 truncate text-lg">
                               {description || "-"}
-                              {conversionRate && (
-                                <div className="flex items-center gap-1 text-xs w-fit text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
-                                  <Info className="h-3 w-3" />
-                                  <span>
-                                    {conversionRate?.points} pts ={" "}
-                                    {conversionRate?.currency} Unit Currency
-                                  </span>
-                                </div>
-                              )}
                             </p>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <p>
                                 <span className="font-bold">Date:&nbsp;</span>
-                                {format(new Date(createdAt), "MMM dd, yyyy")}
+                                {formatDateTime(createdAt)}
                               </p>
                               {transactionReference ? (
                                 <p className="text-sm capitalize">
@@ -221,12 +148,25 @@ export function PointsHistory({
                                   {transactionReference}
                                 </p>
                               ) : null}
-                              {expiredAt && type !== PointsType.Expired ? (
+                              {expiredAt &&
+                              ![PointsType.Expired, PointsType.Locked].includes(
+                                type
+                              ) ? (
                                 <p className="text-sm text-red-600 dark:text-red-400">
                                   <span>Expiry Date: </span>
-                                  <span>
-                                    {getExpiryText(expiredAt?.toString() || "")}
-                                  </span>
+                                  <span>{formatDateTime(expiredAt)}</span>
+                                </p>
+                              ) : null}
+                              {expiredAt && type === PointsType.Expired ? (
+                                <p className="text-sm text-red-600 dark:text-red-400">
+                                  <span>Expired At: </span>
+                                  <span>{formatDateTime(expiredAt)}</span>
+                                </p>
+                              ) : null}
+                              {unlockAt && type === PointsType.Locked ? (
+                                <p className="text-sm text-green-600 dark:text-green-400">
+                                  <span>Unlock Date: </span>
+                                  <span>{formatDateTime(unlockAt)}</span>
                                 </p>
                               ) : null}
                             </div>
@@ -235,20 +175,27 @@ export function PointsHistory({
                             className={cn("text-right font-medium", {
                               "text-green-600 dark:text-green-400":
                                 type === PointsType.Adding,
-                              "text-red-600 dark:text-red-400":
+
+                              "text-rose-500 dark:text-rose-400":
                                 type === PointsType.Expired,
-                              "text-amber-600 dark:text-amber-400":
+
+                              "text-orange-500 dark:text-orange-400":
                                 type === PointsType.Spending,
-                              "text-gray-600 dark:text-gray-400":
+
+                              "text-gray-500 dark:text-gray-400":
                                 type === PointsType.Blocked ||
                                 type === PointsType.Locked,
                             })}
                           >
-                            {type === PointsType.Adding ||
-                            type === PointsType.Adjustment
+                            {[
+                              PointsType.Adding,
+                              PointsType.Locked,
+                              PointsType.Adjustment,
+                            ].includes(type)
                               ? "+"
                               : "-"}
-                            {points.toLocaleString()} points
+                            {points.toLocaleString()}&nbsp;
+                            {selectedWallet?.unitsName}
                           </div>
                         </div>
                       );
@@ -287,14 +234,6 @@ export function PointsHistory({
           )}
         </CardContent>
       </Card>
-      {isRedeemModalOpen && (
-        <RedeemPointsModal
-          open={isRedeemModalOpen}
-          onOpenChange={setIsRedeemModalOpen}
-          availablePoints={availablePoints}
-          onSuccess={handleRedeemSuccess}
-        />
-      )}
     </>
   );
 }

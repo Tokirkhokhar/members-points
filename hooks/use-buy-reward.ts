@@ -29,7 +29,6 @@ export const useBuyReward = () => {
           },
         }
       );
-      console.log("🚀 ~ buyReward ~ response:", response);
 
       if (response?.message) {
         setData(response);

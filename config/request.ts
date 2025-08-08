@@ -12,8 +12,18 @@ export const axiosInstance = axios.create({
 
 export const getReq = async (url: string, config?: AxiosRequestConfig<any>) => {
   const options = config || {};
+  const token = localStorage.getItem("auth_token");
+
   try {
-    const response = await axiosInstance.get(url, options);
+    const response = await axiosInstance.get(url, {
+      ...options,
+      headers: token
+        ? {
+            ...options.headers,
+            Authorization: `Bearer ${token}`,
+          }
+        : options.headers,
+    });
     return response.data;
   } catch (err: any) {
     if (err.response.status === 401) {
@@ -29,7 +39,15 @@ export const postReq = async <K>(
 ) => {
   const options = config || {};
   try {
-    const response = await axiosInstance.post(url, data, options);
+    const token = localStorage.getItem("auth_token");
+
+    const response = await axiosInstance.post(url, data, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (err: any) {
     if (url.includes("members/generate-token")) {
@@ -49,7 +67,15 @@ export const patchReq = async <K>(
 ) => {
   const options = config || {};
   try {
-    const response = await axiosInstance.patch(url, data, options);
+    const token = localStorage.getItem("auth_token");
+
+    const response = await axiosInstance.patch(url, data, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (err: any) {
     if (err.response.status === 401) {
