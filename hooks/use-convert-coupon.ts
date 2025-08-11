@@ -4,7 +4,7 @@ import { postReq } from "@/config/request";
 export type ConvertCouponPayload = {
   issuedRewardId: string;
   points: number;
-  walletCode?: string;
+  walletCode: string;
 };
 
 export type ConvertCouponResponse = {
@@ -27,10 +27,7 @@ export const useConvertCoupon = () => {
 
       const { data: response } = await postReq(
         `/member-portal/${issuedRewardId}/convert`,
-        {
-          points,
-          ...(walletCode && { walletCode }),
-        }
+        { points, walletCode }
       );
 
       if (response) {

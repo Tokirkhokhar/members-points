@@ -42,7 +42,7 @@ const convertFormSchema = z.object({
     .max(100000, {
       message: "Cannot convert more than 100,000 points at once",
     }),
-  walletCode: z.string().optional(),
+  walletCode: z.string().min(1, { message: "Wallet code is required" }),
 });
 
 type ConvertCouponModalProps = {
@@ -184,7 +184,7 @@ export function ConvertCouponModal({
               name="walletCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Wallet</FormLabel>
+                  <p className="text-sm font-medium">Wallet</p>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
@@ -211,11 +211,11 @@ export function ConvertCouponModal({
               name="points"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Points to Convert</FormLabel>
+                  <p className="text-sm font-medium">Points to Convert</p>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Enter points amount"
+                      placeholder="Enter points (e.g., 10)"
                       {...field}
                       onChange={(e) =>
                         e.target.value === "0"
@@ -223,7 +223,7 @@ export function ConvertCouponModal({
                           : field.onChange(Number(e.target.value))
                       }
                       value={field.value || ""}
-                      className="text-center text-lg font-medium"
+                      className="text-base font-medium"
                     />
                   </FormControl>
                   <FormDescription>
@@ -259,7 +259,8 @@ export function ConvertCouponModal({
                       points: watchedPoints,
                       conversionRounding:
                         selectedReward?.pointConversionRounding,
-                    })}{" "}
+                    })}
+                    &nbsp;
                     {currencyCode}
                   </span>
                 </div>
@@ -278,7 +279,7 @@ export function ConvertCouponModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading || watchedPoints <= 0}
+                disabled={isLoading}
                 className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               >
                 {isLoading ? (
