@@ -9,12 +9,11 @@ export const useLogin = () => {
 
   const login = async (email: string) => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       const payload = { email };
 
       const { data: response } = await postReq(
-        "admin/members/generate-token",
+        "/members/generate-token",
         payload,
         {
           headers: {

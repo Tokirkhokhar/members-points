@@ -2,8 +2,9 @@ import { useState } from "react";
 import { postReq } from "@/config/request";
 
 export type ConvertCouponPayload = {
+  issuedRewardId: string;
   points: number;
-  walletId?: string;
+  walletCode: string;
 };
 
 export type ConvertCouponResponse = {
@@ -15,24 +16,18 @@ export const useConvertCoupon = () => {
   const [data, setData] = useState<ConvertCouponResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const convertCoupon = async (
-    issuedRewardId: string,
-    payload: ConvertCouponPayload
-  ): Promise<ConvertCouponResponse> => {
+  const convertCoupon = async ({
+    issuedRewardId,
+    points,
+    walletCode,
+  }: ConvertCouponPayload): Promise<ConvertCouponResponse> => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        `members/${issuedRewardId}/convert`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `/member-portal/${issuedRewardId}/convert`,
+        { points, walletCode }
       );
 
       if (response) {

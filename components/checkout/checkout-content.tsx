@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import {
+  ArrowLeft,
+  CreditCard,
+  Loader2,
+  Gift,
+  CheckCircle,
+  Info,
+  AlertCircle,
+} from "lucide-react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,30 +30,24 @@ import {
   useCreateTransaction,
   CreateTransactionPayload,
 } from "@/hooks/useCreateTransaction";
-import {
-  useValidatePoints,
-  ValidatePointsResponse,
-} from "@/hooks/use-validate-points";
+import { useValidatePoints } from "@/hooks/use-validate-points";
 import { useBlockPoints } from "@/hooks/useBlockPoints";
 import { useSpendPoints } from "@/hooks/useSpendPoints";
 import { useUnBlockPoints } from "@/hooks/useUnBlockPoints";
 import { useToast } from "@/hooks/use-toast";
-import {
-  ArrowLeft,
-  CreditCard,
-  Loader2,
-  Gift,
-  CheckCircle,
-  Info,
-  AlertCircle,
-} from "lucide-react";
-import Link from "next/link";
 import { currencySymbol } from "@/constants/common";
 import { generateTransactionDocumentNumber } from "@/lib/utils";
-import { PaymentConfirmationModal } from "./payment-confirmation-modal";
 import { useGetMembersWallets } from "@/hooks/useGetMembersWallets";
 import { useRedeemCoupon } from "@/hooks/use-redeem-coupon";
 import { useValidateCoupon } from "@/hooks/use-validate-coupon";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PaymentConfirmationModal } from "./payment-confirmation-modal";
 
 export function CheckoutContent() {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -81,7 +85,7 @@ export function CheckoutContent() {
   const [couponCode, setCouponCode] = useState<string>("");
   const [isCouponValidated, setIsCouponValidated] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [defaultWallet, setDefaultWallet] = useState<any>(null);
+  const [walletId, setWalletId] = useState<string>();
   const [blockedPoints, setBlockedPoints] = useState<number>(0);
   const [blockPointId, setBlockPointId] = useState<string | null>(null);
   const [transactionDocumentNumber, setTransactionDocumentNumber] = useState<
@@ -115,10 +119,11 @@ export function CheckoutContent() {
 
   useEffect(() => {
     if (membersWallets?.length) {
-      const defaultWallet = membersWallets.find(
-        (wallet: any) => wallet.isDefault
-      );
-      setDefaultWallet(defaultWallet);
+      const defaultWallet = membersWallets?.find(({ isDefault }) => isDefault);
+
+      if (defaultWallet) {
+        setWalletId(defaultWallet.id);
+      }
     }
   }, [membersWallets]);
 
@@ -136,6 +141,7 @@ export function CheckoutContent() {
       const response = await validatePoints({
         amount: parseFloat((totalPrice - couponDiscount).toFixed(2)),
         points: pointsToRedeem,
+        walletId,
       });
 
       setPointsDiscount(Number(response.discount));
@@ -231,7 +237,7 @@ export function CheckoutContent() {
         const blockPoint = await blockPoints({
           memberId: user.id,
           points: pointsToRedeem,
-          walletId: defaultWallet?.id,
+          ...(walletId && { walletId }),
           transactionDocumentNumber,
         });
         setBlockedPoints(pointsToRedeem);
@@ -267,7 +273,7 @@ export function CheckoutContent() {
           points: blockedPoints,
           memberId: user!.id,
           amount: finalAmount,
-          walletId: defaultWallet?.id,
+          ...(walletId && { walletId }),
           transactionDocumentNumber: documentNumber,
         });
       }
@@ -385,6 +391,10 @@ export function CheckoutContent() {
         });
       }
     }
+  };
+
+  const handleWalletChange = (walletId: string) => {
+    setWalletId(walletId);
   };
 
   const isProcessing =
@@ -548,8 +558,9 @@ export function CheckoutContent() {
                         <strong>Email:</strong> {user?.email}
                       </p>
                     </div>
+
                     {/* Coupon Code Section */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 border border-border rounded-md p-4">
                       <div className="flex items-center gap-2">
                         <Gift className="h-5 w-5 text-blue-500" />
                         <h3 className="font-medium">Apply Coupon</h3>
@@ -652,7 +663,7 @@ export function CheckoutContent() {
                     </div>
 
                     {/* Point Redemption Section */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 border border-border rounded-md p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Gift className="h-5 w-5 text-amber-500" />
@@ -671,8 +682,28 @@ export function CheckoutContent() {
                       </div>
 
                       {/* Points Input Row */}
-                      <div className="flex gap-2">
-                        <div className="flex-1">
+                      <div className="flex flex-col gap-4">
+                        <h4 className="text-base font-semibold">
+                          Select Wallet
+                        </h4>
+                        <Select
+                          value={walletId}
+                          onValueChange={(walletId) =>
+                            handleWalletChange(walletId)
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Wallet" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {membersWallets?.map((wallet) => (
+                              <SelectItem key={wallet.id} value={wallet.id}>
+                                {wallet.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <div className="flex flex-row gap-4">
                           <Input
                             type="number"
                             placeholder="Enter points"
@@ -689,32 +720,31 @@ export function CheckoutContent() {
                             className="text-center"
                             disabled={isPointsValidated}
                           />
+                          {!isPointsValidated ? (
+                            <Button
+                              onClick={handleValidatePoints}
+                              disabled={isValidatingPoints || !pointsToRedeem}
+                              variant="outline"
+                              size="default"
+                              className="px-4"
+                            >
+                              {isValidatingPoints ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                "Validate"
+                              )}
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={handleResetPoints}
+                              variant="ghost"
+                              size="default"
+                              className="px-4"
+                            >
+                              Reset
+                            </Button>
+                          )}
                         </div>
-
-                        {!isPointsValidated ? (
-                          <Button
-                            onClick={handleValidatePoints}
-                            disabled={isValidatingPoints || !pointsToRedeem}
-                            variant="outline"
-                            size="default"
-                            className="px-4"
-                          >
-                            {isValidatingPoints ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              "Validate"
-                            )}
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={handleResetPoints}
-                            variant="ghost"
-                            size="default"
-                            className="px-4"
-                          >
-                            Reset
-                          </Button>
-                        )}
                       </div>
 
                       {/* Validation Success State */}

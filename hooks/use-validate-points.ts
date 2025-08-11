@@ -4,6 +4,7 @@ import { postReq } from "@/config/request";
 export type ValidatePointsPayload = {
   amount: number;
   points: number;
+  walletId?: string;
 };
 
 export type ValidatePointsResponse = {
@@ -30,19 +31,12 @@ export const useValidatePoints = () => {
     payload: ValidatePointsPayload
   ): Promise<ValidatePointsResponse> => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        "members/validate/points",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        "/member-portal/validate/points",
+        payload
       );
 
       if (response) {

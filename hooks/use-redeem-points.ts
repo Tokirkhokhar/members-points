@@ -13,19 +13,12 @@ export const useRedeemPoints = () => {
 
   const redeemPoints = async (payload: RedeemPointsPayload) => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        "members/redeem-points",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        "/member-portal/redeem-points",
+        payload
       );
 
       if (response) {

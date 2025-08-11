@@ -15,19 +15,12 @@ export const useBuyReward = () => {
     points?: number
   ): Promise<BuyRewardResponse> => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        `members/${rewardId}/buy`,
-        { ...(points && { points }) },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `/member-portal/rewards/${rewardId}/buy`,
+        { ...(points && { points }) }
       );
 
       if (response?.message) {

@@ -15,19 +15,12 @@ export const useBlockPoints = () => {
 
   const blockPoints = async (payload: BlockPointsPayload) => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        "members/block/points",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        "/member-portal/block/points",
+        payload
       );
 
       if (response) {

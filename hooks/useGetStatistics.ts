@@ -33,7 +33,7 @@ export const useGetStatistics = () => {
     try {
       setIsLoading(true);
 
-      const { data: response } = await getReq("members/wallets");
+      const { data: response } = await getReq("/member-portal/wallets");
       if (isFirstTimeAPIcall) {
         setIsFirstTimeAPIcall(false);
       }

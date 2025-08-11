@@ -15,19 +15,11 @@ export const useUnBlockPoints = () => {
 
   const unBlockPoints = async (blockedPointId: string) => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        `members/${blockedPointId}/unblock/points`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `/member-portal/${blockedPointId}/unblock/points`
       );
 
       if (response) {

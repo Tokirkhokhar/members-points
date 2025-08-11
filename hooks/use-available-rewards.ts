@@ -75,15 +75,8 @@ export const useAvailableRewards = (page: number = 1, limit: number = 10) => {
       setIsLoading(true);
       setError(null);
 
-      const token = localStorage.getItem("auth_token");
       const { data: response } = await getReq(
-        `members/rewards/available?page=${page}&limit=${limit}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `/member-portal/rewards/available?page=${page}&limit=${limit}`
       );
 
       if (response?.data) {

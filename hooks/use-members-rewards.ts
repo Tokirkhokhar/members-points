@@ -73,12 +73,7 @@ export const useMemberRewards = () => {
   const getMemberRewardsApiCall = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem("auth_token");
-      const { data: response } = await getReq("members/rewards", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      const { data: response } = await getReq("/member-portal/rewards", {
         params: {
           page,
           limit,

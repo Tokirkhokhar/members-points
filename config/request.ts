@@ -32,9 +32,9 @@ export const getReq = async (url: string, config?: AxiosRequestConfig<any>) => {
     throw err;
   }
 };
-export const postReq = async <K>(
+export const postReq = async (
   url: string,
-  data: K,
+  data = {},
   config?: AxiosRequestConfig<any>
 ) => {
   const options = config || {};

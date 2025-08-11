@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Loader2, ArrowRightLeft } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,9 +25,15 @@ import {
 } from "@/components/ui/form";
 import { useConvertCoupon } from "@/hooks/use-convert-coupon";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowRightLeft, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { calculateConvertedRewardValue } from "@/lib/utils";
+import { useGetMembersWallets } from "@/hooks/useGetMembersWallets";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const convertFormSchema = z.object({
   points: z
@@ -35,6 +42,7 @@ const convertFormSchema = z.object({
     .max(100000, {
       message: "Cannot convert more than 100,000 points at once",
     }),
+  walletCode: z.string().min(1, { message: "Wallet code is required" }),
 });
 
 type ConvertCouponModalProps = {
@@ -59,29 +67,44 @@ export function ConvertCouponModal({
   selectedReward,
   onSuccess,
 }: ConvertCouponModalProps) {
-  const { convertCoupon, isLoading } = useConvertCoupon();
   const { toast } = useToast();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { convertCoupon, isLoading } = useConvertCoupon();
+  const {
+    getMembersWallets,
+    isLoading: isWalletsLoading,
+    data: wallets,
+    defaultWallet,
+  } = useGetMembersWallets();
 
   const form = useForm<z.infer<typeof convertFormSchema>>({
     resolver: zodResolver(convertFormSchema),
     defaultValues: {
       points: 0,
+      walletCode: "",
     },
   });
 
-  const watchedPoints = form.watch("points");
+  useEffect(() => {
+    getMembersWallets();
+  }, []);
 
-  // Calculate converted amount
-  const convertedAmount =
-    conversionRate && watchedPoints > 0
-      ? (watchedPoints / conversionRate.points) * conversionRate.currency
-      : 0;
+  useEffect(() => {
+    if (defaultWallet && !form.getValues().walletCode) {
+      form.setValue("walletCode", defaultWallet.walletCode);
+    }
+  }, [defaultWallet, form]);
+
+  const watchedPoints = form.watch("points");
 
   async function onSubmit(values: z.infer<typeof convertFormSchema>) {
     try {
-      const response = await convertCoupon(issuedRewardId, {
-        points: values.points,
+      const { points, walletCode } = values;
+
+      const response = await convertCoupon({
+        issuedRewardId,
+        points: Number(points),
+        walletCode,
       });
 
       // Show success modal
@@ -158,14 +181,41 @@ export function ConvertCouponModal({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
+              name="walletCode"
+              render={({ field }) => (
+                <FormItem>
+                  <p className="text-sm font-medium">Wallet</p>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Wallet" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {wallets?.map((wallet) => (
+                          <SelectItem
+                            key={wallet.walletCode}
+                            value={wallet.walletCode}
+                          >
+                            {wallet.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="points"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Points to Convert</FormLabel>
+                  <p className="text-sm font-medium">Points to Convert</p>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Enter points amount"
+                      placeholder="Enter points (e.g., 10)"
                       {...field}
                       onChange={(e) =>
                         e.target.value === "0"
@@ -173,7 +223,7 @@ export function ConvertCouponModal({
                           : field.onChange(Number(e.target.value))
                       }
                       value={field.value || ""}
-                      className="text-center text-lg font-medium"
+                      className="text-base font-medium"
                     />
                   </FormControl>
                   <FormDescription>
@@ -204,13 +254,13 @@ export function ConvertCouponModal({
                     You will receive:
                   </span>
                   <span className="font-semibold text-blue-800 dark:text-blue-200">
-                    {/* { convertedAmount.toFixed(2)} {currencyCode} */}
                     {calculateConvertedRewardValue({
                       conversionRate,
                       points: watchedPoints,
                       conversionRounding:
                         selectedReward?.pointConversionRounding,
-                    })}{" "}
+                    })}
+                    &nbsp;
                     {currencyCode}
                   </span>
                 </div>
@@ -229,7 +279,7 @@ export function ConvertCouponModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading || watchedPoints <= 0}
+                disabled={isLoading}
                 className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               >
                 {isLoading ? (

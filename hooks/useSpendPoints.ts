@@ -16,19 +16,12 @@ export const useSpendPoints = () => {
 
   const spendPoints = async (payload: SpendPointsPayload) => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
-        "members/spend/points",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        "/member-portal/spend/points",
+        payload
       );
 
       if (response) {

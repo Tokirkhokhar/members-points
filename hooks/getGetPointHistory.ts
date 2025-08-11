@@ -30,13 +30,16 @@ export const useGetPointHistory = () => {
     try {
       setIsLoading(true);
 
-      const { data: response } = await getReq("members/wallets/point-history", {
-        params: {
-          page,
-          limit,
-          ...(walletTypeId && { walletTypeId }),
-        },
-      });
+      const { data: response } = await getReq(
+        "/member-portal/wallets/point-history",
+        {
+          params: {
+            page,
+            limit,
+            ...(walletTypeId && { walletTypeId }),
+          },
+        }
+      );
       if (response) {
         if (isFirstTimeAPIcall) {
           setIsFirstTimeAPIcall(false);
