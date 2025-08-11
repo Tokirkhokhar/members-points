@@ -64,32 +64,39 @@ export function PointsHistory({
 
   return (
     <>
-      <Card className="min-h-[570px] h-auto relative">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <Card className="min-h-[570px] h-auto relative overflow-hidden">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-6">
           <div>
-            <CardTitle>Points History</CardTitle>
-            <CardDescription>Your recent points activities</CardDescription>
+            <CardTitle className="text-xl sm:text-2xl">
+              Points History
+            </CardTitle>
+            <CardDescription className="text-sm sm:text-base">
+              Your recent points activities
+            </CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-2 sm:p-6">
           {isLoading ? (
-            <div className="space-y-3">
+            <div className="space-y-4 p-2">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <Skeleton className="h-10 w-10 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-36" />
-                    <Skeleton className="h-4 w-24" />
+                <div
+                  key={i}
+                  className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
+                >
+                  <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
                   </div>
-                  <Skeleton className="h-4 w-16 ml-auto" />
+                  <Skeleton className="h-6 w-16 mt-1" />
                 </div>
               ))}
             </div>
           ) : (
             <div>
-              <div className="space-y-4 mb-8">
+              <div className="space-y-2 sm:space-y-3 mb-8">
                 {data?.data.length === 0 ? (
-                  <div className="flex items-center justify-center min-h-[400px]  text-center py-6">
+                  <div className="flex items-center justify-center min-h-[300px] sm:min-h-[400px] text-center py-6 px-4">
                     <p className="text-muted-foreground">
                       No transactions found
                     </p>
@@ -110,7 +117,7 @@ export function PointsHistory({
                       return (
                         <div
                           key={id}
-                          className="flex items-start gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors"
+                          className="flex flex-col sm:flex-row items-start gap-3 p-3 sm:p-4 rounded-lg hover:bg-muted/50 transition-colors border border-transparent hover:border-muted-foreground/10"
                         >
                           <div
                             className={cn(`rounded-full p-2`, {
@@ -136,12 +143,12 @@ export function PointsHistory({
                             )}
                           </div>
 
-                          <div className="flex-1 min-w-0 flex flex-col gap-2">
-                            <p className="font-medium flex items-center gap-2 truncate text-lg">
+                          <div className="flex-1 min-w-0 w-full">
+                            <p className="font-medium text-base sm:text-lg text-foreground line-clamp-2">
                               {description || "-"}
                             </p>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <p className="flex items-center gap-2">
+                            <div className="mt-2 flex flex-col sm:flex-row sm:flex-wrap gap-2 text-xs sm:text-sm text-muted-foreground">
+                              <p className="flex items-center gap-1.5">
                                 <Calendar className="h-4 w-4" />
                                 <span className="font-semibold">
                                   Date:&nbsp;
@@ -198,20 +205,23 @@ export function PointsHistory({
                             </div>
                           </div>
                           <div
-                            className={cn("text-right font-medium", {
-                              "text-green-600 dark:text-green-400":
-                                type === PointsType.Adding,
+                            className={cn(
+                              "mt-2 sm:mt-0 text-right font-medium whitespace-nowrap text-sm sm:text-base",
+                              {
+                                "text-green-600 dark:text-green-400":
+                                  type === PointsType.Adding,
 
-                              "text-rose-500 dark:text-rose-400":
-                                type === PointsType.Expired,
+                                "text-rose-500 dark:text-rose-400":
+                                  type === PointsType.Expired,
 
-                              "text-orange-500 dark:text-orange-400":
-                                type === PointsType.Spending,
+                                "text-orange-500 dark:text-orange-400":
+                                  type === PointsType.Spending,
 
-                              "text-gray-500 dark:text-gray-400":
-                                type === PointsType.Blocked ||
-                                type === PointsType.Locked,
-                            })}
+                                "text-gray-500 dark:text-gray-400":
+                                  type === PointsType.Blocked ||
+                                  type === PointsType.Locked,
+                              }
+                            )}
                           >
                             {[
                               PointsType.Adding,
@@ -231,28 +241,41 @@ export function PointsHistory({
               </div>
 
               {data?.data && data?.data.length > 0 && (
-                <div className="flex items-center justify-between absolute bottom-1 w-full pr-14 pl-6 my-4">
-                  <p className="text-sm text-muted-foreground">
-                    Showing {Math.min((page - 1) * 10 + 1, total)} to&nbsp;
-                    {Math.min(page * 10, total)} of {total} entries
-                  </p>
-                  <div className="flex items-center gap-4 cursor-pointer">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => handlePageChange(page - 1)}
-                      disabled={page === 1}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => handlePageChange(page + 1)}
-                      disabled={page * 10 >= total}
-                    >
-                      Next
-                    </Button>
+                <div className="sticky bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t p-4">
+                  <div className="container mx-auto px-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+                        Showing{" "}
+                        <span className="font-medium">
+                          {Math.min((page - 1) * 10 + 1, total)}
+                        </span>{" "}
+                        to&nbsp;
+                        <span className="font-medium">
+                          {Math.min(page * 10, total)}
+                        </span>{" "}
+                        of <span className="font-medium">{total}</span> entries
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs sm:text-sm px-3 sm:px-4"
+                          onClick={() => handlePageChange(page - 1)}
+                          disabled={page === 1}
+                        >
+                          Previous
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          className="text-xs sm:text-sm px-3 sm:px-4"
+                          onClick={() => handlePageChange(page + 1)}
+                          disabled={page * 10 >= total}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
