@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -26,6 +26,14 @@ import {
 import { useConvertCoupon } from "@/hooks/use-convert-coupon";
 import { useToast } from "@/hooks/use-toast";
 import { calculateConvertedRewardValue } from "@/lib/utils";
+import { useGetMembersWallets } from "@/hooks/useGetMembersWallets";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const convertFormSchema = z.object({
   points: z
@@ -34,6 +42,7 @@ const convertFormSchema = z.object({
     .max(100000, {
       message: "Cannot convert more than 100,000 points at once",
     }),
+  walletCode: z.string().optional(),
 });
 
 type ConvertCouponModalProps = {
@@ -58,29 +67,44 @@ export function ConvertCouponModal({
   selectedReward,
   onSuccess,
 }: ConvertCouponModalProps) {
-  const { convertCoupon, isLoading } = useConvertCoupon();
   const { toast } = useToast();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { convertCoupon, isLoading } = useConvertCoupon();
+  const {
+    getMembersWallets,
+    isLoading: isWalletsLoading,
+    data: wallets,
+    defaultWallet,
+  } = useGetMembersWallets();
 
   const form = useForm<z.infer<typeof convertFormSchema>>({
     resolver: zodResolver(convertFormSchema),
     defaultValues: {
       points: 0,
+      walletCode: "",
     },
   });
 
-  const watchedPoints = form.watch("points");
+  useEffect(() => {
+    getMembersWallets();
+  }, []);
 
-  // Calculate converted amount
-  const convertedAmount =
-    conversionRate && watchedPoints > 0
-      ? (watchedPoints / conversionRate.points) * conversionRate.currency
-      : 0;
+  useEffect(() => {
+    if (defaultWallet && !form.getValues().walletCode) {
+      form.setValue("walletCode", defaultWallet.walletCode);
+    }
+  }, [defaultWallet, form]);
+
+  const watchedPoints = form.watch("points");
 
   async function onSubmit(values: z.infer<typeof convertFormSchema>) {
     try {
-      const response = await convertCoupon(issuedRewardId, {
-        points: values.points,
+      const { points, walletCode } = values;
+
+      const response = await convertCoupon({
+        issuedRewardId,
+        points: Number(points),
+        walletCode,
       });
 
       // Show success modal
@@ -157,6 +181,33 @@ export function ConvertCouponModal({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
+              name="walletCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Wallet</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Wallet" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {wallets?.map((wallet) => (
+                          <SelectItem
+                            key={wallet.walletCode}
+                            value={wallet.walletCode}
+                          >
+                            {wallet.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="points"
               render={({ field }) => (
                 <FormItem>
@@ -203,7 +254,6 @@ export function ConvertCouponModal({
                     You will receive:
                   </span>
                   <span className="font-semibold text-blue-800 dark:text-blue-200">
-                    {/* { convertedAmount.toFixed(2)} {currencyCode} */}
                     {calculateConvertedRewardValue({
                       conversionRate,
                       points: watchedPoints,

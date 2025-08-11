@@ -541,15 +541,17 @@ export function RewardsContent() {
           </div>
         )}
       </div>
-      <ConvertCouponModal
-        open={convertModalOpen}
-        onOpenChange={setConvertModalOpen}
-        issuedRewardId={selectedReward?.id || ""}
-        conversionRate={selectedReward?.pointConversionRate}
-        currencyCode={selectedReward?.currencyData?.code}
-        selectedReward={selectedReward}
-        onSuccess={handleConvertSuccess}
-      />
+      {convertModalOpen && (
+        <ConvertCouponModal
+          open={convertModalOpen}
+          onOpenChange={setConvertModalOpen}
+          issuedRewardId={selectedReward?.id || ""}
+          conversionRate={selectedReward?.pointConversionRate}
+          currencyCode={selectedReward?.currencyData?.code}
+          selectedReward={selectedReward}
+          onSuccess={handleConvertSuccess}
+        />
+      )}
     </div>
   );
 }

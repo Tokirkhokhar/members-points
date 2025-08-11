@@ -1,21 +1,25 @@
-import { getReq } from "@/config/request";
 import { useState } from "react";
+import { getReq } from "@/config/request";
+
+interface Wallet {
+  id: string;
+  createdAt: string;
+  name: string;
+  walletCode: string;
+  unitSingularName: string;
+  unitPluralName: string;
+  isDefault: boolean;
+}
 
 export const useGetMembersWallets = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<Wallet[]>([]);
 
   const getMembersWallets = async () => {
     try {
       setIsLoading(true);
 
-      const token = localStorage.getItem("auth_token");
-
-      const { data: response } = await getReq("/member-portal/wallets/list", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const { data: response } = await getReq("/member-portal/wallets/list");
       if (response) {
         setIsLoading(false);
         setData(response);
@@ -28,5 +32,10 @@ export const useGetMembersWallets = () => {
     }
   };
 
-  return { getMembersWallets, isLoading, data };
+  return {
+    getMembersWallets,
+    isLoading,
+    data,
+    defaultWallet: data?.find(({ isDefault }) => isDefault),
+  };
 };
