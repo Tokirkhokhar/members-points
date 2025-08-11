@@ -24,14 +24,8 @@ export const useRewardStatistics = ({
       setIsLoading(true);
       setError(null);
 
-      const token = localStorage.getItem("auth_token");
       const { data: response } = await getReq(
-        "/member-portal/rewards/statistics",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        "/member-portal/rewards/statistics"
       );
 
       if (response) {

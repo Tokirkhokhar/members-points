@@ -1,38 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { useGetStatistics } from "@/hooks/useGetStatistics";
-import { PointsStatistics as PointsStatsType } from "@/services/points-service";
-// import {
-//   BarChart,
-//   Bar,
-//   PieChart,
-//   Pie,
-//   Cell,
-//   ResponsiveContainer,
-//   XAxis,
-//   YAxis,
-//   Tooltip,
-//   Legend,
-// } from "recharts";
+import { BadgeMinus, BadgePlus, CircleX, Info, Wallet } from "lucide-react";
 import { PointsHistory } from "./points-history";
 import { CountUp } from "../ui/countUp";
 import { Skeleton } from "../ui/skeleton";
-import {
-  BadgeMinus,
-  BadgePlus,
-  BlocksIcon,
-  CircleX,
-  CrossIcon,
-  Info,
-  Wallet,
-} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -40,35 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
-type StateCardProps = {
-  targetNumber: number;
-  label: string;
-};
-
-const StateCard = ({ targetNumber, label }: StateCardProps) => {
-  return (
-    <Card className="hover:bg-primary/10 hover:scale-[1.03] transition-all cursor-pointer block border border-input rounded-[8px] shadow-sm">
-      <CardHeader className="pb-2">
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-3xl">
-          <CountUp targetNumber={targetNumber} />
-        </CardTitle>
-      </CardHeader>
-    </Card>
-  );
-};
-
-// const Progress = ({ value }: { value: number }) => {
-//   return (
-//     <div className="relative h-4 w-full overflow-hidden rounded-full bg-secondary">
-//       <div
-//         className="h-full w-full flex-1 bg-primary transition-all"
-//         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-//       />
-//     </div>
-//   );
-// };
 
 export function PointsStatistics() {
   const {

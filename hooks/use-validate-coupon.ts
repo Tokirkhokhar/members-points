@@ -25,19 +25,12 @@ export const useValidateCoupon = () => {
     payload: ValidateCouponPayload
   ): Promise<ValidateCouponResponse> => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
         "/member-portal/validate/coupon",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        payload
       );
 
       if (response) {

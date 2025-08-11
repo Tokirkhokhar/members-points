@@ -23,19 +23,12 @@ export const useRedeemCoupon = () => {
     payload: RedeemCouponPayload
   ): Promise<RedeemCouponResponse> => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
         "/member-portal/redeem/coupon",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        payload
       );
 
       if (response) {

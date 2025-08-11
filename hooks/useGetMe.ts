@@ -1,6 +1,5 @@
-import { getReq } from "@/config/request";
-import { getCookie } from "@/lib/utils";
 import { useState } from "react";
+import { getReq } from "@/config/request";
 
 export const useGetMe = () => {
   const [isLoading, setIsLoading] = useState(false);

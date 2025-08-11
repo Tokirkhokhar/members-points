@@ -46,18 +46,11 @@ export const useMemberRedemptions = (page: number = 1, limit: number = 20) => {
     pageLimit: number = limit
   ) => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await getReq(
-        `/member-portal/redemptions?page=${pageNum}&limit=${pageLimit}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        `/member-portal/redemptions?page=${pageNum}&limit=${pageLimit}`
       );
 
       if (response) {

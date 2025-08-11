@@ -47,19 +47,12 @@ export const useCreateTransaction = () => {
 
   const createTransaction = async (payload: CreateTransactionPayload) => {
     try {
-      const token = localStorage.getItem("auth_token");
       setIsLoading(true);
       setError(null);
 
       const { data: response } = await postReq(
         "/member-portal/transaction",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
+        payload
       );
 
       if (response) {
