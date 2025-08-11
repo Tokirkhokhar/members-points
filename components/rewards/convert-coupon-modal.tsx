@@ -4,6 +4,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { Loader2, ArrowRightLeft } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,8 +25,6 @@ import {
 } from "@/components/ui/form";
 import { useConvertCoupon } from "@/hooks/use-convert-coupon";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowRightLeft, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { calculateConvertedRewardValue } from "@/lib/utils";
 
 const convertFormSchema = z.object({

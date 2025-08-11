@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { BadgePlus, BadgeMinus /* Filter */, Gift, Info } from "lucide-react";
+import {
+  BadgePlus,
+  BadgeMinus,
+  UnlockIcon,
+  LockIcon,
+  Calendar,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -135,14 +140,17 @@ export function PointsHistory({
                             <p className="font-medium flex items-center gap-2 truncate text-lg">
                               {description || "-"}
                             </p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <p>
-                                <span className="font-bold">Date:&nbsp;</span>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                              <p className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4" />
+                                <span className="font-semibold">
+                                  Date:&nbsp;
+                                </span>
                                 {formatDateTime(createdAt)}
                               </p>
                               {transactionReference ? (
-                                <p className="text-sm capitalize">
-                                  <span className="font-bold">
+                                <p className="flex items-center gap-2 text-sm capitalize">
+                                  <span className="font-semibold">
                                     Transaction Reference:&nbsp;
                                   </span>
                                   {transactionReference}
@@ -152,23 +160,41 @@ export function PointsHistory({
                               ![PointsType.Expired, PointsType.Locked].includes(
                                 type
                               ) ? (
-                                <p className="text-sm text-red-600 dark:text-red-400">
-                                  <span>Expiry Date: </span>
+                                <p className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                                  <Calendar className="h-4 w-4" />
+                                  <span className="font-semibold">
+                                    Expiry Date:&nbsp;
+                                  </span>
                                   <span>{formatDateTime(expiredAt)}</span>
                                 </p>
                               ) : null}
                               {expiredAt && type === PointsType.Expired ? (
-                                <p className="text-sm text-red-600 dark:text-red-400">
-                                  <span>Expired At: </span>
+                                <p className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                                  <Calendar className="h-4 w-4" />
+                                  <span className="font-semibold">
+                                    Expired At:&nbsp;
+                                  </span>
                                   <span>{formatDateTime(expiredAt)}</span>
                                 </p>
                               ) : null}
                               {unlockAt && type === PointsType.Locked ? (
-                                <p className="text-sm text-green-600 dark:text-green-400">
-                                  <span>Unlock Date: </span>
+                                <p className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                                  <LockIcon className="h-4 w-4" />
+                                  <span className="font-semibold">
+                                    Unlock Date:&nbsp;
+                                  </span>
                                   <span>{formatDateTime(unlockAt)}</span>
                                 </p>
                               ) : null}
+                              {unlockAt && type === PointsType.Adding && (
+                                <p className="flex items-center gap-2 text-sm">
+                                  <UnlockIcon className="h-4 w-4" />
+                                  <span className="font-semibold">
+                                    Unlocked At:&nbsp;
+                                  </span>
+                                  <span>{formatDateTime(unlockAt)}</span>
+                                </p>
+                              )}
                             </div>
                           </div>
                           <div
@@ -207,7 +233,7 @@ export function PointsHistory({
               {data?.data && data?.data.length > 0 && (
                 <div className="flex items-center justify-between absolute bottom-1 w-full pr-14 pl-6 my-4">
                   <p className="text-sm text-muted-foreground">
-                    Showing {Math.min((page - 1) * 10 + 1, total)} to{" "}
+                    Showing {Math.min((page - 1) * 10 + 1, total)} to&nbsp;
                     {Math.min(page * 10, total)} of {total} entries
                   </p>
                   <div className="flex items-center gap-4 cursor-pointer">
