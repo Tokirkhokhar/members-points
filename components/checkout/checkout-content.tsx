@@ -319,9 +319,9 @@ export function CheckoutContent() {
               pointsUsed: blockedPoints,
             }),
             conversionRate: validationData?.conversionRate,
-            actualAmount: Number(totalPrice?.toFixed(2)),
-            discountedAmount: Number(finalAmount.toFixed(2)),
-            discountAmount: Number((totalPrice - finalAmount).toFixed(2)),
+            actualAmount: totalPrice?.toFixed(2),
+            discountedAmount: finalAmount.toFixed(2),
+            discountAmount: (totalPrice - finalAmount).toFixed(2),
             ...(isCouponValidated &&
               couponValidationData?.isValid && {
                 couponCode: couponValidationData.couponCode,
